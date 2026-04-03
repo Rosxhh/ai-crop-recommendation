@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="h-[calc(100vh-80px)] w-full flex overflow-hidden lg:animate-[fade-in-up_0.5s_ease-out] relative">
+    
+    <!-- Sidebar: ChatGPT Style -->
+    <div id="sidebar" class="w-72 bg-slate-900 text-slate-100 flex flex-col transition-all duration-300 -translate-x-full fixed inset-y-0 left-0 z-[100] lg:relative lg:translate-x-0 border-r border-slate-800 shadow-2xl lg:shadow-none">
+        <!-- New Chat Button -->
+        <div class="p-4">
+            <button onclick="startNewChat()" class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl transition-all group font-bold">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-plus text-sm group-hover:rotate-90 transition-transform"></i>
+                    <span>New Chat</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- Recent Chats List -->
+        <div class="flex-1 overflow-y-auto px-1 space-y-1 custom-scrollbar" id="chatHistoryList">
+            <div class="px-4 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">History</div>
+            <div class="p-8 text-center text-slate-600 text-xs italic">Loading history...</div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-4 border-t border-slate-800/50 bg-slate-900">
+            <div class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 transition-colors group">
+                <div class="w-8 h-8 rounded-lg bg-agri-600 text-white flex items-center justify-center text-sm font-black shadow-lg">VR</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[10px] text-slate-500 truncate font-black uppercase tracking-widest">AgriCore <span class="text-white">Premium</span></p>
+                </div>
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-white">
+                    <i class="fa-solid fa-angles-left"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden transition-opacity"></div>
+
+    <!-- Main Chat Window -->
+    <div class="flex-1 flex flex-col min-w-0 relative bg-slate-50 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-white px-4 sm:px-8 py-4 border-b border-slate-100 flex justify-between items-center relative z-20 shadow-sm">
+            <div class="flex items-center gap-2 sm:gap-4">
+                <a href="/" class="w-10 h-10 bg-slate-50 shadow-sm rounded-xl flex items-center justify-center text-slate-400 hover:text-agri-600 border border-slate-100 transition-colors" title="Back to Dashboard">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 bg-slate-50 shadow-sm rounded-xl flex items-center justify-center text-slate-400 hover:text-agri-600 border border-slate-100">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-white text-agri-600 flex items-center justify-center p-1.5 shadow-lg border border-agri-100">
+                        <i class="fa-solid fa-robot text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-800 leading-none">AgriCore <span class="text-agri-600">AI</span></h2>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1 hidden sm:flex items-center gap-1.5">
+                            <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span> Specialist Online
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 sm:gap-4">
+                <div class="bg-agri-50 px-3 py-1.5 rounded-lg border border-agri-100 hidden md:flex items-center gap-2">
+                    <span class="text-[10px] font-black text-agri-600 uppercase tracking-widest">Gemma Core Active</span>
+                </div>
+                <button onclick="startNewChat()" class="p-2.5 rounded-xl bg-white text-slate-400 hover:text-agri-600 border border-slate-100 shadow-sm transition-all" title="New Chat">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-10 space-y-10 scroll-smooth z-10 custom-scrollbar" id="messages">
+            <!-- Messages populated via JS -->
+        </div>
+
+        <!-- Input Section -->
+        <div class="p-4 sm:p-8 bg-white border-t border-slate-100 z-20">
+            
+            <!-- Image Preview -->
+            <div id="imagePreviewContainer" class="hidden max-w-4xl mx-auto mb-6">
+                <div class="relative inline-block">
+                    <img id="imagePreview" src="" class="h-28 w-auto rounded-2xl shadow-2xl ring-4 ring-agri-500/10 border-2 border-white object-cover" alt="Preview">
+                    <button onclick="clearImage()" class="absolute -top-3 -right-3 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                        <i class="fa-solid fa-xmark text-xs font-bold"></i>
+                    </button>
+                    <input type="hidden" id="imageBase64" value="">
+                </div>
+            </div>
+
+            <!-- Unified Input Bar -->
+            <div class="max-w-4xl mx-auto">
+                <div class="relative flex items-end gap-2 sm:gap-4">
+                    
+                    <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
+                    <button onclick="document.getElementById('imageInput').click()" class="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-white text-slate-400 hover:text-agri-600 rounded-2xl flex items-center justify-center transition-all border border-slate-100 shadow-sm" title="Attach Image">
+                        <i class="fa-solid fa-paperclip text-lg sm:text-xl"></i>
+                    </button>
+
+                    <div class="flex-1 min-h-[56px] bg-white border-2 border-slate-100 rounded-2xl sm:rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] focus-within:border-agri-400/50 transition-all flex items-center overflow-hidden">
+                        <textarea id="messageInput" rows="1" class="flex-1 bg-transparent border-none px-4 sm:px-6 py-4 outline-none resize-none text-slate-700 font-medium placeholder:text-slate-300 max-h-40" placeholder="Type or ask in your language..."></textarea>
+                        
+                        <div class="flex items-center gap-1 sm:gap-2 pr-2 sm:pr-4 pl-2 border-l border-slate-50 ml-2">
+                            <select id="languageSelect" onchange="onLanguageChange()" class="bg-transparent border-none text-[10px] sm:text-xs font-black uppercase text-slate-400 hover:text-agri-600 outline-none cursor-pointer">
+                                <option value="English">English</option>
+                                <option value="Tamil">Tamil</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Telugu">Telugu</option>
+                                <option value="Kannada">Kannada</option>
+                            </select>
+                            <div class="w-[1px] h-6 bg-slate-50"></div>
+                            <button id="voiceToggleBtn" onclick="toggleVoice()" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-300 hover:text-agri-500">
+                                <i class="fa-solid fa-volume-high" id="voiceIcon"></i>
+                            </button>
+                            <button id="micBtn" onclick="toggleSpeech()" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-300 hover:text-red-500">
+                                <i class="fa-solid fa-microphone" id="micIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="sendBtn" onclick="sendMessage()" class="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-gradient-to-br from-agri-500 to-agri-700 text-white rounded-2xl sm:rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-agri-600/20 hover:shadow-agri-600/40 hover:-translate-y-1 transition-all active:scale-95 group">
+                        <i class="fa-solid fa-paper-plane text-lg sm:text-xl group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('messageInput');
+    const languageSelect = document.getElementById('languageSelect');
+    const chatHistoryList = document.getElementById('chatHistoryList');
+    const voiceIcon = document.getElementById('voiceIcon');
+    const micIcon = document.getElementById('micIcon');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const imageBase64 = document.getElementById('imageBase64');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+
+    const langMap = {
+        'English': 'en-IN', 'Tamil': 'ta-IN', 'Hindi': 'hi-IN', 'Telugu': 'te-IN', 'Kannada': 'kn-IN'
+    };
+
+    let voiceOutputEnabled = true;
+    let voices = [];
+    let currentSessionId = "{{ session_id }}";
+
+    // 1. Multilingual Voice & Initialization
+    function initVoices() {
+        voices = window.speechSynthesis.getVoices();
+        console.log(`System voices loaded: ${voices.length}`);
+    }
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = initVoices;
+    }
+    initVoices();
+
+    function onLanguageChange() {
+        const lang = languageSelect.value;
+        const msgMap = {
+            'English': 'Voice mode active. English ready.',
+            'Tamil': 'குரல் முறை செயல்படுகிறது. தமிழ் தயார்.',
+            'Hindi': 'वॉयस मोड सक्रिय है। हिंदी तैयार है।',
+            'Telugu': 'వాయిస్ మోడ్ యాక్టివ్. తెలుగు సిద్ధంగా ఉంది.',
+            'Kannada': 'ಧ್ವನಿ ಮೋಡ್ ಸಕ್ರಿಯವಾಗಿದೆ. ಕನ್ನಡ ಸಿದ್ಧವಾಗಿದೆ.'
+        };
+        speakText(msgMap[lang], lang);
+    }
+
+    function speakText(text, lang) {
+        if (!voiceOutputEnabled || !window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        
+        const clean = text.replace(/[*#_]/g, '').replace(/<[^>]*>/g, '').replace(/\*\*.*?\*\*/g, '');
+        const utterance = new SpeechSynthesisUtterance(clean);
+        const code = langMap[lang];
+        
+        // Advanced logic to find NATIVE voices
+        const targetVoice = voices.find(v => v.lang === code && (v.name.includes("Google") || v.localService)) || 
+                            voices.find(v => v.lang === code) ||
+                            voices.find(v => v.lang.startsWith(code.split('-')[0])) ||
+                            voices.find(v => v.name.toLowerCase().includes(lang.toLowerCase()));
+        
+        if (targetVoice) utterance.voice = targetVoice;
+        utterance.lang = code;
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleVoice() {
+        voiceOutputEnabled = !voiceOutputEnabled;
+        voiceIcon.className = voiceOutputEnabled ? "fa-solid fa-volume-high" : "fa-solid fa-volume-xmark text-slate-400";
+        if (!voiceOutputEnabled) window.speechSynthesis.cancel();
+    }
+
+    // 2. Sidebar & Conversation Management
+    function toggleSidebar() {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('hidden');
+    }
+
+    async function loadChatHistory() {
+        try {
+            const res = await fetch('/chatbot/api/?list_chats=true');
+            const data = await res.json();
+            chatHistoryList.innerHTML = '<div class="px-4 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">History</div>';
+            
+            data.chats.forEach(chat => {
+                const isActive = chat.session_id === currentSessionId;
+                const div = document.createElement('div');
+                div.className = `mx-2 px-3 py-3 rounded-xl cursor-default flex items-center gap-3 transition-all group/item ${isActive ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'}`;
+                
+                div.innerHTML = `
+                    <div class="flex-1 flex items-center gap-3 cursor-pointer min-w-0" onclick="loadSession('${chat.session_id}')">
+                        <i class="fa-regular fa-message text-[10px] opacity-40"></i>
+                        <span class="flex-1 truncate text-xs font-medium">${chat.title}</span>
+                    </div>
+                    <button onclick="deleteSession(event, '${chat.session_id}')" class="opacity-0 group-hover/item:opacity-100 p-2 hover:text-red-500 transition-all text-[10px]" title="Delete Chat">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                chatHistoryList.appendChild(div);
+            });
+        } catch (e) { console.error("History fail:", e); }
+    }
+
+    async function deleteSession(event, sid) {
+        event.stopPropagation();
+        if (!confirm("Are you sure you want to delete this conversation? 🚜")) return;
+        
+        try {
+            const res = await fetch('/chatbot/api/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+                body: JSON.stringify({ delete_chat: true, session_id: sid })
+            });
+            const data = await res.json();
+            
+            if (sid === currentSessionId) {
+                currentSessionId = data.session_id;
+                messagesEl.innerHTML = '';
+                addMessage("This conversation was deleted. How can I help you with a new one? 🌾", false);
+            }
+            loadChatHistory();
+        } catch (e) { console.error("Delete fail:", e); }
+    }
+
+    async function startNewChat() {
+        const res = await fetch('/chatbot/api/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+            body: JSON.stringify({ new_chat: true })
+        });
+        const data = await res.json();
+        currentSessionId = data.session_id;
+        messagesEl.innerHTML = '';
+        addMessage("How can I assist you today? 🌾", false);
+        loadChatHistory();
+        if (window.innerWidth < 1024 && !sidebar.classList.contains('-translate-x-full')) toggleSidebar();
+    }
+
+    async function loadSession(sid) {
+        if (sid === currentSessionId) return;
+        currentSessionId = sid;
+        const res = await fetch(`/chatbot/api/?session_id=${sid}`);
+        const data = await res.json();
+        messagesEl.innerHTML = '';
+        data.history.forEach(m => addMessage(m.content, m.role === 'user', false, m.image_data));
+        loadChatHistory();
+        if (window.innerWidth < 1024) toggleSidebar();
+    }
+
+    // 3. UI Messaging
+    function addMessage(text, isUser = false, isTyping = false, imageUrl = null) {
+        const div = document.createElement('div');
+        div.className = `flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-1 max-w-[92%] sm:max-w-[80%] ${isUser ? 'ml-auto' : ''} animate-fade-in-up group/msg`;
+        
+        let messageContent = text.replace(/\n/g, '<br>');
+        if (text === "[Image Content]") messageContent = "";
+
+        const content = isTyping 
+            ? `<div class="bg-white border border-slate-100 px-6 py-4 rounded-3xl flex items-center gap-3 shadow-sm"><div class="dot-typing"></div></div>`
+            : `<div class="relative flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-full">
+                <div class="${isUser ? 'bg-slate-800 text-white shadow-xl' : 'bg-white border border-slate-100 shadow-md'} px-6 py-4 rounded-3xl rounded-${isUser?'tr':'tl'}-sm font-medium leading-relaxed text-base sm:text-lg overflow-hidden break-words">
+                    ${imageUrl ? `<img src="${imageUrl}" class="max-w-full h-auto rounded-xl mb-3 border border-white/20 shadow-sm" alt="Shared Image">` : ''}
+                    ${messageContent}
+                </div>
+                ${!isTyping ? `
+                <button class="copy-btn mt-2 opacity-0 group-hover/msg:opacity-100 transition-opacity p-2 text-slate-400 hover:text-agri-600 bg-white shadow-sm border border-slate-100 rounded-lg flex items-center gap-2 text-[10px] font-bold">
+                    <i class="fa-regular fa-copy"></i> Copy
+                </button>` : ''}
+               </div>`;
+            
+        div.innerHTML = content;
+        
+        // Attach listener safely (Fixes the "leaking code" bug)
+        const btn = div.querySelector('.copy-btn');
+        if (btn) {
+            btn.onclick = () => copyToClipboard(text, btn);
+        }
+
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return div;
+    }
+
+    async function sendMessage() {
+        const text = inputEl.value.trim();
+        const image = imageBase64.value;
+        if (!text && !image) return;
+        
+        addMessage(text, true, false, image);
+        inputEl.value = ''; inputEl.style.height = 'auto';
+        imagePreviewContainer.classList.add('hidden'); imageBase64.value = '';
+        
+        const typing = addMessage('', false, true);
+        
+        try {
+            const res = await fetch(`/chatbot/api/?session_id=${currentSessionId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+                body: JSON.stringify({ message: text, image: image, language: languageSelect.value })
+            });
+            const data = await res.json();
+            typing.remove();
+            
+            const reply = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-agri-700">$1</strong>');
+            addMessage(reply);
+            speakText(data.reply, languageSelect.value);
+            loadChatHistory();
+        } catch (e) { typing.remove(); addMessage("⚠️ System busy. Please try again soon."); }
+    }
+
+    // Handlers
+    window.addEventListener('DOMContentLoaded', async () => {
+        const res = await fetch('/chatbot/api/');
+        const data = await res.json();
+        currentSessionId = data.session_id;
+        if (data.history?.length > 0) {
+            messagesEl.innerHTML = '';
+            data.history.forEach(m => addMessage(m.content, m.role === 'user', false, m.image_data));
+        } else {
+             addMessage("Namaste! I am your **AgriCore AI Master**. 🌾 How can I help you today?", false);
+        }
+        loadChatHistory();
+    });
+
+    // Standard Handlers
+    inputEl.oninput = () => { inputEl.style.height = 'auto'; inputEl.style.height = inputEl.scrollHeight + 'px'; };
+    inputEl.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
+
+    // Paste Support (Universal)
+    inputEl.addEventListener('paste', (e) => {
+        const items = e.clipboardData.items;
+        let imagePasted = false;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") !== -1) {
+                const blob = items[i].getAsFile();
+                window.handleImageSelection({ files: [blob] });
+                imagePasted = true;
+            }
+        }
+        // If it's a text paste, trigger resize after browser renders it
+        if (!imagePasted) {
+            setTimeout(() => inputEl.dispatchEvent(new Event('input')), 0);
+        }
+    });
+
+    function copyToClipboard(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+            const icon = btn.querySelector('i');
+            const original = icon.className;
+            icon.className = "fa-solid fa-check text-green-500 scale-125 transition-all text-[10px]";
+            setTimeout(() => icon.className = original, 2000);
+        });
+    }
+
+    let recognition;
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.onstart = () => micIcon.className = "fa-solid fa-circle-stop text-red-500 animate-pulse";
+        recognition.onresult = (e) => { inputEl.value = e.results[0][0].transcript; inputEl.dispatchEvent(new Event('input')); sendMessage(); };
+        recognition.onend = () => micIcon.className = "fa-solid fa-microphone text-lg";
+    }
+    function toggleSpeech() { if (!recognition) return; recognition.lang = langMap[languageSelect.value]; recognition.start(); }
+
+    window.handleImageSelection = function(e) {
+        const file = e.files ? e.files[0] : (e.target.files ? e.target.files[0] : null);
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (ev) => { imagePreview.src = ev.target.result; imageBase64.value = ev.target.result; imagePreviewContainer.classList.remove('hidden'); };
+            reader.readAsDataURL(file);
+        }
+    };
+    function clearImage() { imagePreviewContainer.classList.add('hidden'); imageBase64.value = ''; }
+</script>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
+    #sidebar .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+    .dot-typing { position: relative; width: 6px; height: 6px; border-radius: 5px; background-color: #22c55e; animation: dotTyping 1.2s infinite linear; }
+    .dot-typing::before, .dot-typing::after { content: ''; display: inline-block; position: absolute; top: 0; width: 6px; height: 6px; border-radius: 5px; background-color: #22c55e; }
+    .dot-typing::before { left: -10px; animation: dotTypingBefore 1.2s infinite linear; }
+    .dot-typing::after { left: 10px; animation: dotTypingAfter 1.2s infinite linear; }
+    @keyframes dotTypingBefore { 0% { opacity: 0; } 33% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes dotTyping { 33% { opacity: 0; } 66% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes dotTypingAfter { 0% { opacity: 0; } 66% { opacity: 0; } 100% { opacity: 1; } }
+</style>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{
+  "name": "AgriCore AI System",
+  "short_name": "AgriCore",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#22c55e",
+  "description": "Smart Agriculture System for yield prediction, crop recommendation, and soil analysis.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1892/1892742.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

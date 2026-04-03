@@ -1,0 +1,438 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+<div class="relative w-full min-h-screen bg-slate-100 flex flex-col z-[30]">
+    <!-- Custom Style to Hide Base Nav -->
+    <style>
+        nav { display: none !important; }
+        body { padding-top: 0 !important; overflow-y: auto !important; }
+        .ui-element { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .ui-hidden { opacity: 0 !important; pointer-events: none !important; transform: scale(0.9) !important; }
+    </style>
+    <!-- Full Screen Map Container -->
+    <div id="map" class="w-full h-[100vh] z-0 relative">
+        <!-- Floating Home/Back Button -->
+        <div class="absolute top-8 left-8 z-[1001] pointer-events-auto ui-element group/dash">
+            <a href="/" class="group flex items-center gap-3 bg-white pl-3 pr-6 py-3 rounded-[1.5rem] shadow-2xl border border-slate-100 text-slate-700 font-bold hover:bg-agri-600 hover:text-white transition-all duration-300 active:scale-95 relative">
+                <button onclick="event.preventDefault(); this.parentElement.parentElement.classList.add('ui-hidden')" class="absolute -top-2 -right-2 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10" title="Hide">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1 shadow-inner border border-slate-100">
+                    {% load static %}
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="w-full h-full object-contain">
+                </div>
+                <span class="hidden md:block">Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Floating Search & Identification Card -->
+        <div class="absolute top-8 left-1/2 -translate-x-1/2 z-[1001] pointer-events-auto w-full max-w-xl px-4 ui-element group/search">
+            <div class="bg-white p-4 rounded-[2rem] shadow-2xl border border-slate-100 flex flex-col gap-3 relative">
+                <button onclick="this.parentElement.parentElement.classList.add('ui-hidden')" class="absolute -top-2 -right-1 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10" title="Hide Search">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                    <input type="text" id="villageSearch" placeholder="Find village, survey number, or location..." 
+                        class="w-full pl-12 pr-28 py-4 bg-slate-100 rounded-2xl border border-slate-200 focus:bg-white focus:border-agri-500 focus:ring-4 focus:ring-agri-100 outline-none transition-all font-bold text-sm text-slate-800">
+                    <i class="fa-solid fa-earth-asia absolute left-5 top-1/2 -translate-y-1/2 text-agri-600 text-lg"></i>
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                        <button onclick="searchVillage()" class="px-5 py-2.5 bg-agri-700 text-white rounded-xl font-black hover:bg-agri-800 transition-all text-[10px] uppercase tracking-wider">Search</button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between gap-4 px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="detectMyLocation()" class="text-[10px] font-black text-slate-500 hover:text-agri-600 flex items-center gap-2 uppercase tracking-widest transition-colors">
+                            <i class="fa-solid fa-location-crosshairs text-base"></i> Detect Me
+                        </button>
+                        <div class="w-[1px] h-4 bg-slate-200"></div>
+                        <button onclick="document.getElementById('coordMenu').classList.toggle('hidden')" class="text-[10px] font-black text-slate-500 hover:text-blue-600 flex items-center gap-2 uppercase tracking-widest transition-colors">
+                            <i class="fa-solid fa-hashtag text-base"></i> Coordinates
+                        </button>
+                    </div>
+                    <div id="statusIndicator" class="hidden animate-pulse flex items-center gap-2 text-[10px] font-black text-agri-600 uppercase tracking-widest">
+                        <span class="w-2 h-2 rounded-full bg-agri-600"></span> Located
+                    </div>
+                </div>
+
+                <!-- Hidden Coordinate Menu -->
+                <div id="coordMenu" class="hidden pt-3 border-t border-slate-100">
+                    <div class="flex gap-2">
+                        <input type="number" step="any" id="latInput" placeholder="Latitude" class="w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 outline-none font-bold text-xs">
+                        <input type="number" step="any" id="lonInput" placeholder="Longitude" class="w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 outline-none font-bold text-xs">
+                        <button onclick="jumpToCoords()" class="aspect-square bg-blue-600 text-white px-4 rounded-xl font-bold hover:bg-blue-700 transition-all"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Layer Switcher (Top Right - below search) -->
+        <div class="absolute top-8 right-8 z-[1001] flex flex-col gap-3 pointer-events-auto ui-element">
+             <div id="layerMenu" class="hidden absolute top-0 right-full mr-4 bg-white p-3 rounded-3xl shadow-2xl border border-slate-200 flex flex-col gap-2 min-w-[160px] animate-[fadeInRight_0.3s_ease-out]">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-3 py-1">Map Layers</p>
+                <button onclick="setBaseLayer('satellite')" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-agri-50 text-slate-700 font-bold transition-all text-xs border border-transparent hover:border-agri-100 group">
+                    <div class="w-8 h-8 rounded-lg bg-agri-100 text-agri-600 flex items-center justify-center"><i class="fa-solid fa-earth-asia"></i></div>
+                    Satellite
+                </button>
+                <button onclick="setBaseLayer('terrain')" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-blue-50 text-slate-700 font-bold transition-all text-xs border border-transparent hover:border-blue-100">
+                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-mountain-sun"></i></div>
+                    Terrain
+                </button>
+                <button onclick="setBaseLayer('roads')" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-100 text-slate-700 font-bold transition-all text-xs border border-transparent hover:border-slate-200">
+                    <div class="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-road"></i></div>
+                    Standard
+                </button>
+             </div>
+             
+             <div class="relative group">
+                <button onclick="document.getElementById('layerMenu').classList.toggle('hidden')" class="w-14 h-14 rounded-2xl bg-white shadow-2xl border border-slate-100 text-slate-700 flex items-center justify-center hover:bg-agri-600 hover:text-white transition-all scale-110 active:scale-95 shadow-agri-200">
+                    <div class="w-10 h-10 rounded-xl bg-agri-50 group-hover:bg-white flex items-center justify-center p-1 transition-colors">
+                        <i class="fa-solid fa-layer-group text-xl text-agri-600"></i>
+                    </div>
+                </button>
+                <button onclick="this.parentElement.parentElement.classList.add('ui-hidden')" class="absolute -top-2 -right-1 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10" title="Hide Controller">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+             </div>
+        </div>
+
+        <!-- Global UI Hide Toggle -->
+        <div class="absolute bottom-10 left-8 z-[1001] pointer-events-auto">
+            <button onclick="toggleGlobalUI()" id="btnToggleUI" class="w-14 h-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 transition-all shadow-2xl active:scale-90 border border-slate-700" title="Toggle UI Visibility">
+                <i class="fa-solid fa-eye-slash text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Floating Zoom Controls (Bottom Right) -->
+        <div class="absolute bottom-10 right-8 z-[1001] flex flex-col gap-3 pointer-events-auto ui-element">
+             <div class="bg-white p-2 rounded-2xl shadow-2xl border border-slate-200 flex flex-col gap-2">
+                <button onclick="map.zoomIn()" title="Zoom In" class="w-14 h-14 rounded-xl bg-slate-50 text-slate-900 font-black text-3xl hover:bg-agri-600 hover:text-white transition-all flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 shadow-inner">
+                    +
+                </button>
+                <div class="w-full h-[1px] bg-slate-200/50"></div>
+                <button onclick="map.zoomOut()" title="Zoom Out" class="w-14 h-14 rounded-xl bg-slate-50 text-slate-900 font-black text-3xl hover:bg-agri-600 hover:text-white transition-all flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 shadow-inner leading-none pb-1">
+                    -
+                </button>
+             </div>
+        </div>
+
+        <!-- Minimal Side Toolbar -->
+        <div class="absolute top-1/2 -translate-y-1/2 left-8 z-[1001] flex flex-col gap-4 pointer-events-auto ui-element group/toolbar">
+            <div class="bg-white p-3 rounded-[2.5rem] shadow-2xl border border-slate-200 flex flex-col gap-4 items-center relative">
+                <button onclick="this.parentElement.parentElement.classList.add('ui-hidden')" class="absolute -top-1 -right-1 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="w-8 h-[1px] bg-slate-200 mt-2 opacity-50"></div>
+                
+                <button onclick="startDrawing()" id="btnDraw" class="group relative w-14 h-14 rounded-full bg-agri-50 text-agri-600 hover:bg-agri-600 hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg active:scale-90">
+                    <i class="fa-solid fa-draw-polygon text-xl"></i>
+                    <span class="absolute left-full ml-6 px-4 py-3 bg-slate-900 text-white text-[11px] font-black rounded-2xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap pointer-events-none shadow-2xl z-[1001]">Draw Farm</span>
+                </button>
+
+                <button onclick="startEditing()" id="btnEdit" class="group relative w-14 h-14 rounded-full bg-slate-50 text-slate-400 hover:bg-amber-500 hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg active:scale-90">
+                    <i class="fa-solid fa-pen-nib text-xl"></i>
+                    <span class="absolute left-full ml-6 px-4 py-3 bg-slate-900 text-white text-[11px] font-black rounded-2xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap pointer-events-none shadow-2xl z-[1001]">Edit Boundary</span>
+                </button>
+
+                <button onclick="clearMap()" id="btnClear" class="group relative w-14 h-14 rounded-full bg-slate-50 text-rose-400 hover:bg-rose-500 hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg active:scale-90">
+                    <i class="fa-solid fa-trash-can text-xl"></i>
+                    <span class="absolute left-full ml-6 px-4 py-3 bg-slate-900 text-white text-[11px] font-black rounded-2xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap pointer-events-none shadow-2xl z-[1001]">Clear Map</span>
+                </button>
+
+                <div class="w-8 h-[1px] bg-slate-200 mb-2 opacity-50"></div>
+            </div>
+        </div>
+
+        <!-- Floating Result Panel (Visible after drawing) -->
+        <div id="measurementResults" class="hidden absolute bottom-12 left-1/2 -translate-x-1/2 z-[1001] pointer-events-auto px-4 w-full max-w-2xl animate-[slideUp_0.4s_ease-out]">
+            <div class="bg-slate-900 p-6 rounded-[2.5rem] shadow-2xl border border-slate-800 flex flex-col md:flex-row items-center gap-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-agri-500/20 text-agri-400 flex items-center justify-center text-2xl shadow-inner border border-agri-500/30">
+                        <i class="fa-solid fa-maximize"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Land Area</p>
+                        <p class="text-3xl font-black text-white" id="areaM2">0 <span class="text-xs text-slate-500 font-bold uppercase ml-1">m²</span></p>
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-[1px] h-12 bg-white/10"></div>
+
+                <div class="flex gap-8">
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Acres</p>
+                        <p class="text-xl font-black text-emerald-400" id="areaAcres">0.00</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hectares</p>
+                        <p class="text-xl font-black text-amber-400" id="areaHectares">0.00</p>
+                    </div>
+                </div>
+
+                <div class="flex-grow"></div>
+
+                <div class="flex gap-3 w-full md:w-auto">
+                    <button onclick="saveBoundary()" class="flex-grow md:flex-none px-8 py-4 rounded-2xl bg-agri-600 text-white font-black hover:bg-agri-700 transition-all shadow-xl shadow-agri-900/20 active:scale-95 text-sm">
+                        Save Farm
+                    </button>
+                    <button onclick="clearMap()" class="aspect-square bg-white/10 text-white rounded-2xl hover:bg-rose-500 transition-all flex items-center justify-center w-[52px]">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drawing Tip Overlay -->
+        <div id="drawingTip" class="absolute bottom-10 left-32 z-[1001] pointer-events-none max-w-[280px] ui-element group/tip">
+            <div class="bg-white p-5 rounded-[2rem] shadow-2xl border border-slate-200 flex items-start gap-4 ring-1 ring-slate-900/5 relative pointer-events-auto">
+                <button onclick="document.getElementById('drawingTip').classList.add('ui-hidden')" class="absolute -top-2 -right-1 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="w-10 h-10 rounded-full bg-agri-100 text-agri-600 flex items-center justify-center flex-shrink-0 animate-bounce">
+                    <i class="fa-solid fa-pencil"></i>
+                </div>
+                <div>
+                    <h4 class="font-black text-slate-800 text-sm mb-1 tracking-tight">Quick Tip</h4>
+                    <p class="text-[11px] text-slate-500 font-bold leading-relaxed">Zoom in deep to identify landmarks like roads or canals before drawing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let map, drawnItems, satelliteLayer, terrainLayer, roadsLayer;
+    let farmMarker = null;
+    let polygonHandler, editHandler;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Initialize Map
+        map = L.map('map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([20.5937, 78.9629], 5);
+
+        // Map Layers
+        satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19
+        }).addTo(map);
+
+        terrainLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17
+        });
+
+        roadsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        });
+
+        // Initialize Objects
+        drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        // Handlers
+        polygonHandler = new L.Draw.Polygon(map, {
+            allowIntersection: false,
+            shapeOptions: { color: '#22c55e', fillOpacity: 0.3, weight: 3 }
+        });
+
+        editHandler = new L.EditToolbar.Edit(map, {
+            featureGroup: drawnItems,
+            selectedPathOptions: {
+                dashArray: '10, 10',
+                fill: true,
+                fillColor: '#feebc8',
+                fillOpacity: 0.1
+            }
+        });
+
+        // Events
+        map.on(L.Draw.Event.CREATED, function (e) {
+            drawnItems.clearLayers();
+            drawnItems.addLayer(e.layer);
+            calculateMeasurements(e.layer);
+            document.getElementById('drawingTip').classList.add('hidden');
+        });
+
+        map.on(L.Draw.Event.EDITED, function (e) {
+            e.layers.eachLayer(calculateMeasurements);
+        });
+
+        // Auto-load boundary
+        const saved = localStorage.getItem('agriCoreFarmBoundary_v2');
+        if(saved) {
+            const data = JSON.parse(saved);
+            const layer = L.geoJSON(data, {
+                style: { color: '#22c55e', fillOpacity: 0.3, weight: 3 }
+            });
+            layer.eachLayer(l => {
+                drawnItems.addLayer(l);
+                calculateMeasurements(l);
+                setTimeout(() => map.fitBounds(drawnItems.getBounds()), 500);
+            });
+        }
+
+        // 🔥 Disease Surveillance Mapping (User's Module 2 Integration)
+        fetch('/analysis/api/disease-markers/')
+            .then(res => res.json())
+            .then(data => {
+                data.markers.forEach(m => {
+                    L.circleMarker([m.lat, m.lng], {
+                        radius: 5, color: '#ff0000', fillColor: '#ff0000', fillOpacity: 0.9, weight: 2
+                    }).addTo(map).bindPopup(`<b>Outbreak Detected: ${m.name}</b><br><small>Reported: ${m.date}</small>`);
+                });
+            });
+    });
+
+
+    function setBaseLayer(type) {
+        map.removeLayer(satelliteLayer);
+        map.removeLayer(terrainLayer);
+        map.removeLayer(roadsLayer);
+
+        if (type === 'satellite') satelliteLayer.addTo(map);
+        else if (type === 'terrain') terrainLayer.addTo(map);
+        else if (type === 'roads') roadsLayer.addTo(map);
+        
+        document.getElementById('layerMenu').classList.add('hidden');
+    }
+
+    async function searchVillage() {
+        const query = document.getElementById('villageSearch').value;
+        if (!query) return;
+        
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+            const data = await res.json();
+            if (data.length > 0) {
+                placeMarker(data[0].lat, data[0].lon);
+                const status = document.getElementById('statusIndicator');
+                status.classList.remove('hidden');
+                setTimeout(() => status.classList.add('hidden'), 3000);
+            } else {
+                alert("Location not found.");
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function detectMyLocation() {
+        if (!navigator.geolocation) return alert("GPS not supported.");
+        navigator.geolocation.getCurrentPosition(p => {
+            placeMarker(p.coords.latitude, p.coords.longitude);
+        }, () => alert("GPS access denied."));
+    }
+
+    function jumpToCoords() {
+        const lat = parseFloat(document.getElementById('latInput').value);
+        const lon = parseFloat(document.getElementById('lonInput').value);
+        if (!isNaN(lat) && !isNaN(lon)) placeMarker(lat, lon);
+        else alert("Invalid coordinates.");
+    }
+
+    function startDrawing() {
+        cancelAction();
+        polygonHandler.enable();
+        document.getElementById('btnDraw').classList.replace('bg-agri-50', 'bg-agri-600');
+        document.getElementById('btnDraw').classList.replace('text-agri-600', 'text-white');
+    }
+
+    function startEditing() {
+        cancelAction();
+        if (drawnItems.getLayers().length === 0) return alert("Draw a boundary first!");
+        editHandler.enable();
+        document.getElementById('btnEdit').classList.replace('bg-slate-50', 'bg-amber-500');
+        document.getElementById('btnEdit').classList.replace('text-slate-400', 'text-white');
+    }
+
+    function cancelAction() {
+        if (polygonHandler.enabled()) polygonHandler.disable();
+        if (editHandler.enabled()) editHandler.disable();
+        
+        document.getElementById('btnEdit').classList.add('bg-slate-50', 'text-slate-400');
+        document.getElementById('btnEdit').classList.remove('bg-amber-500', 'text-white');
+        document.getElementById('btnDraw').classList.add('bg-agri-50', 'text-agri-600');
+        document.getElementById('btnDraw').classList.remove('bg-agri-600', 'text-white');
+    }
+
+    function placeMarker(lat, lon) {
+        const pos = [lat, lon];
+        map.flyTo(pos, 17);
+        if (farmMarker) farmMarker.setLatLng(pos);
+        else {
+            farmMarker = L.marker(pos, {
+                icon: L.divIcon({ 
+                    className: 'custom-farm-marker', 
+                    html: "<div class='marker-pulse'></div>", 
+                    iconSize:[30,30], iconAnchor:[15,15] 
+                })
+            }).addTo(map);
+        }
+    }
+
+    function calculateMeasurements(layer) {
+        const geojson = layer.toGeoJSON();
+        const area = turf.area(geojson);
+        
+        document.getElementById('measurementResults').classList.remove('hidden');
+        document.getElementById('areaM2').innerHTML = `${Math.round(area).toLocaleString()} <span class="text-xs text-slate-500 font-bold uppercase ml-1">m²</span>`;
+        document.getElementById('areaAcres').innerText = (area * 0.000247105).toFixed(2);
+        document.getElementById('areaHectares').innerText = (area * 0.0001).toFixed(2);
+    }
+
+    function clearMap() {
+        drawnItems.clearLayers();
+        if(farmMarker) { map.removeLayer(farmMarker); farmMarker = null; }
+        localStorage.removeItem('agriCoreFarmBoundary_v2');
+        document.getElementById('measurementResults').classList.add('hidden');
+        document.getElementById('drawingTip').classList.remove('hidden');
+    }
+
+    function saveBoundary() {
+        if(drawnItems.getLayers().length === 0) return alert("No boundary to save.");
+        const data = drawnItems.toGeoJSON();
+        localStorage.setItem('agriCoreFarmBoundary_v2', JSON.stringify(data));
+        alert("Boundary saved!");
+    }
+
+    function toggleGlobalUI() {
+        const elements = document.querySelectorAll('.ui-element');
+        const btn = document.getElementById('btnToggleUI');
+        const isHidden = elements[0].classList.contains('ui-hidden');
+        
+        elements.forEach(el => {
+            if (isHidden) el.classList.remove('ui-hidden');
+            else el.classList.add('ui-hidden');
+        });
+        
+        btn.innerHTML = isHidden ? '<i class="fa-solid fa-eye-slash text-xl"></i>' : '<i class="fa-solid fa-eye text-xl"></i>';
+        btn.classList.toggle('bg-agri-600', !isHidden);
+        btn.classList.toggle('bg-slate-900/90', isHidden);
+    }
+</script>
+
+<style>
+    .marker-pulse {
+        width: 16px; height: 16px; background: #16a34a; border: 3px solid white; border-radius: 50%;
+        box-shadow: 0 0 0 rgba(22, 163, 74, 0.4); animation: pulse 2s infinite; margin: 7px;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+        70% { box-shadow: 0 0 0 25px rgba(22, 163, 74, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+    }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translate(-50%, 40px); }
+        to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    @keyframes fadeInRight {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    .leaflet-bar { border: none !important; box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important; border-radius: 16px !important; overflow: hidden; }
+    .leaflet-container { font-family: inherit; }
+</style>
+{% endblock %}

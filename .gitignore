@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+*.pkl
+*.h5
+db.sqlite3
+soil_dataset/
+.ipynb_checkpoints/

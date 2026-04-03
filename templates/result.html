@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="relative w-full min-h-screen">
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        
+        <!-- Result Sidebar (2/5 width) -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-10 text-center relative overflow-hidden animate-[fadeInLeft_0.6s_ease-out]">
+                <!-- Decorative Glow -->
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-gradient-to-b from-agri-50 to-transparent -z-10"></div>
+                
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-emerald-50 text-emerald-600 shadow-xl shadow-emerald-50 p-2 mb-6 border border-emerald-100 mx-auto">
+                    <i class="fa-solid fa-chart-pie text-3xl"></i>
+                </div>
+
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-1 tracking-tight">Analysis Complete</h2>
+                <p class="text-slate-500 text-sm mb-8">AI-generated yield insight</p>
+
+                <!-- Main Yield Display -->
+                <div class="bg-slate-50 rounded-3xl p-6 mb-8 border border-slate-100 shadow-inner">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total Estimated Yield</p>
+                    <div class="flex items-baseline justify-center gap-2">
+                        <span class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-agri-500 to-agri-800 tracking-tighter">{{ yield }}</span>
+                        <span class="text-xl font-bold text-slate-400">Tons</span>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 text-left">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-emerald-600 shadow-sm">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Efficiency</p>
+                            <p class="text-slate-800 font-bold leading-tight">{{ yield_ph }} <span class="text-[10px] text-slate-400">Tons/Hectare</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 space-y-3">
+                    <a href="{% url 'yield' %}" class="block w-full py-4 rounded-2xl bg-gradient-to-r from-agri-500 to-agri-600 text-white font-bold shadow-lg shadow-agri-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                        New Analysis <i class="fa-solid fa-rotate-right ml-2 opacity-50"></i>
+                    </a>
+                    <a href="/" class="block w-full py-4 rounded-2xl bg-white text-slate-700 font-bold border-2 border-slate-100 hover:border-agri-500 hover:text-agri-600 transition-all text-sm">
+                        Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Visualization (3/5 width) -->
+        <div class="lg:col-span-3 space-y-8 animate-[fadeInRight_0.6s_ease-out]">
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 p-8 md:p-10 h-full flex flex-col">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">Nutrient Portfolio</h3>
+                        <p class="text-sm text-slate-500">Comparing soil input to regional benchmarks</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                </div>
+
+                <!-- Crop Visual (Refined Banner) -->
+                <div class="relative h-56 rounded-[2rem] overflow-hidden mb-8 group shadow-xl bg-slate-900">
+                    <img src="{{ crop_details.image }}" alt="{{ crop }}" 
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-90"
+                         onerror="this.src='https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80';">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-8">
+                        <div class="flex items-center gap-2 text-amber-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
+                             <span class="w-4 h-[1px] bg-amber-400/50"></span>
+                             Recommended Crop
+                        </div>
+                        <h3 class="text-4xl font-black text-white capitalize tracking-tighter">{{ crop }}</h3>
+                    </div>
+                </div>
+
+                <div class="flex-grow flex items-center justify-center relative min-h-[300px]">
+                    <canvas id="soilRadar"></canvas>
+                </div>
+
+                <!-- Input Summary Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-slate-100">
+                    <div class="text-center">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Humidity</p>
+                        <p class="text-sm font-bold text-slate-700">{{ inputs.humidity }}%</p>
+                    </div>
+                    <div class="text-center border-l border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Soil pH</p>
+                        <p class="text-sm font-bold text-slate-700">{{ inputs.ph }}</p>
+                    </div>
+                    <div class="text-center border-l border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Temp</p>
+                        <p class="text-sm font-bold text-slate-700">{{ inputs.temperature }}°C</p>
+                    </div>
+                    <div class="text-center border-l border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Rainfall</p>
+                        <p class="text-sm font-bold text-slate-700">{{ inputs.rainfall }}mm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Confetti for premium feel
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#22c55e', '#16a34a', '#dcfce7']
+        });
+
+        // Radar Chart
+        const ctx = document.getElementById('soilRadar').getContext('2d');
+        
+        // Data from inputs
+        const userN = Number("{{ inputs.nitrogen|default:0 }}");
+        const userP = Number("{{ inputs.phosphorus|default:0 }}");
+        const userK = Number("{{ inputs.potassium|default:0 }}");
+        
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Nitrogen', 'Phosphorus', 'Potassium', 'pH Stability', 'Moisture Retention'],
+                datasets: [{
+                    label: 'Current Status',
+                    data: [
+                        userN, 
+                        userP, 
+                        userK, 
+                        (7 - Math.abs(7 - Number("{{ inputs.ph|default:7 }}"))) * 14, 
+                        Number("{{ inputs.humidity|default:50 }}")
+                    ],
+                    fill: true,
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    borderColor: 'rgb(34, 197, 94)',
+                    pointBackgroundColor: 'rgb(34, 197, 94)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(34, 197, 94)',
+                    borderWidth: 3
+                }, {
+                    label: 'Optimal (Avg)',
+                    data: [80, 50, 50, 90, 80],
+                    fill: true,
+                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                    borderColor: 'rgba(148, 163, 184, 0.4)',
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { display: false },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { 
+                            usePointStyle: true,
+                            padding: 20,
+                            font: { weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    @keyframes fadeInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+</style>
+</div>
+{% endblock %}

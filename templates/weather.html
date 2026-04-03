@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="relative w-full min-h-screen">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center">
+    
+    <!-- Back Navigator -->
+    <div class="w-full mb-2 animate-[fadeInUp_0.4s_ease-out]">
+        <a href="/" class="inline-flex items-center text-slate-500 hover:text-blue-600 font-bold transition-colors">
+            <i class="fa-solid fa-arrow-left mr-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Setup / CTA Area -->
+    <div id="weatherCTA" class="text-center max-w-lg mx-auto mt-10 animate-[fadeInUp_0.5s_ease-out]">
+        <div class="w-24 h-24 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center p-3 mx-auto mb-6 shadow-xl border border-blue-100">
+            <i class="fa-solid fa-cloud-sun text-4xl"></i>
+        </div>
+        <h2 class="text-4xl font-extrabold text-slate-800 mb-4 tracking-tight">Smart Weather</h2>
+        <p class="text-slate-500 text-lg mb-8">Access hyper-local climate data specifically tailored for your farm's precise coordinates.</p>
+        
+        <button onclick="getLocation()" class="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-blue-600 rounded-2xl hover:bg-blue-700 hover:-translate-y-1 shadow-lg shadow-blue-500/30 overflow-hidden">
+            <span class="absolute inset-0 w-full h-full -mt-1 rounded-2xl opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
+            <i class="fa-solid fa-location-crosshairs mr-3 text-xl group-hover:rotate-90 transition-transform duration-500"></i> 
+            <span class="relative">Detect Farm Location</span>
+        </button>
+        <p id="loadingMsg" class="text-blue-500 font-medium mt-6 hidden animate-pulse"><i class="fa-solid fa-satellite-dish mr-2"></i> Fetching meteorological data...</p>
+    </div>
+
+    <!-- Weather Dashboard (Hidden Initially) -->
+    <div id="weatherDashboard" class="w-full hidden animate-[fadeInUp_0.5s_ease-out]">
+        
+        <!-- Main Weather Widget -->
+        <div class="bg-gradient-to-br from-blue-500 to-indigo-700 rounded-[2.5rem] shadow-2xl overflow-hidden relative text-white">
+            
+            <!-- Abstract background art -->
+            <div class="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+            
+            <div class="p-8 md:p-12 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                
+                <!-- Temp & Icon -->
+                <div class="flex items-center gap-6">
+                    <div class="text-6xl md:text-8xl flex">
+                        <i id="weatherIcon" class="fa-solid fa-cloud-sun drop-shadow-lg text-yellow-300"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-start">
+                            <span id="tempValue" class="text-7xl md:text-8xl font-black tracking-tighter drop-shadow-md">--</span>
+                            <span class="text-3xl font-bold mt-2 opacity-80">°C</span>
+                        </div>
+                        <p id="descValue" class="text-xl md:text-2xl font-medium text-blue-100 capitalize mt-1 tracking-wide">--</p>
+                    </div>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-2 gap-4 w-full md:w-auto mt-6 md:mt-0">
+                    <div class="bg-slate-800/10 rounded-2xl p-4 border border-white/10 text-center flex flex-col items-center justify-center min-w-[120px]">
+                        <i class="fa-solid fa-droplet text-blue-200 mb-2 text-xl"></i>
+                        <span class="text-sm font-bold text-blue-200 uppercase tracking-widest">Humidity</span>
+                        <span id="humidityValue" class="text-2xl font-bold">--%</span>
+                    </div>
+                    <div class="bg-slate-800/10 rounded-2xl p-4 border border-white/10 text-center flex flex-col items-center justify-center min-w-[120px]">
+                        <i class="fa-solid fa-cloud-showers-heavy text-blue-200 mb-2 text-xl"></i>
+                        <span class="text-sm font-bold text-blue-200 uppercase tracking-widest">Rainfall</span>
+                        <span class="text-2xl font-bold"><span id="rainValue">--</span><span class="text-base font-normal ml-1">mm</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Bar for Farm Advice -->
+            <div class="bg-indigo-900 p-4 px-8 border-t border-white/10 flex items-center gap-4">
+                <i class="fa-solid fa-lightbulb text-yellow-300 text-xl"></i>
+                <p id="farmAdvice" class="font-medium text-indigo-100">Weather looks optimal for standard farming activities today.</p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-8">
+            <button onclick="location.reload()" class="text-slate-400 hover:text-slate-600 font-medium transition-colors"><i class="fa-solid fa-rotate-right mr-2"></i> Refresh Data</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function getLocation() {
+    const ctaBtn = document.querySelector('#weatherCTA button');
+    const loadMsg = document.getElementById('loadingMsg');
+    
+    if (navigator.geolocation) {
+        ctaBtn.classList.add('hidden');
+        loadMsg.classList.remove('hidden');
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+function showError(error) {
+    alert("Unable to retrieve location. Please check your browser permissions.");
+    location.reload();
+}
+
+function showPosition(position) {
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
+
+    fetch(`/weather/?lat=${lat}&lon=${lon}`)
+    .then(response => response.json())
+    .then(data => {
+        // Hide CTA, Show Dashboard
+        document.getElementById("weatherCTA").classList.add("hidden");
+        document.getElementById("weatherDashboard").classList.remove("hidden");
+
+        // Populate Data
+        document.getElementById("tempValue").innerText = Math.round(data.temperature);
+        document.getElementById("descValue").innerText = data.description;
+        document.getElementById("humidityValue").innerText = data.humidity + "%";
+        document.getElementById("rainValue").innerText = data.rainfall;
+        
+        // Smart Farm Advice Logic
+        const adviceEl = document.getElementById("farmAdvice");
+        const iconEl = document.getElementById("weatherIcon");
+        const desc = data.description.toLowerCase();
+        
+        if(desc.includes("rain") || data.rainfall > 0) {
+            adviceEl.innerText = "Rain expected. Delay irrigation and pesticide application.";
+            iconEl.className = "fa-solid fa-cloud-rain drop-shadow-lg text-blue-200";
+        } else if (data.temperature > 35) {
+            adviceEl.innerText = "High temperatures. Ensure crops are well hydrated and monitor for heat stress.";
+            iconEl.className = "fa-solid fa-sun drop-shadow-lg text-yellow-400";
+        } else if (data.humidity > 80 && data.temperature > 25) {
+            adviceEl.innerText = "High humidity and warmth. Strong risk of fungal diseases. Monitor crops closely.";
+            iconEl.className = "fa-solid fa-temperature-arrow-up drop-shadow-lg text-orange-400";
+        } else {
+            adviceEl.innerText = "Conditions are generally favorable for standard agricultural operations today.";
+            iconEl.className = "fa-solid fa-cloud-sun drop-shadow-lg text-yellow-300";
+        }
+    })
+    .catch(err => {
+        alert("Error fetching weather data. Please try again later.");
+        location.reload();
+    });
+}
+</script>
+</div>
+{% endblock %}
