@@ -1,8 +1,9 @@
 .env
 __pycache__/
 *.pyc
-*.pkl
-*.h5
+# .pkl and .h5 are included because they are needed for the AI features to work in production
+# *.pkl
+# *.h5
 db.sqlite3
 soil_dataset/
 .ipynb_checkpoints/

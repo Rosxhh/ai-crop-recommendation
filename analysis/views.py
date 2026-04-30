@@ -116,47 +116,119 @@ def smart_analysis(request):
             soil_type = "Unknown Analysis"
             soil_characteristics = ["Unable to completely analyze soil structure."]
             soil_confidence = 0.0
-            
-            token = os.getenv("GEMINI_API_KEY")
-            if token and GEMINI_AVAILABLE:
-                genai.configure(api_key=token)
-                model_names = ['gemini-1.5-flash-8b', 'gemini-flash-lite-latest', 'gemini-1.5-flash', 'gemma-3-4b-it']
-                
-                prompt = """Analyze this image. 
-                1. If the image is NOT clearly a photo of soil or earth (e.g., if it's a leaf, a plant, a person, or a building), respond: {"type": "Invalid", "confidence": 100.0}
-                2. If it IS soil, identify the primary type from these 6 categories ONLY: [Sandy, Clay, Loamy, Silty, Peaty, Chalky].
-                
-                Respond strictly in this JSON format:
-                {"type": "TheMatchedType", "confidence": 95.5}"""
-                
-                for m_name in model_names:
-                    try:
-                        g_model = genai.GenerativeModel(m_name)
-                        response = g_model.generate_content([prompt, img], request_options={"timeout": 20})
-                        if response and response.text:
-                            match = re.search(r'\{.*\}', response.text, re.DOTALL)
-                            if match:
-                                data = json.loads(match.group(0))
-                                extracted = data.get("type", "Unknown")
-                                if extracted == "Invalid":
-                                    soil_type = "Wrong Image Type"
-                                    soil_characteristics = ["The uploaded image appears to be a plant/leaf instead of soil. Please upload a clear photo of the earth ground for this analysis."]
-                                    soil_confidence = 100.0
-                                    break
-                                elif extracted in SOIL_DATA:
-                                    soil_type = extracted
-                                    soil_characteristics = SOIL_DATA[extracted]["characteristics"]
-                                    soil_confidence = float(data.get("confidence", 0.0))
-                                    
-                                    # Dynamically adjust NPK based on soil type
-                                    multipliers = SOIL_NUTRIENT_MULTIPLIERS.get(soil_type, {"N":1,"P":1,"K":1,"humidity":1})
-                                    n = round(n * multipliers["N"], 2)
-                                    p = round(p * multipliers["P"], 2)
-                                    k = round(k * multipliers["K"], 2)
-                                    hum = round(hum * multipliers["humidity"], 2)
-                                    break
-                    except Exception:
-                        continue
+            indian_soil_name = None   
+            yield_quality_multiplier = 1.0   # Baseline yield factor
+            ai_tags = []                     # AI sensory labels
+            indian_soil_name = None   # Indian soil display name from local model
+
+            # ──────────────────────────────────────────────────────────────────
+            # 🧠  STEP 1 — LOCAL CNN (soil_model.h5 trained on 6000 Indian soil images)
+            # Uses your own trained CNN as primary engine.
+            # If confidence >= 60%, no Gemini call needed → saves API quota.
+            # ──────────────────────────────────────────────────────────────────
+            _used_local_model = False
+            try:
+                from soil.ml_predictor import predict_soil_type as _local_soil_predict
+                _ml_type, _ml_raw, _ml_indian, _ml_conf = _local_soil_predict(img)
+
+                if _ml_type and _ml_conf >= 60.0 and _ml_type in SOIL_DATA:
+                    soil_type            = _ml_type
+                    indian_soil_name     = _ml_indian
+                    soil_confidence      = _ml_conf
+                    soil_characteristics = SOIL_DATA[soil_type]["characteristics"]
+                    _used_local_model    = True
+
+                    # Adjust NPK values for the detected soil type
+                    multipliers = SOIL_NUTRIENT_MULTIPLIERS.get(soil_type, {"N":1,"P":1,"K":1,"humidity":1})
+                    n   = round(n   * multipliers["N"],        2)
+                    p   = round(p   * multipliers["P"],        2)
+                    k   = round(k   * multipliers["K"],        2)
+                    hum = round(hum * multipliers["humidity"], 2)
+                    print(f"[Analysis] ✅ Local CNN: {_ml_raw} → {soil_type} ({_ml_conf:.1f}%)")
+
+            except Exception as _e:
+                print(f"[Analysis] Local CNN step failed: {_e}")
+
+            # ──────────────────────────────────────────────────────────────────
+            # 🤖  STEP 2 — GEMINI AI (fallback when local model < 60% confidence)
+            # ──────────────────────────────────────────────────────────────────
+            if not _used_local_model:
+                token = os.getenv("GEMINI_API_KEY")
+                if token and GEMINI_AVAILABLE:
+                    genai.configure(api_key=token)
+                    model_names = ['gemini-1.5-flash-8b', 'gemini-flash-lite-latest', 'gemini-1.5-flash', 'gemma-3-4b-it']
+
+                    prompt = """Analyze this soil image in extreme detail for agricultural purposes.
+                    1. If the image is NOT clearly a photo of soil/earth, respond: {"type": "Invalid", "confidence": 100}
+                    2. If it IS soil:
+                       - "type": Choose one from [Sandy, Clay, Loamy, Silty, Peaty, Chalky].
+                       - "confidence": confidence percentage.
+                       - "texture": One of [Fine, Course, Clumpy, Loose].
+                       - "color": One of [Black/Dark, Red, Brown, Yellow, Pale].
+                       - "moisture": One of [Dry, Moist, Saturated].
+                       - "organic_matter": One of [High, Medium, Low].
+                       - "ph_estimate": A scientific estimate of pH (4.5 - 8.5) based on soil type and color.
+                       - "regional_name": The specific Indian regional name for this soil (e.g., "Black Cotton Soil", "Kallar", "Regur").
+                       - "top_crops": List 3 specific crops suited for these visual conditions.
+                       - "best_practices": [3-sentence professional "Dos"].
+                       - "bad_practices": [3-sentence professional "Don'ts"].
+
+                    Respond strictly in JSON format like: 
+                    {"type": "Loamy", "confidence": 98, "texture": "Fine", "color": "Dark", "moisture": "Moist", "organic_matter": "High", "ph_estimate": 6.8, "regional_name": "Alluvial Soil", "top_crops": ["Wheat", "Potato", "Tomato"], "best_practices": ["Rotate crops regularly", "Add organic mulch", "Monitor pH"], "bad_practices": ["Avoid over-tilling", "Don't use chemical-heavy fertilizers", "Avoid walking on wet soil"]}"""
+
+                    for m_name in model_names:
+                        try:
+                            g_model = genai.GenerativeModel(m_name)
+                            response = g_model.generate_content([prompt, img], request_options={"timeout": 20})
+                            if response and response.text:
+                                match = re.search(r'\{.*\}', response.text, re.DOTALL)
+                                if match:
+                                    data = json.loads(match.group(0))
+                                    extracted = data.get("type", "Unknown")
+                                    if extracted == "Invalid":
+                                        soil_type = "Wrong Image Type"
+                                        soil_characteristics = ["The uploaded image does not appear to be soil. Please upload a clear photo of the ground."]
+                                        soil_confidence = 100.0
+                                        break
+                                    elif extracted in SOIL_DATA:
+                                        soil_type = extracted
+                                        indian_soil_name = data.get("regional_name", extracted)
+                                        soil_confidence = float(data.get("confidence", 0.0))
+                                        ai_sensing = {
+                                            "texture": data.get("texture", "Mixed"),
+                                            "color": data.get("color", "Varies"),
+                                            "moisture": data.get("moisture", "Detected"),
+                                            "organic": data.get("organic_matter", "Medium"),
+                                            "ph": float(data.get("ph_estimate", ph)),
+                                            "crops": data.get("top_crops", []),
+                                            "dos": data.get("best_practices", []),
+                                            "donts": data.get("bad_practices", [])
+                                        }
+                                        soil_characteristics = SOIL_DATA[extracted]["characteristics"]
+                                        ph = ai_sensing["ph"]
+                                        
+                                        # Advanced NPK Multiplier based on AI Sensing
+                                        multipliers = SOIL_NUTRIENT_MULTIPLIERS.get(soil_type, {"N":1,"P":1,"K":1,"humidity":1})
+                                        n_factor = multipliers["N"]
+                                        if ai_sensing["organic"] == "High": n_factor *= 1.2
+                                        if ai_sensing["moisture"] == "Saturated": n_factor *= 0.8 # leaching risk
+                                        
+                                        n   = round(n   * n_factor, 2)
+                                        p   = round(p   * multipliers["P"], 2)
+                                        k   = round(k   * multipliers["K"], 2)
+                                        hum = round(hum * multipliers["humidity"], 2)
+                                        
+                                        # Yield Adjustment based on visual health
+                                        if ai_sensing["organic"] == "High" and ai_sensing["moisture"] == "Moist":
+                                            yield_quality_multiplier = 1.15
+                                        elif ai_sensing["moisture"] == "Dry":
+                                            yield_quality_multiplier = 0.85
+                                        else:
+                                            yield_quality_multiplier = 1.0
+                                            
+                                        break
+                        except Exception:
+                            continue
 
             # Market Price Data (INR per Ton)
             MARKET_PRICES = {
@@ -182,7 +254,7 @@ def smart_analysis(request):
 
             # Yield ML Model
             yield_input = np.array([[n, p, k, temp, hum, ph, rain, area]])
-            total_yield = round(float(yield_model.predict(yield_input)[0]), 2)  # type: ignore
+            total_yield = round(float(yield_model.predict(yield_input)[0]) * yield_quality_multiplier, 2)  # type: ignore
             yield_ph = round(total_yield / area, 2) if area > 0 else 0  # type: ignore
 
             # Calculate Market Value
@@ -241,9 +313,24 @@ def smart_analysis(request):
             
             recommended_crops = recommended_crops[:4]
 
+            # Collect AI sensory tags and maintenance
+            ai_tags = []
+            best_practices = []
+            bad_practices = []
+            if 'ai_sensing' in locals():
+                ai_tags = [
+                    f"Texture: {ai_sensing['texture']}",
+                    f"Color: {ai_sensing['color']}",
+                    f"Moisture: {ai_sensing['moisture']}",
+                    f"Health: {ai_sensing['organic']} Organic"
+                ]
+                best_practices = ai_sensing.get('dos', [])
+                bad_practices = ai_sensing.get('donts', [])
+
             context = {
                 "result_ready": True,
                 "result_class": soil_type,
+                "indian_soil_name": indian_soil_name,  # e.g. "Alluvial Soil" from local CNN
                 "characteristics": soil_characteristics,
                 "soil_confidence": soil_confidence,
                 "uploaded_url": uploaded_url,
@@ -261,6 +348,9 @@ def smart_analysis(request):
                 "harvest_days": harvest_days,
                 "harvest_date": harvest_date,
                 "ai_insights": ai_advice,
+                "ai_tags": ai_tags,
+                "best_practices": best_practices,
+                "bad_practices": bad_practices,
                 "recommended_crops": recommended_crops,
                 "alternatives": alternatives,
                 "temperature": temp,

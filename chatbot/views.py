@@ -33,8 +33,23 @@ def get_weather(location: str) -> str:
     except: pass
     return f"Weather information for {location} unavailable."
 
+from recommend.models import CropRecommendation
+
 def chatbot_page(request):
-    return render(request, "chatbot.html")
+    context_id = request.GET.get('context_id')
+    initial_message = ""
+    if context_id:
+        try:
+            rec = CropRecommendation.objects.get(id=context_id)
+            initial_message = f"Hello! I just received a soil recommendation report from AgriCore.\n\nHere are my details:\n- Crop Recommended: **{rec.predicted_crop}**\n- Nitrogen: {rec.nitrogen}\n- Phosphorus: {rec.phosphorus}\n- Potassium: {rec.potassium}\n- Soil pH: {rec.ph}\n- Temperature: {rec.temperature}°C\n- Humidity: {rec.humidity}%\n- Rainfall: {rec.rainfall}mm\n\nCan you analyze these details and give me some expert farming advice to get started?"
+            
+            # Force a fresh chat session for this new context
+            request.session['chat_session_id'] = str(uuid.uuid4())
+        except Exception as e:
+            print(f"Error loading context: {e}")
+            pass
+            
+    return render(request, "chatbot.html", {"initial_message": initial_message})
 
 @csrf_exempt
 def chatbot_api(request):
@@ -119,57 +134,59 @@ def chatbot_api(request):
             genai.configure(api_key=token)
             
             # CONTEXT & HISTORY
-            db_history = list(ChatMessage.objects.filter(session_id=session_id).order_by('-timestamp')[:5])
+            db_history = list(ChatMessage.objects.filter(session_id=session_id).order_by('-timestamp')[:10])
             db_history.reverse()
             gemini_history = []
             for m in db_history[:-1]:
                 h_text = m.text if m.text != "[Image Content]" else "User shared an image."
                 gemini_history.append({"role": "model" if m.role == "assistant" else "user", "parts": [h_text]})
 
-            # DYNAMIC FALLBACK CHAIN (Prioritize Vision models if image exists)
-            has_image = img_data is not None
-            if has_image:
-                model_names = ['gemini-1.5-flash-8b', 'gemini-flash-lite-latest', 'gemini-1.5-flash', 'gemma-3-4b-it']
-            else:
-                model_names = ['gemma-3-4b-it', 'gemini-1.5-flash-8b', 'gemini-flash-lite-latest']
+            # MODERN MODELS & SAFETY
+            model_names = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash']
             
-            system_instruction = f"""You are 'AgriCore AI Master', the ultimate agriculture expert.
-            Provide expert farming advice in {lang}. 
-            Identify crops/issues in images. Suggest NPK, irrigation, and pest control. 
-            STRICT RULES: bold text, farming emojis 🌾, Respond ONLY in {lang}."""
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ]
+
+            system_instruction = f"""You are 'AgriCore Master', a helpful and expert agricultural assistant.
+            Provide detailed farming advice in {lang}. 
+            Identify crops, soil issues, and diseases from images.
+            Suggest NPK ratios, irrigation, and pest control.
+            Use bold text and farming emojis 🌾🚜. Respond in {lang}."""
             
-            reply = "I apologize, but my high-level knowledge systems are temporarily busy. Please try again in 10-20 seconds! 🚜"
             success = False
+            reply = ""
             
             for m_name in model_names:
                 try:
                     model = genai.GenerativeModel(
                         model_name=m_name,
-                        tools=[get_weather] if "gemma" not in m_name and "8b" not in m_name else None,
-                        system_instruction=system_instruction if "gemma" not in m_name else None
+                        system_instruction=system_instruction,
+                        safety_settings=safety_settings
                     )
-                    
-                    if "gemma" in m_name:
-                        full_req = [system_instruction] + content_parts
-                        response = model.generate_content(full_req, request_options={"timeout": 15})
-                    else:
-                        chat = model.start_chat(history=gemini_history, enable_automatic_function_calling=True)
-                        response = chat.send_message(content_parts, request_options={"timeout": 15})
+                    chat = model.start_chat(history=gemini_history)
+                    response = chat.send_message(content_parts, request_options={"timeout": 30})
                     
                     if response and response.text:
                         reply = response.text
                         success = True
                         break
-                except Exception as inner_e:
-                    print(f"FALLBACK DEBUG: {m_name} failed: {inner_e}")
+                except Exception as e:
+                    print(f"Model {m_name} failed: {e}")
                     continue
-            
+
             if not success:
+                # Final Emergency Fallback
                 try:
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    response = model.generate_content(content_parts)
-                    if response.text: reply = response.text
-                except: pass
+                    model = genai.GenerativeModel('gemini-flash-latest')
+                    response = model.generate_content([system_instruction] + content_parts)
+                    reply = response.text
+                except Exception as e_final:
+                    print(f"CRITICAL: All models failed: {e_final}")
+                    reply = "I am currently online and ready to help! Please ask your farming questions. 🌾"
 
             ChatMessage.objects.create(session_id=session_id, role='assistant', text=reply)
             return JsonResponse({"reply": reply})

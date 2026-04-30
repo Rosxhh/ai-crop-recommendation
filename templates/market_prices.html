@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="relative w-full min-h-screen pb-24 bg-transparent overflow-hidden">
+  <div class="absolute top-0 right-0 w-1/3 h-1/2 bg-amber-50 rounded-full blur-[130px] -z-10 opacity-60"></div>
+  <div class="absolute bottom-0 left-0 w-1/4 h-1/4 bg-rose-50 rounded-full blur-[100px] -z-10 opacity-40"></div>
+
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    <a href="/" class="inline-flex items-center text-slate-500 hover:text-agri-700 font-bold text-sm mb-6 transition-colors">
+      <i class="fa-solid fa-arrow-left mr-2"></i> <span data-i18n="nav_dash">Dashboard</span>
+    </a>
+
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-600 text-[10px] font-black uppercase tracking-widest mb-4">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span> <span data-i18n="market_prices">Live Mandi Prices</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4" data-i18n="mandi_connect">Mandi <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-rose-600">Price Connect</span></h1>
+        <p class="text-slate-500 text-lg font-medium" data-i18n="mandi_desc">Real-time agricultural commodity prices across major Indian markets.</p>
+      </div>
+      
+      <div class="flex-shrink-0">
+        <label class="relative block group">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-4">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 group-focus-within:text-amber-500 transition-colors"></i>
+          </span>
+          <input type="text" id="market-search" placeholder="Search crop or market..." data-i18n-placeholder="search_market"
+            class="w-full md:w-80 pl-11 pr-4 py-4 rounded-2xl border border-slate-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 font-bold text-slate-700">
+        </label>
+      </div>
+    </div>
+
+    <!-- DAILY TOP MOVERS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div class="bg-emerald-50 rounded-3xl p-6 border border-emerald-100 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1" data-i18n="top_gainer">Top Gainer</p>
+          <h3 class="text-xl font-black text-slate-900">Onion (Nasik)</h3>
+          <p class="text-emerald-600 font-bold text-sm">₹2,850 <i class="fa-solid fa-caret-up ml-1"></i> 14%</p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-emerald-500 shadow-sm border border-emerald-100">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+      </div>
+      <div class="bg-rose-50 rounded-3xl p-6 border border-rose-100 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] font-black text-rose-600 uppercase tracking-widest mb-1" data-i18n="top_loser">Top Loser</p>
+          <h3 class="text-xl font-black text-slate-900">Potato (Agra)</h3>
+          <p class="text-rose-600 font-bold text-sm">₹1,120 <i class="fa-solid fa-caret-down ml-1"></i> 8%</p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-rose-500 shadow-sm border border-rose-100">
+          <i class="fa-solid fa-arrow-trend-down"></i>
+        </div>
+      </div>
+      <div class="bg-amber-50 rounded-3xl p-6 border border-amber-100 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1" data-i18n="market_volume">Market Volume</p>
+          <h3 class="text-xl font-black text-slate-900">High Demand</h3>
+          <p class="text-amber-600 font-bold text-sm">Wheat, Soybean</p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-amber-500 shadow-sm border border-amber-100">
+          <i class="fa-solid fa-chart-simple"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN TABLE -->
+    <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 border border-emerald-100 overflow-hidden">
+      <div class="px-8 py-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+        <h2 class="text-lg font-black text-slate-800"><span data-i18n="live_prices">Live Prices</span> <span class="text-slate-400 font-bold text-sm ml-2">(₹ / Quintal)</span></h2>
+        <div class="flex gap-2">
+            <button class="px-6 py-2 rounded-xl bg-white text-xs font-black text-slate-500 border border-slate-100 shadow-sm hover:bg-slate-50 transition-colors uppercase tracking-widest" data-i18n="export_pdf">Export PDF</button>
+            <button id="refresh-btn" class="px-6 py-2 rounded-xl bg-agri-600 text-xs font-black text-white shadow-lg shadow-agri-600/20 hover:bg-agri-700 transition-all uppercase tracking-widest" data-i18n="refresh">Refresh</button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] bg-slate-50/50">
+              <th class="px-8 py-5" data-i18n="commodity">Commodity</th>
+              <th class="px-8 py-5" data-i18n="market">Market (Mandi)</th>
+              <th class="px-8 py-5" data-i18n="state">State</th>
+              <th class="px-8 py-5" data-i18n="min_price">Min Price</th>
+              <th class="px-8 py-5" data-i18n="max_price">Max Price</th>
+              <th class="px-8 py-5" data-i18n="modal_price">Modal Price</th>
+              <th class="px-8 py-5" data-i18n="change">Change</th>
+            </tr>
+          </thead>
+          <tbody id="price-body" class="divide-y divide-slate-50">
+            <!-- Data will be injected -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let PRICE_DATA = [
+    { crop: 'Wheat', market: 'Khanna', state: 'Punjab', min: 2150, max: 2325, modal: 2275, change: 1.2, trend: 'up' },
+    { crop: 'Wheat', market: 'Indore', state: 'MP', min: 2100, max: 2250, modal: 2200, change: 0.5, trend: 'up' },
+    { crop: 'Rice (Basmati)', market: 'Karnal', state: 'Haryana', min: 4200, max: 4800, modal: 4550, change: -2.3, trend: 'down' },
+    { crop: 'Rice (Common)', market: 'Raipur', state: 'Chhattisgarh', min: 2000, max: 2400, modal: 2200, change: 1.1, trend: 'up' },
+    { crop: 'Onion', market: 'Lasalgaon', state: 'Maharashtra', min: 1800, max: 2500, modal: 2200, change: 12.5, trend: 'up' },
+    { crop: 'Onion', market: 'Pune', state: 'Maharashtra', min: 1900, max: 2600, modal: 2300, change: 10.2, trend: 'up' },
+    { crop: 'Tomato', market: 'Kolar', state: 'Karnataka', min: 800, max: 1400, modal: 1200, change: -4.1, trend: 'down' },
+    { crop: 'Tomato', market: 'Madanapalle', state: 'Andhra Pradesh', min: 750, max: 1300, modal: 1100, change: -5.0, trend: 'down' },
+    { crop: 'Soybean', market: 'Ujjain', state: 'MP', min: 3800, max: 4200, modal: 4100, change: 0.8, trend: 'up' },
+    { crop: 'Soybean', market: 'Latur', state: 'Maharashtra', min: 3900, max: 4300, modal: 4150, change: 1.2, trend: 'up' },
+    { crop: 'Potato', market: 'Agra', state: 'UP', min: 1000, max: 1300, modal: 1150, change: -1.5, trend: 'down' },
+    { crop: 'Potato', market: 'Hooghly', state: 'West Bengal', min: 1100, max: 1400, modal: 1250, change: -0.5, trend: 'down' },
+    { crop: 'Cotton', market: 'Rajkot', state: 'Gujarat', min: 6200, max: 6800, modal: 6550, change: 2.1, trend: 'up' },
+    { crop: 'Cotton', market: 'Bhatinda', state: 'Punjab', min: 6100, max: 6700, modal: 6400, change: 1.8, trend: 'up' },
+    { crop: 'Mustard', market: 'Bharatpur', state: 'Rajasthan', min: 5100, max: 5450, modal: 5325, change: 0.2, trend: 'up' },
+    { crop: 'Mustard', market: 'Alwar', state: 'Rajasthan', min: 5150, max: 5500, modal: 5350, change: 0.5, trend: 'up' },
+    { crop: 'Black Gram', market: 'Gulbarga', state: 'Karnataka', min: 5800, max: 6400, modal: 6150, change: -0.5, trend: 'down' },
+    { crop: 'Green Gram', market: 'Jalgaon', state: 'Maharashtra', min: 6500, max: 7200, modal: 6800, change: 2.4, trend: 'up' },
+    { crop: 'Maize', market: 'Gulabbagh', state: 'Bihar', min: 1800, max: 2100, modal: 1950, change: 0.8, trend: 'up' },
+    { crop: 'Maize', market: 'Davangere', state: 'Karnataka', min: 1850, max: 2150, modal: 2000, change: 1.0, trend: 'up' },
+    { crop: 'Sugarcane', market: 'Muzaffarnagar', state: 'UP', min: 300, max: 350, modal: 320, change: 0.0, trend: 'up' },
+    { crop: 'Groundnut', market: 'Gondal', state: 'Gujarat', min: 5500, max: 6200, modal: 5850, change: -1.2, trend: 'down' },
+    { crop: 'Turmeric', market: 'Nizamabad', state: 'Telangana', min: 7000, max: 8500, modal: 7800, change: 4.5, trend: 'up' },
+    { crop: 'Chilli (Red)', market: 'Guntur', state: 'Andhra Pradesh', min: 15000, max: 22000, modal: 18500, change: 5.2, trend: 'up' },
+    { crop: 'Garlic', market: 'Mandsaur', state: 'MP', min: 4500, max: 8000, modal: 6200, change: -3.4, trend: 'down' }
+  ];
+
+  function renderTable(data) {
+    const tbody = document.getElementById('price-body');
+    tbody.innerHTML = '';
+    
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      row.className = "hover:bg-slate-50/50 transition-colors group";
+      
+      const changeColor = item.trend === 'up' ? 'text-emerald-600' : 'text-rose-600';
+      const changeIcon = item.trend === 'up' ? 'fa-caret-up' : 'fa-caret-down';
+      const changeBg = item.trend === 'up' ? 'bg-emerald-50' : 'bg-rose-50';
+
+      row.innerHTML = `
+        <td class="px-8 py-5 font-black text-slate-900">${item.crop}</td>
+        <td class="px-8 py-5 font-bold text-slate-500">${item.market}</td>
+        <td class="px-8 py-5 font-bold text-slate-400 text-xs uppercase tracking-widest">${item.state}</td>
+        <td class="px-8 py-5 font-bold text-slate-600 text-sm">₹${item.min.toLocaleString()}</td>
+        <td class="px-8 py-5 font-bold text-slate-600 text-sm">₹${item.max.toLocaleString()}</td>
+        <td class="px-8 py-5 font-black text-agri-600 text-base">₹${item.modal.toLocaleString()}</td>
+        <td class="px-8 py-5">
+            <span class="inline-flex items-center px-2 py-1 rounded-lg ${changeBg} ${changeColor} font-black text-xs">
+                <i class="fa-solid ${changeIcon} mr-1"></i> ${Math.abs(item.change).toFixed(1)}%
+            </span>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Search logic
+  document.getElementById('market-search').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = PRICE_DATA.filter(item => 
+      item.crop.toLowerCase().includes(term) || 
+      item.market.toLowerCase().includes(term) || 
+      item.state.toLowerCase().includes(term)
+    );
+    renderTable(filtered);
+  });
+
+  // Refresh Logic for Live Data Simulation
+  const refreshBtn = document.getElementById('refresh-btn');
+  refreshBtn.addEventListener('click', () => {
+      const originalText = refreshBtn.innerHTML;
+      refreshBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Refreshing...';
+      refreshBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+      setTimeout(() => {
+          PRICE_DATA = PRICE_DATA.map(item => {
+              // fluctuate prices by +/- 3%
+              const multiplier = 1 + (Math.random() * 0.06 - 0.03); 
+              const newModal = Math.round(item.modal * multiplier);
+              const newMin = Math.round(item.min * multiplier);
+              const newMax = Math.round(item.max * multiplier);
+              const newChange = (Math.random() * 8);
+              const newTrend = Math.random() > 0.5 ? 'up' : 'down';
+              
+              return {
+                  ...item,
+                  min: newMin,
+                  max: newMax,
+                  modal: newModal,
+                  change: newChange,
+                  trend: newTrend
+              };
+          });
+
+          const term = document.getElementById('market-search').value.toLowerCase();
+          const filtered = PRICE_DATA.filter(item => 
+              item.crop.toLowerCase().includes(term) || 
+              item.market.toLowerCase().includes(term) || 
+              item.state.toLowerCase().includes(term)
+          );
+          renderTable(filtered);
+
+          refreshBtn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Updated';
+          refreshBtn.classList.remove('opacity-80', 'cursor-not-allowed', 'bg-agri-600', 'hover:bg-agri-700');
+          refreshBtn.classList.add('bg-emerald-500');
+          
+          setTimeout(() => {
+              refreshBtn.innerHTML = originalText;
+              refreshBtn.classList.remove('bg-emerald-500');
+              refreshBtn.classList.add('bg-agri-600', 'hover:bg-agri-700');
+          }, 2000);
+          
+      }, 800);
+  });
+
+  // Init
+  renderTable(PRICE_DATA);
+</script>
+{% endblock %}

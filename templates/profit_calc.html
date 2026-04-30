@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<div class="relative w-full min-h-screen pb-24 bg-transparent overflow-hidden">
+  <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-50 rounded-full blur-[120px] -z-10 opacity-70"></div>
+  <div class="absolute bottom-0 left-0 w-96 h-96 bg-teal-50 rounded-full blur-[100px] -z-10 opacity-60"></div>
+
+  <div class="max-w-5xl mx-auto px-4 py-10">
+    <a href="/" class="inline-flex items-center text-slate-500 hover:text-emerald-600 font-bold text-sm mb-6 transition-colors">
+      <i class="fa-solid fa-arrow-left mr-2"></i> Dashboard
+    </a>
+
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-700 shadow-lg border border-emerald-200 mb-4">
+        <i class="fa-solid fa-chart-line text-2xl"></i>
+      </div>
+      <h1 class="text-4xl font-black text-slate-900 tracking-tight mb-2">Profit / Loss <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500">Calculator</span></h1>
+      <p class="text-slate-500 text-base max-w-lg mx-auto">Know your exact profit margin before you plant. Enter your costs and expected yield.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- LEFT: INPUT -->
+      <div class="space-y-5">
+        <!-- Crop & Land -->
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6">
+          <h3 class="font-black text-slate-800 mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
+            <i class="fa-solid fa-seedling text-emerald-500"></i> Crop Details
+          </h3>
+          <div class="space-y-4">
+            <div>
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 block">Crop</label>
+              <select id="p-crop" onchange="autofill()" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                <option value="Rice" data-yield="3.5" data-price="2200">Rice</option>
+                <option value="Wheat" data-yield="3.8" data-price="2275">Wheat</option>
+                <option value="Maize" data-yield="5.0" data-price="1900">Maize</option>
+                <option value="Cotton" data-yield="1.5" data-price="6500">Cotton</option>
+                <option value="Sugarcane" data-yield="70" data-price="350">Sugarcane</option>
+                <option value="Groundnut" data-yield="1.8" data-price="5500">Groundnut</option>
+                <option value="Soybean" data-yield="1.5" data-price="3800">Soybean</option>
+                <option value="Tomato" data-yield="25" data-price="1200">Tomato</option>
+                <option value="Potato" data-yield="20" data-price="1100">Potato</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 block">Area (Hectares)</label>
+                <input id="p-area" type="number" value="1" min="0.1" step="0.1"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+              </div>
+              <div>
+                <label class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 block">Yield (ton/ha)</label>
+                <input id="p-yield" type="number" value="3.5" min="0.1" step="0.1"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 block">Market Price (₹/Quintal)</label>
+              <input id="p-price" type="number" value="2200" min="100"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            </div>
+          </div>
+        </div>
+
+        <!-- Costs -->
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6">
+          <h3 class="font-black text-slate-800 mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
+            <i class="fa-solid fa-receipt text-rose-500"></i> Input Costs (₹)
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-bold text-slate-600 w-28 flex-shrink-0">🌱 Seeds</label>
+              <input id="c-seeds" type="number" value="4000" class="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            </div>
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-bold text-slate-600 w-28 flex-shrink-0">🧪 Fertilizer</label>
+              <input id="c-fert" type="number" value="6000" class="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            </div>
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-bold text-slate-600 w-28 flex-shrink-0">👷 Labour</label>
+              <input id="c-labour" type="number" value="8000" class="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            </div>
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-bold text-slate-600 w-28 flex-shrink-0">💧 Irrigation</label>
+              <input id="c-irr" type="number" value="3000" class="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            </div>
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-bold text-slate-600 w-28 flex-shrink-0">🐛 Pesticide</label>
+              <input id="c-pest" type="number" value="2000" class="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            </div>
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-bold text-slate-600 w-28 flex-shrink-0">📦 Other</label>
+              <input id="c-other" type="number" value="1000" class="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            </div>
+          </div>
+        </div>
+
+        <button onclick="calcProfit()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-lg shadow-lg hover:from-emerald-600 hover:to-teal-600 transform hover:-translate-y-0.5 transition-all">
+          <i class="fa-solid fa-calculator mr-2"></i> Calculate Profit/Loss
+        </button>
+      </div>
+
+      <!-- RIGHT: RESULTS -->
+      <div id="p-results" class="space-y-5 opacity-0 transition-all duration-500">
+        <!-- Summary card -->
+        <div id="summary-card" class="rounded-3xl p-6 text-white shadow-xl bg-gradient-to-br from-emerald-600 to-teal-600">
+          <p class="text-emerald-100 text-xs font-black uppercase tracking-widest mb-1">Net Result</p>
+          <h2 id="profit-label" class="text-4xl font-black mb-1">₹—</h2>
+          <p id="profit-sub" class="text-emerald-200 text-sm font-bold">—</p>
+          <div class="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-white/20">
+            <div class="text-center">
+              <p class="text-xs text-white/70 font-bold">Revenue</p>
+              <p id="s-rev" class="font-black text-lg">₹—</p>
+            </div>
+            <div class="text-center border-x border-white/20">
+              <p class="text-xs text-white/70 font-bold">Total Cost</p>
+              <p id="s-cost" class="font-black text-lg">₹—</p>
+            </div>
+            <div class="text-center">
+              <p class="text-xs text-white/70 font-bold">Margin</p>
+              <p id="s-margin" class="font-black text-lg">—%</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-lg p-5">
+          <h4 class="font-black text-slate-700 text-sm mb-4">Cost Breakdown</h4>
+          <canvas id="donut-chart" height="200"></canvas>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-lg p-5">
+          <h4 class="font-black text-slate-700 text-sm mb-4">Revenue vs Total Cost</h4>
+          <canvas id="bar-chart" height="160"></canvas>
+        </div>
+
+        <!-- Breakeven -->
+        <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 flex gap-3">
+          <i class="fa-solid fa-scale-balanced text-amber-500 mt-0.5"></i>
+          <div>
+            <p class="text-xs font-black text-amber-700 uppercase tracking-wide">Breakeven Yield</p>
+            <p id="breakeven" class="font-black text-amber-900 text-lg">—</p>
+            <p class="text-xs text-amber-600 mt-0.5">You need to produce at least this much to cover all costs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let donutChart = null, barChart = null;
+
+function autofill() {
+  const sel = document.getElementById('p-crop');
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('p-yield').value = opt.dataset.yield;
+  document.getElementById('p-price').value = opt.dataset.price;
+}
+
+function fmt(n) { return Math.round(n).toLocaleString('en-IN'); }
+
+function calcProfit() {
+  const area  = parseFloat(document.getElementById('p-area').value)  || 1;
+  const yield_ = parseFloat(document.getElementById('p-yield').value) || 0;
+  const price = parseFloat(document.getElementById('p-price').value) || 0;
+  const costs = {
+    Seeds:      parseFloat(document.getElementById('c-seeds').value)  || 0,
+    Fertilizer: parseFloat(document.getElementById('c-fert').value)   || 0,
+    Labour:     parseFloat(document.getElementById('c-labour').value) || 0,
+    Irrigation: parseFloat(document.getElementById('c-irr').value)    || 0,
+    Pesticide:  parseFloat(document.getElementById('c-pest').value)   || 0,
+    Other:      parseFloat(document.getElementById('c-other').value)  || 0,
+  };
+  const totalCost = Object.values(costs).reduce((a,b)=>a+b,0);
+  const totalTons = yield_ * area;
+  const revenue   = totalTons * 10 * price; // 1 ton = 10 quintals
+  const profit    = revenue - totalCost;
+  const margin    = totalCost > 0 ? (profit / revenue * 100) : 0;
+  const breakeven = price > 0 ? (totalCost / (price * 10)) : 0; // tons
+
+  const card = document.getElementById('summary-card');
+  if (profit >= 0) {
+    card.className = 'rounded-3xl p-6 text-white shadow-xl bg-gradient-to-br from-emerald-600 to-teal-600';
+  } else {
+    card.className = 'rounded-3xl p-6 text-white shadow-xl bg-gradient-to-br from-rose-600 to-pink-700';
+  }
+
+  document.getElementById('profit-label').innerText = (profit >= 0 ? '+' : '') + '₹' + fmt(profit);
+  document.getElementById('profit-sub').innerText   = profit >= 0 ? '🎉 Profitable season projected!' : '⚠️ Loss projected — review your inputs';
+  document.getElementById('s-rev').innerText        = '₹' + fmt(revenue);
+  document.getElementById('s-cost').innerText       = '₹' + fmt(totalCost);
+  document.getElementById('s-margin').innerText     = margin.toFixed(1) + '%';
+  document.getElementById('breakeven').innerText    = breakeven.toFixed(2) + ' tons (' + (breakeven/area).toFixed(2) + ' t/ha)';
+
+  // Charts
+  if (donutChart) donutChart.destroy();
+  if (barChart)   barChart.destroy();
+
+  const COLORS = ['#6366f1','#f59e0b','#ef4444','#3b82f6','#10b981','#8b5cf6'];
+  donutChart = new Chart(document.getElementById('donut-chart'), {
+    type: 'doughnut',
+    data: { labels: Object.keys(costs), datasets:[{ data: Object.values(costs), backgroundColor: COLORS, borderWidth:2 }] },
+    options: { plugins:{ legend:{ position:'bottom', labels:{font:{weight:'bold', size:11}} } }, cutout:'65%' }
+  });
+
+  barChart = new Chart(document.getElementById('bar-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Revenue', 'Total Cost'],
+      datasets:[{ data:[revenue, totalCost], backgroundColor:['#10b981','#ef4444'], borderRadius:10, borderSkipped:false }]
+    },
+    options: { plugins:{legend:{display:false}}, scales:{ y:{ ticks:{ callback: v=>'₹'+v.toLocaleString('en-IN') } } } }
+  });
+
+  const r = document.getElementById('p-results');
+  r.classList.remove('opacity-0'); r.classList.add('opacity-100');
+}
+
+// Auto-fill on load
+autofill();
+</script>
+{% endblock %}

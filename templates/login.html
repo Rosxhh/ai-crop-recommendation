@@ -1,0 +1,518 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriCore | Future of Farming</title>
+    
+    <!-- Core Assets -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #16a34a;
+            --accent: #15803d;
+            --glass: rgba(255, 255, 255, 0.9);
+            --navy: #0f172a;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .cinematic-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('{% static "images/auth/farmer.png" %}') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            padding: 24px;
+        }
+
+        /* Sophisticated Depth Overlay */
+        .cinematic-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(22, 163, 74, 0.3), transparent 60%),
+                        radial-gradient(circle at 80% 80%, rgba(15, 23, 42, 0.6), transparent 60%);
+            backdrop-filter: blur(8px) saturate(120%);
+            z-index: 1;
+        }
+
+        .portal-card {
+            background: var(--glass);
+            backdrop-filter: blur(60px) saturate(220%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 60px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            box-shadow: 0 80px 150px -40px rgba(0, 0, 0, 0.7);
+            animation: cardReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardReveal {
+            from { opacity: 0; transform: translateY(60px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .portal-section {
+            padding: 30px 40px;
+            display: none;
+        }
+
+        .portal-section.active {
+            display: block;
+            animation: sectionIn 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        @keyframes sectionIn {
+            from { opacity: 0; transform: translateX(20px); filter: blur(10px); }
+            to { opacity: 1; transform: translateX(0); filter: blur(0); }
+        }
+
+        /* Neumorphic Input Fields */
+        .field-box {
+            margin-bottom: 16px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #0f172a;
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+
+        .field-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .field-input-wrapper i {
+            position: absolute;
+            left: 20px;
+            color: #475569;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 14px 24px 14px 54px;
+            background: rgba(241, 245, 249, 0.9);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--navy);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .field-input:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px -10px rgba(22, 163, 74, 0.2);
+        }
+
+        .field-input:focus + i {
+            color: var(--primary);
+        }
+
+        /* Action Buttons */
+        .btn-portal {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 30px 60px -15px rgba(22, 163, 74, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-portal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 40px 80px -20px rgba(22, 163, 74, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-fastpass {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            box-shadow: 0 15px 30px rgba(22, 163, 74, 0.1);
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .btn-fastpass:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        /* Language Toggle */
+        .lang-switch {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            z-index: 100;
+            background: white;
+            padding: 6px;
+            border-radius: 20px;
+            display: flex;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .lang-btn {
+            padding: 8px 18px;
+            font-size: 11px;
+            font-weight: 900;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+        }
+
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 5px 15px rgba(22, 163, 74, 0.2);
+        }
+
+        /* Toast Popup */
+        .toast-engine {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 640px) {
+            .portal-card { border-radius: 40px; }
+            .portal-section { padding: 50px 30px; }
+            .cinematic-wrapper { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toast-engine" id="toast-root">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="flex items-center gap-4 p-5 rounded-[2.5rem] bg-white/95 backdrop-blur-2xl border border-white/20 shadow-2xl animate-pop pointer-events-auto mb-4">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center {% if message.tags == 'error' %}bg-rose-500{% else %}bg-green-500{% endif %} text-white shadow-lg">
+                    <i class="fa-solid {% if message.tags == 'error' %}fa-xmark{% else %}fa-check{% endif %}"></i>
+                </div>
+                <div>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5" id="toast-title">Security Alert</p>
+                    <p class="text-[13px] font-black text-slate-800 leading-none">{{ message }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="cinematic-wrapper">
+        
+        <div class="lang-switch">
+            <button onclick="setLanguage('en')" id="en-btn" class="lang-btn active">EN</button>
+            <button onclick="setLanguage('ta')" id="ta-btn" class="lang-btn">தமிழ்</button>
+        </div>
+
+        <div class="portal-card">
+            
+            <!-- Login Hub -->
+            <div id="login-section" class="portal-section active">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-green-50 rounded-[2rem] flex items-center justify-center mx-auto mb-4 shadow-inner">
+                        <i class="fa-solid fa-tractor text-green-600 text-2xl"></i>
+                    </div>
+                    <h1 id="log-h1" class="text-3xl font-black text-slate-900 mb-1 tracking-tight">Access Hub</h1>
+                    <p id="log-p" class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.3em]">Precision Farming System</p>
+                </div>
+
+                <form method="POST" action="{% url 'login' %}" id="login-form">
+                    {% csrf_token %}
+                    <div class="field-box">
+                        <label id="lbl-email" class="field-label">Email or Username</label>
+                        <div class="field-input-wrapper">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" name="email" id="email-field" required placeholder="farmer@agricore.ai or Username" class="field-input" autocomplete="username">
+                            <button type="button" onclick="clearField('email-field')" class="absolute right-4 text-slate-300 hover:text-rose-500 transition-colors">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="field-box">
+                        <div class="flex justify-between items-center pr-2">
+                            <label id="lbl-pass" class="field-label">Secure Passphrase</label>
+                            <a id="lnk-lost" href="#" class="text-[9px] font-black text-green-800 hover:underline tracking-widest uppercase">Lost?</a>
+                        </div>
+                        <div class="field-input-wrapper">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <input type="password" name="password" id="pass-field" required placeholder="••••••••" class="field-input" autocomplete="current-password">
+                            <button type="button" onclick="togglePassword('pass-field', this)" class="absolute right-4 text-slate-300 hover:text-green-600 transition-colors">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-portal" id="btn-login" onclick="this.innerHTML='<i class=\'fa-solid fa-spinner fa-spin\'></i> AUTHENTICATING...'">
+                        Establish Connection <i class="fa-solid fa-arrow-right-to-bracket opacity-40"></i>
+                    </button>
+
+
+                </form>
+
+                <div class="mt-8 text-center">
+                    <p id="sub-register" class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                        New to the platform? <br>
+                        <button onclick="showSection('signup-section')" class="text-green-800 hover:underline mt-2 inline-flex items-center gap-2">
+                            Create New Identity <i class="fa-solid fa-plus text-[10px]"></i>
+                        </button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Signup Hub -->
+            <div id="signup-section" class="portal-section">
+                <button onclick="showSection('login-section')" class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-navy transition-colors mb-4">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                
+                <div class="mb-4">
+                    <h2 id="sig-h1" class="text-3xl font-black text-slate-900 mb-1 tracking-tight">Join Network</h2>
+                    <p id="sig-p" class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.3em]">Register for instant access</p>
+                </div>
+
+                <form method="POST" action="{% url 'register' %}" id="signup-form">
+                    {% csrf_token %}
+                    <div class="field-box">
+                        <label id="lbl-name" class="field-label">Farmer Full Name</label>
+                        <div class="field-input-wrapper">
+                            <i class="fa-solid fa-user-tag"></i>
+                            <input type="text" name="name" id="reg-name" required placeholder="John Doe" class="field-input" autocomplete="name">
+                        </div>
+                    </div>
+
+                    <div class="field-box">
+                        <label id="lbl-sig-user" class="field-label">Unique Username</label>
+                        <div class="field-input-wrapper">
+                            <i class="fa-solid fa-id-badge"></i>
+                            <input type="text" name="username" id="reg-user" required placeholder="farmer_01" class="field-input" autocomplete="username">
+                            <button type="button" onclick="clearField('reg-user')" class="absolute right-4 text-slate-300 hover:text-rose-500 transition-colors">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="field-box">
+                        <label id="lbl-sig-email" class="field-label">Email Identity</label>
+                        <div class="field-input-wrapper">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" name="email" id="reg-email" required placeholder="name@farm.ai" class="field-input" autocomplete="email">
+                            <button type="button" onclick="clearField('reg-email')" class="absolute right-4 text-slate-300 hover:text-rose-500 transition-colors">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="field-box">
+                        <label id="lbl-sig-pass" class="field-label">Secure Passphrase</label>
+                        <div class="field-input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" name="password" id="reg-pass" required placeholder="••••••••" class="field-input" autocomplete="new-password">
+                            <button type="button" onclick="togglePassword('reg-pass', this)" class="absolute right-4 text-slate-300 hover:text-green-600 transition-colors">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-portal" id="btn-register" onclick="this.innerHTML='<i class=\'fa-solid fa-spinner fa-spin\'></i> CREATING IDENTITY...'">
+                        Register & Launch <i class="fa-solid fa-rocket opacity-40 ml-2"></i>
+                    </button>
+
+
+                </form>
+                
+                <p class="text-center text-[9px] font-black text-slate-400 uppercase tracking-widest mt-8 px-8">
+                    By registering, you instantly authorize <br>secure ecosystem access.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            'en': {
+                'log-h1': 'Access Hub',
+                'log-p': 'Precision Farming System',
+                'lbl-email': 'Email or Username',
+                'lbl-pass': 'Secure Passphrase',
+                'lnk-lost': 'Lost?',
+                'btn-login': 'Establish Connection',
+                'btn-demo': 'Fast-Pass Login',
+                'sub-register': 'No Identity yet? Register here',
+                'sig-h1': 'New Identity',
+                'sig-p': 'Establish Network Access',
+                'lbl-name': 'Full Identity Name',
+                'lbl-sig-user': 'Unique Username',
+                'lbl-sig-email': 'Email Identity',
+                'lbl-sig-pass': 'Secure Passphrase',
+                'sub-register': 'No Identity yet? Register here',
+                'sig-h1': 'Join Network',
+                'sig-p': 'Register for instant access',
+                'lbl-name': 'Farmer Full Name',
+                'lbl-sig-user': 'Unique Username',
+                'lbl-sig-email': 'Email Identity',
+                'lbl-sig-pass': 'Secure Passphrase',
+                'btn-register': 'Register & Launch',
+                'btn-reg-demo': 'Fast-Pass Register',
+                'toast-title': 'Security Alert',
+                'place-email': 'farmer@agricore.ai or Username',
+                'place-user': 'farmer_01',
+                'place-pass': '••••••••',
+                'place-name': 'John Doe'
+            },
+            'ta': {
+                'log-h1': 'அணுகல் மையம்',
+                'log-p': 'துல்லியமான விவசாய முறை',
+                'lbl-email': 'மின்னஞ்சல் அல்லது பயனர்பெயர்',
+                'lbl-pass': 'கடவுச்சொல்',
+                'lnk-lost': 'மறந்துவிட்டதா?',
+                'btn-login': 'இணைப்பை ஏற்படுத்தவும்',
+                'btn-demo': 'வேகமான உள்நுழைவு',
+                'sub-register': 'தளத்திற்கு புதியவரா? இங்கே பதிவு செய்யுங்கள்',
+                'sig-h1': 'நெட்வொர்க்கில் இணையுங்கள்',
+                'sig-p': 'உடனடி அணுகலுக்கு பதிவு செய்யுங்கள்',
+                'lbl-name': 'விவசாயி முழு பெயர்',
+                'lbl-sig-user': 'பயனர்பெயர்',
+                'lbl-sig-email': 'மின்னஞ்சல் முகவரி',
+                'lbl-sig-pass': 'பாதுகாப்பான கடவுச்சொல்',
+                'btn-register': 'பதிவு செய்து தொடங்கு',
+                'btn-reg-demo': 'வேகமான பதிவு',
+                'toast-title': 'பாதுகாப்பு எச்சரிக்கை',
+                'place-email': 'மின்னஞ்சல் அல்லது பயனர்பெயர்',
+                'place-user': 'பயனர்பெயர்',
+                'place-pass': '••••••••',
+                'place-name': 'விவசாயி பெயர்'
+            }
+        };
+
+        function setLanguage(lang) {
+            const data = translations[lang];
+            
+            // Text updates
+            for (let id in data) {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (id === 'sub-register') {
+                        el.innerHTML = lang === 'ta' ? 'தளத்திற்கு புதியவரா? <br><button onclick="showSection(\'signup-section\')" class="text-green-800 hover:underline mt-2 inline-flex items-center gap-2">புதிய கணக்கை உருவாக்கு <i class="fa-solid fa-plus text-[10px]"></i></button>' : 'New to the platform? <br><button onclick="showSection(\'signup-section\')" class="text-green-800 hover:underline mt-2 inline-flex items-center gap-2">Create New Identity <i class="fa-solid fa-plus text-[10px]"></i></button>';
+                    } else if (id === 'btn-login') {
+                        el.innerHTML = `${data[id]} <i class="fa-solid fa-arrow-right-to-bracket opacity-40"></i>`;
+                    } else if (id === 'btn-register') {
+                        el.innerHTML = `${data[id]} <i class="fa-solid fa-rocket opacity-40 ml-2"></i>`;
+                    } else if (id === 'btn-demo') {
+                        el.innerHTML = `<i class="fa-solid fa-bolt-lightning mr-2"></i> ${data[id]}`;
+                    } else if (id === 'btn-reg-demo') {
+                        el.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-2"></i> ${data[id]}`;
+                    } else if (!id.startsWith('place-')) {
+                        el.innerText = data[id];
+                    }
+                }
+            }
+
+            // Placeholders
+            document.querySelectorAll('.field-input').forEach(input => {
+                if (input.id === 'email-field') input.placeholder = data['place-email'];
+                if (input.id === 'reg-user') input.placeholder = data['place-user'];
+                if (input.type === 'password') input.placeholder = data['place-pass'];
+                if (input.type === 'text' && input.id !== 'email-field' && input.id !== 'reg-user') input.placeholder = data['place-name'];
+            });
+
+            // UI Buttons
+            document.getElementById('en-btn').classList.toggle('active', lang === 'en');
+            document.getElementById('ta-btn').classList.toggle('active', lang === 'ta');
+            localStorage.setItem('agri_lang', lang);
+        }
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.portal-section');
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function togglePassword(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function clearField(fieldId) {
+            document.getElementById(fieldId).value = '';
+        }
+
+        // Initialize from local storage
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('agri_lang') || 'en';
+            setLanguage(savedLang);
+
+            // Auto-hide toasts
+            setTimeout(() => {
+                const root = document.getElementById('toast-root');
+                if (root) {
+                    root.style.transition = 'all 0.8s ease';
+                    root.style.opacity = '0';
+                    root.style.transform = 'translate(-50%, -40px)';
+                    setTimeout(() => root.remove(), 800);
+                }
+            }, 6000);
+        });
+    </script>
+</body>
+</html>
+

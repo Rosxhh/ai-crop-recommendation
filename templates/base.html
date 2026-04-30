@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgriCore AI | Intelligent Farming System</title>
+    <title>AgriCore | Intelligent Farming System</title>
     
     <!-- PWA Setup -->
     <link rel="manifest" href="/manifest.json">
@@ -16,7 +16,7 @@
     <!-- Google Fonts (Outfit Focused) -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Design System (Vibrant & Precision Dynamic) -->
+    <!-- Design System -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
@@ -42,106 +42,775 @@
                             800: '#166534',
                             900: '#14532d',
                         }
-                    },
-                    borderRadius: {
-                        '4xl': '2rem',
-                        '5xl': '2.5rem',
-                        '6xl': '3rem',
                     }
                 }
             }
         }
+
+        // Global Localization Hub (Farmer Accessibility Edition)
+        const TRANSLATIONS = {
+            en: {
+                brand: "AgriCore",
+                tools: "More Tools",
+                rapid: "Quick Check",
+                recommend: "Check My Soil",
+                assistant: "Ask Agri Bot",
+                status_ok: "System is Working",
+                nav_dash: "Home",
+                nav_scanner: "AI Scanner",
+                nav_db: "Saved History",
+                nav_leaf: "Leaf Disease Check",
+                nav_weather: "Weather Info",
+                login: "Login",
+                hero_title_1: "Better Farming",
+                hero_title_2: "with AI",
+                hero_sub: "Simple tools to check soil health, find crop diseases, and get expert advice instantly.",
+                assistant_card_title: "Ask Agri-AI",
+                assistant_card_desc: "Speak or type your questions about crops and fertilizers. Available 24/7.",
+                talk_ai: "Talk to AI",
+                intake_title: "Check Your Soil",
+                intake_desc: "Enter soil details to see which crop will grow best in your land.",
+                auto_apply: "Auto Fill",
+                database: "History",
+                chemistry_title: "Soil Health",
+                chemistry_sub: "Soil Nutrients",
+                climate_title: "Climate Info",
+                climate_sub: "Local Weather",
+                run_ai: "See Result",
+                scan_title: "Check Leaf Disease",
+                scan_desc: "Take a photo of a sick leaf to find out what is wrong and how to fix it.",
+                establish_link: "Ready to Scan",
+                init_link: "Open Camera",
+                standby: "Waiting...",
+                import_data: "Upload Photo",
+                scan_results: "Scan Result",
+                match_conf: "Match Accuracy",
+                treatment: "How to Fix",
+                prevention: "How to Prevent",
+                soil_advice: "Soil Advice",
+                // Dashboard & Analysis
+                history_title: "Saved Reports",
+                history_desc: "All your soil checks and crop reports are kept here safely.",
+                new_seq: "New Check",
+                dash_title: "Analysis Result",
+                report_download: "Save Report",
+                expert_strategy: "AI Advice for You",
+                expert_sub: "Analysis Finished",
+                soil_id: "Soil Identity",
+                match_conf: "Accuracy",
+                regional_id: "Local Name",
+                yield_title: "Expected Crop",
+                yield_sub: "Production Estimate",
+                tons: "Tons",
+                climate_title: "Weather Match",
+                climate_sub: "Local Weather",
+                soil_health_title: "Soil Status",
+                soil_health_sub: "Nutrient Level",
+                ph_level: "Acid Level (pH)",
+                npk_index: "NPK Level",
+                soil_class: "Soil Type",
+                verified_by: "Checked by",
+                raw_sample: "Your Soil Photo",
+                maintenance_guide: "Care Instructions",
+                good_practice: "What to Do",
+                bad_practice: "What Not to Do",
+                opt_suggest: "Best Crops for You",
+                opt_sub: "Other crops that grow well here",
+                best_adapt: "Good Choice",
+                run_another: "Check Another Soil",
+
+                rainfall: "Rainfall",
+                // Result Page
+                report_title: "Soil Report",
+                match_result: "Match Result",
+                match_desc: "We found the perfect crop for your land.",
+                recommended_crop: "Best Crop for You",
+                crop_details_title: "Crop Details",
+                nutrient_score: "Soil Health Score",
+                weather_match_title: "Weather Match",
+                download_report: "Save Report",
+                ask_bot_advice: "Ask Bot for Advice",
+                // Crops
+                rice: "Rice", maize: "Maize", chickpea: "Chickpea", kidneybeans: "Kidney Beans",
+                pigeonpeas: "Pigeon Peas", mothbeans: "Moth Beans", mungbean: "Mung Bean",
+                blackgram: "Black Gram", lentil: "Lentil", pomegranate: "Pomegranate",
+                banana: "Banana", mango: "Mango", grapes: "Grapes", watermelon: "Watermelon",
+                muskmelon: "Muskmelon", apple: "Apple", orange: "Orange", papaya: "Papaya",
+                coconut: "Coconut", cotton: "Cotton", jute: "Jute", coffee: "Coffee",
+                // Login History
+                login_activity: "Login Activity",
+                date_time: "Date & Time",
+                device: "Device",
+                ip_address: "IP Address",
+                status: "Status",
+                success: "Success",
+                go_back: "Go Back",
+                account_secure: "Account Secure",
+                audit_desc: "Monitor your account's recent security logs and access history.",
+                last_20: "Displaying last 20 login events.",
+                download_audit: "Download Security Audit",
+                // Market Prices
+                market_prices: "Market Prices",
+                mandi_connect: "Mandi Price Connect",
+                mandi_desc: "Real-time agricultural commodity prices across major Indian markets.",
+                search_market: "Search crop or market...",
+                commodity: "Commodity",
+                market: "Market (Mandi)",
+                state: "State",
+                min_price: "Min Price",
+                max_price: "Max Price",
+                modal_price: "Modal Price",
+                change: "Change",
+                top_gainer: "Top Gainer",
+                top_loser: "Top Loser",
+                market_volume: "Market Volume",
+                live_prices: "Live Prices",
+                refresh: "Refresh",
+                export_pdf: "Export PDF",
+                // Home Extra
+                farming_tools: "Farming Tools",
+                farming_tools_desc: "Simple tools to help you manage your farm and grow better crops.",
+                get_started: "Get Started",
+                farm_view: "Farm View",
+                farm_view_desc: "See your farm from above using satellite maps.",
+                launch_hub: "Launch Hub",
+                start_scan: "Start Scan",
+                weather_desc: "Check rain, temperature, and local weather alerts.",
+                view_weather: "View Weather",
+                view_prices: "View Prices"
+            },
+            ta: {
+                brand: "அக்ரிகோர்",
+                tools: "விவசாய கருவிகள்",
+                rapid: "விரைவான சோதனை",
+                recommend: "மண் மற்றும் பயிர் சோதனை",
+                assistant: "AI உதவி",
+                status_ok: "செயல்பாடு சீராக உள்ளது",
+                nav_dash: "முகப்பு",
+                nav_scanner: "AI ஸ்கேனர்",
+                nav_db: "சேமிக்கப்பட்டவை",
+                nav_leaf: "இலை நோய் சோதனை",
+                nav_weather: "வானிலை விவரம்",
+                login: "உள்நுழை",
+                hero_title_1: "சிறந்த விவசாயம்",
+                hero_title_2: "AI மூலம்",
+                hero_sub: "உங்கள் மண்ணின் ஆரோக்கியத்தை சரிபார்க்கவும், பயிர் நோய்களைக் கண்டறியவும் எளிய கருவிகள்.",
+                assistant_card_title: "AI-யிடம் கேளுங்கள்",
+                assistant_card_desc: "பயிர்கள் மற்றும் உரங்கள் பற்றிய உங்கள் கேள்விகளைக் கேளுங்கள். 24/7 கிடைக்கும்.",
+                talk_ai: "AI-யுடன் பேசுங்கள்",
+                intake_title: "உங்கள் மண்ணைச் சரிபார்க்கவும்",
+                intake_desc: "உங்கள் நிலத்தில் எந்தப் பயிர் சிறப்பாக வளரும் என்பதைக் காண விவரங்களை உள்ளிடவும்.",
+                auto_apply: "தானாக நிரப்பு",
+                database: "வரலாறு",
+                chemistry_title: "மண் சத்துக்கள்",
+                chemistry_sub: "உங்கள் மண்ணில் உள்ள சத்துக்கள்",
+                climate_title: "வானிலை விவரங்கள்",
+                climate_sub: "தற்போதைய சூழல்",
+                run_ai: "முடிவைக் காண்க",
+                scan_title: "இலை நோயைச் சரிபார்க்கவும்",
+                scan_desc: "பாதிக்கப்பட்ட இலையின் புகைப்படத்தை எடுத்து, நோய் மற்றும் அதை சரிசெய்யும் வழியைக் கண்டறியவும்.",
+                establish_link: "தயார்",
+                init_link: "கேமராவைத் திற",
+                standby: "காத்திருக்கிறது...",
+                import_data: "புகைப்படத்தைப் பதிவேற்று",
+                scan_results: "முடிவு",
+                match_conf: "துல்லியம்",
+                treatment: "எப்படி சரி செய்வது",
+                prevention: "எப்படி தடுப்பது",
+                soil_advice: "மண் ஆலோசனை",
+                back_btn: "பின்செல்லவும்",
+
+                // Dashboard & Analysis
+                history_title: "சேமிக்கப்பட்டவை",
+                history_desc: "உங்கள் மண் பரிசோதனைகள் இங்கே பாதுகாப்பாக உள்ளன.",
+                new_seq: "புதிய சோதனை",
+                dash_title: "பரிசோதனை முடிவு",
+                report_download: "பதிவிறக்கம்",
+                expert_strategy: "உங்களுக்கான AI ஆலோசனை",
+                expert_sub: "பரிசோதனை முடிந்தது",
+                soil_id: "மண் அடையாளம்",
+                match_conf: "துல்லியம்",
+                regional_id: "உள்ளூர் பெயர்",
+                yield_title: "எதிர்பார்க்கும் பயிர்",
+                yield_sub: "உற்பத்தி மதிப்பீடு",
+                tons: "டன்கள்",
+                climate_title: "வானிலை பொருத்தம்",
+                climate_sub: "பகுதி தரவு",
+                soil_health_title: "மண்ணின் நிலை",
+                soil_health_sub: "ஆரோக்கிய சோதனை",
+                ph_level: "pH அளவு",
+                npk_index: "NPK குறியீடு",
+                soil_class: "மண் வகை",
+                verified_by: "சரிபார்க்கப்பட்டது",
+                raw_sample: "உங்கள் மண் புகைப்படம்",
+                maintenance_guide: "பராமரிப்பு வழிகாட்டி",
+                good_practice: "செய்ய வேண்டியவை",
+                bad_practice: "செய்யக்கூடாதவை",
+                opt_suggest: "சிறந்த பயிர் பரிந்துரைகள்",
+                opt_sub: "இங்கு வளரக்கூடிய மற்ற பயிர்கள்",
+                best_adapt: "சிறந்த தேர்வு",
+                run_another: "மறுபடியும் சோதிக்க",
+
+                rainfall: "மழைப்பொழிவு",
+                // Result Page
+                report_title: "மண் அறிக்கை",
+                match_result: "பொருத்தம்",
+                match_desc: "உங்கள் நிலத்திற்கு ஏற்ற பயிரை நாங்கள் கண்டறிந்துள்ளோம்.",
+                recommended_crop: "பரிந்துரைக்கப்பட்ட பயிர்",
+                crop_details_title: "பயிர் விவரங்கள்",
+                nutrient_score: "மண் ஆரோக்கியம்",
+                weather_match_title: "வானிலை பொருத்தம்",
+                download_report: "அறிக்கையை சேமி",
+                ask_bot_advice: "AI-யிடம் ஆலோசனை கேளுங்கள்",
+                // Crops
+                rice: "நெல்", maize: "சோளம்", chickpea: "கொண்டைக்கடலை", kidneybeans: "ராஜ்மா",
+                pigeonpeas: "துவரை", mothbeans: "நரிப்பயறு", mungbean: "பாசிப்பயறு",
+                blackgram: "உளுந்து", lentil: "மசூர் பருப்பு", pomegranate: "மாதுளை",
+                banana: "வாழை", mango: "மாம்பழம்", grapes: "திராட்சை", watermelon: "தர்பூசணி",
+                muskmelon: "முலாம்பழம்", apple: "ஆப்பிள்", orange: "ஆரஞ்சு", papaya: "பப்பாளி",
+                coconut: "தேங்காய்", cotton: "பருத்தி", jute: "சணல்", coffee: "காபி",
+                // Login History
+                login_activity: "உள்நுழைவு வரலாறு",
+                date_time: "தேதி மற்றும் நேரம்",
+                device: "சாதனம்",
+                ip_address: "IP முகவரி",
+                status: "நிலை",
+                success: "வெற்றி",
+                go_back: "பின்செல்ல",
+                account_secure: "கணக்கு பாதுகாப்பானது",
+                audit_desc: "உங்கள் கணக்கின் பாதுகாப்பு மற்றும் உள்நுழைவு வரலாற்றைக் கண்காணிக்கவும்.",
+                last_20: "கடந்த 20 உள்நுழைவுகள் காட்டப்படுகின்றன.",
+                download_audit: "பாதுகாப்பு அறிக்கையைப் பதிவிறக்கு",
+                // Market Prices
+                market_prices: "சந்தை விலைகள்",
+                mandi_connect: "மண்டி விலை விவரம்",
+                mandi_desc: "இந்தியாவின் முக்கிய சந்தைகளில் விவசாயப் பொருட்களின் நேரடி விலைகள்.",
+                search_market: "பயிர் அல்லது சந்தையைத் தேடுங்கள்...",
+                commodity: "பொருள்",
+                market: "சந்தை (மண்டி)",
+                state: "மாநிலம்",
+                min_price: "குறைந்த விலை",
+                max_price: "அதிக விலை",
+                modal_price: "சராசரி விலை",
+                change: "மாற்றம்",
+                top_gainer: "அதிக உயர்வு",
+                top_loser: "அதிக வீழ்ச்சி",
+                market_volume: "சந்தை அளவு",
+                live_prices: "நேரடி விலைகள்",
+                refresh: "புதுப்பி",
+                export_pdf: "பதிவிறக்கம்",
+                // Home Extra
+                farming_tools: "விவசாய கருவிகள்",
+                farming_tools_desc: "உங்கள் விவசாயத்தை நிர்வகிக்க மற்றும் சிறந்த பயிர்களை வளர்க்க எளிய கருவிகள்.",
+                get_started: "தொடங்கவும்",
+                farm_view: "பண்ணை பார்வை",
+                farm_view_desc: "செயற்கைக்கோள் வரைபடங்களைப் பயன்படுத்தி உங்கள் பண்ணையை மேலிருந்து பார்க்கவும்.",
+                launch_hub: "தொடங்கு",
+                start_scan: "ஸ்கேன் தொடங்கு",
+                weather_desc: "மழை, வெப்பநிலை மற்றும் உள்ளூர் வானிலை எச்சரிக்கைகளை சரிபார்க்கவும்.",
+                view_weather: "வானிலை காண்க",
+                view_prices: "விலைகளை காண்க"
+            },
+            hi: {
+                brand: "एग्रीकोर",
+                tools: "किसान उपकरण",
+                rapid: "त्वरित जाँच",
+                recommend: "मिट्टी और फसल जाँच",
+                assistant: "एआई सहायता",
+                status_ok: "प्रणाली सक्रिय है",
+                nav_dash: "मुख्य पृष्ठ",
+                nav_scanner: "एआई स्कैनर",
+                nav_db: "पुराना रिकॉर्ड",
+                nav_leaf: "पत्ती रोग जाँच",
+                nav_weather: "मौसम की जानकारी",
+                login: "लॉगिन",
+                hero_title_1: "बेहतर खेती",
+                hero_title_2: "एआई के साथ",
+                hero_sub: "मिट्टी के स्वास्थ्य और फसल रोगों की जाँच के लिए सरल उपकरण।",
+                assistant_card_title: "एआई से पूछें",
+                assistant_card_desc: "फसलों और उर्वरकों के बारे में अपने सवाल पूछें। 24/7 उपलब्ध।",
+                talk_ai: "एआई से बात करें",
+                intake_title: "अपनी मिट्टी की जाँच करें",
+                intake_desc: "मिट्टी का विवरण भरें और देखें कि आपकी भूमि के लिए कौन सी फसल सबसे अच्छी है।",
+                auto_apply: "ऑटो फिल",
+                database: "इतिहास",
+                chemistry_title: "मिट्टी के पोषक तत्व",
+                chemistry_sub: "आपकी मिट्टी में पोषक तत्व",
+                climate_title: "मौसम विवरण",
+                climate_sub: "वर्तमान पर्यावरण",
+                run_ai: "परिणाम देखें",
+                scan_title: "इले रोग की जाँच करें",
+                scan_desc: "बीमार पत्ते की फोटो लें और जानें कि उसे कैसे ठीक किया जाए।",
+                establish_link: "तैयार",
+                init_link: "कैमरा खोलें",
+                standby: "प्रतीक्षा करें...",
+                import_data: "फोटो अपलोड करें",
+                scan_results: "परिणाम",
+                match_conf: "सटीकता",
+                treatment: "कैसे ठीक करें",
+                prevention: "बचाव के उपाय",
+                soil_advice: "मिट्टी की सलाह",
+                back_btn: "वापस जाएं",
+
+                // Dashboard & Analysis
+                history_title: "सुरक्षित रिकॉर्ड",
+                history_desc: "आपकी सुरक्षित मिट्टी की जाँच यहाँ रखी गई है।",
+                new_seq: "नई जाँच",
+                dash_title: "जाँच परिणाम",
+                report_download: "रिपोर्ट डाउनलोड",
+                expert_strategy: "आपके लिए एआई सलाह",
+                expert_sub: "जाँच पूर्ण",
+                soil_id: "मिट्टी की पहचान",
+                match_conf: "सटीकता",
+                regional_id: "स्थानीय नाम",
+                yield_title: "अपेक्षित फसल",
+                yield_sub: "उत्पादन अनुमान",
+                tons: "टन",
+                climate_title: "मौसम अनुकूलता",
+                climate_sub: "क्षेत्र डेटा",
+                soil_health_title: "मिट्टी की स्थिति",
+                soil_health_sub: "स्वास्थ्य जाँच",
+                ph_level: "pH स्तर",
+                npk_index: "NPK इंडेक्स",
+                soil_class: "मिट्टी वर्ग",
+                verified_by: "जाँचा गया",
+                raw_sample: "आपकी मिट्टी की फोटो",
+                maintenance_guide: "रखरखाव गाइड",
+                good_practice: "क्या करें",
+                bad_practice: "क्या न करें",
+                opt_suggest: "सर्वोत्तम फसल सुझाव",
+                opt_sub: "अन्य फसलें जो यहाँ बढ़ सकती हैं",
+                best_adapt: "बेहतरीन विकल्प",
+                run_another: "फिर से जाँचें",
+
+                rainfall: "वर्षा",
+                // Result Page
+                report_title: "मिट्टी की रिपोर्ट",
+                match_result: "मिलान परिणाम",
+                match_desc: "हमने आपकी भूमि के लिए सही फसल ढूंढ ली है।",
+                recommended_crop: "आपके लिए सही फसल",
+                crop_details_title: "फसल का विवरण",
+                nutrient_score: "मिट्टी स्वास्थ्य स्कोर",
+                weather_match_title: "मौसम मिलान",
+                download_report: "रिपोर्ट सहेजें",
+                ask_bot_advice: "AI से सलाह लें",
+                // Crops
+                rice: "चावल", maize: "मक्का", chickpea: "चना", kidneybeans: "राजमा",
+                pigeonpeas: "अरहर", mothbeans: "मोठ", mungbean: "मूंग",
+                blackgram: "उड़द", lentil: "मसूर", pomegranate: "अनार",
+                banana: "केला", mango: "आम", grapes: "अंगूर", watermelon: "तरबूज",
+                muskmelon: "खरबूजा", apple: "सेब", orange: "संतरा", papaya: "पपीता",
+                coconut: "नारियल", cotton: "कपास", jute: "जूट", coffee: "कॉफी",
+                // Login History
+                login_activity: "लॉगिन इतिहास",
+                date_time: "दिनांक और समय",
+                device: "उपकरण",
+                ip_address: "आईपी पता",
+                status: "स्थिति",
+                success: "सफल",
+                go_back: "वापस जाएं",
+                account_secure: "खाता सुरक्षित है",
+                audit_desc: "अपने खाते की सुरक्षा लॉग और लॉगिन इतिहास की निगरानी करें।",
+                last_20: "पिछले 20 लॉगिन विवरण दिखाए जा रहे हैं।",
+                download_audit: "सुरक्षा ऑडिट डाउनलोड करें",
+                // Market Prices
+                market_prices: "बाजार भाव",
+                mandi_connect: "मंडी भाव कनेक्ट",
+                mandi_desc: "प्रमुख भारतीय मंडियों में कृषि वस्तुओं के वास्तविक समय के भाव।",
+                search_market: "फसल या मंडी खोजें...",
+                commodity: "वस्तु",
+                market: "मंडी",
+                state: "राज्य",
+                min_price: "न्यूनतम भाव",
+                max_price: "अधिकतम भाव",
+                modal_price: "औसत भाव",
+                change: "बदलाव",
+                top_gainer: "सबसे ज्यादा लाभ",
+                top_loser: "सबसे ज्यादा गिरावट",
+                market_volume: "बाजार वॉल्यूम",
+                live_prices: "लाइव भाव",
+                refresh: "अपडेट करें",
+                export_pdf: "पीडीएफ डाउनलोड",
+                // Home Extra
+                farming_tools: "कृषि उपकरण",
+                farming_tools_desc: "अपने खेत को प्रबंधित करने और बेहतर फसलें उगाने के लिए सरल उपकरण।",
+                get_started: "शुरू करें",
+                farm_view: "खेत दृश्य",
+                farm_view_desc: "उपग्रह मानचित्रों का उपयोग करके ऊपर से अपने खेत को देखें।",
+                launch_hub: "प्रारंभ करें",
+                start_scan: "स्कैन शुरू करें",
+                weather_desc: "बारिश, तापमान और स्थानीय मौसम अलर्ट की जांच करें।",
+                view_weather: "मौसम देखें",
+                view_prices: "भाव देखें"
+            },
+            te: {
+                brand: "అగ్రి-కోర్", tools: "సాధనాలు", rapid: "త్వరిత తనిఖీ", recommend: "మట్టి తనిఖీ",
+                assistant: "AI అసిస్టెంట్", status_ok: "సిస్టమ్ పనిచేస్తోంది", nav_dash: "హోమ్",
+                nav_scanner: "AI స్కానర్",
+                nav_db: "సేవ్ చేసిన చరిత్ర", nav_leaf: "ఆకు వ్యాధి తనిఖీ", nav_weather: "వాతావరణం",
+                login: "లాగిన్", hero_title_1: "మెరుగైన వ్యవసాయం", hero_title_2: "AI తో",
+                hero_sub: "మట్టి ఆరోగ్యాన్ని తనిఖీ చేయడానికి మరియు పంట వ్యాధులను కనుగొనడానికి సులభమైన సాధనాలు.",
+                assistant_card_title: "AIని అడగండి", talk_ai: "AI తో మాట్లాడండి",
+                intake_title: "మీ మట్టిని తనిఖీ చేయండి", intake_desc: "ఏ పంట బాగా పెరుగుతుందో తెలుసుకోవడానికి వివరాలను నమోదు చేయండి.",
+                auto_apply: "ఆటో ఫిల్", database: "చరిత్ర", chemistry_title: "మట్టి ఆరోగ్యం",
+                run_ai: "ఫలితం చూడండి", scan_title: "ఆకు వ్యాధి తనిఖీ", scan_desc: "వ్యాధిని కనుగొనడానికి ఆకు ఫోటో తీయండి.",
+                scan_results: "ఫలితం", match_conf: "ఖచ్చితత్వం", treatment: "చికిత్స",
+                prevention: "నివారణ", dash_title: "విశ్లేషణ ఫలితం", report_download: "రిపోర్ట్ సేవ్ చేయి",
+                nitrogen: "నత్రజని", phosphorus: "భాస్వరం", potassium: "పొటాషియం",
+                ph: "మట్టి pH", temperature: "ఉష్ణోగ్రత", humidity: "తేమ", rainfall: "వర్షపాతం",
+                recommended_crop: "సిఫార్సు చేసిన పంట", crop_details_title: "పంట వివరాలు",
+                run_another: "మరో తనిఖీ", ask_bot_advice: "AI సలహా అడగండి",
+                rice: "వరి", maize: "మొక్కజొన్న", chickpea: "శనగలు", kidneybeans: "రాజ్మా",
+                pigeonpeas: "కందులు", mothbeans: "మొత్తం గింజలు", mungbean: "పెసలు",
+                blackgram: "మినుములు", lentil: "కందిపప్పు", pomegranate: "దానిమ్మ",
+                banana: "అరటి", mango: "మామిడి", grapes: "ద్రాక్ష", watermelon: "పుచ్చకాయ",
+                muskmelon: "కర్బూజ", apple: "ఆపిల్", orange: "నారింజ", papaya: "బొప్పాయి",
+                coconut: "కొబ్బరి", cotton: "పత్తి", jute: "జనపనార", coffee: "కాఫీ",
+                // Login History
+                login_activity: "లాగిన్ చరిత్ర",
+                date_time: "తేదీ & సమయం",
+                device: "పరికరం",
+                ip_address: "IP చిరునామా",
+                status: "స్థితి",
+                success: "విజయం",
+                go_back: "వెనక్కి వెళ్ళు",
+                account_secure: "ఖాతా సురక్షితం",
+                audit_desc: "మీ ఖాతా భద్రత మరియు లాగిన్ చరిత్రను పర్యవేక్షించండి.",
+                last_20: "చివరి 20 లాగిన్ ఈవెంట్‌లను ప్రదర్శిస్తోంది.",
+                download_audit: "సెక్యూరిటీ ఆడిట్‌ను డౌన్‌లోడ్ చేయండి",
+                // Market Prices
+                market_prices: "మార్కెట్ ధరలు",
+                mandi_connect: "మండి ధరల కనెక్ట్",
+                mandi_desc: "ప్రధాన భారతీయ మార్కెట్లలో వ్యవసాయ వస్తువుల ధరలు.",
+                search_market: "పంట లేదా మార్కెట్ కోసం వెతకండి...",
+                commodity: "వస్తువు",
+                market: "మార్కెట్ (మండి)",
+                state: "రాష్ట్రం",
+                min_price: "కనిష్ట ధర",
+                max_price: "గరిష్ట ధర",
+                modal_price: "సగటు ధర",
+                change: "మార్పు",
+                top_gainer: "టాప్ గెయినర్",
+                top_loser: "టాప్ లూజర్",
+                market_volume: "మార్కెట్ వాల్యూమ్",
+                live_prices: "లైవ్ ధరలు",
+                refresh: "రిఫ్రెష్",
+                export_pdf: "PDF డౌన్‌లోడ్",
+                // Home Extra
+                farming_tools: "వ్యవసాయ సాధనాలు",
+                farming_tools_desc: "మీ పొలాన్ని నిర్వహించడానికి మరియు మెరుగైన పంటలను పండించడానికి సాధారణ సాధనాలు.",
+                get_started: "ప్రారంభించండి",
+                farm_view: "పొలం వీక్షణ",
+                farm_view_desc: "ఉపగ్రహ మ్యాప్‌లను ఉపయోగించి పైనుండి మీ పొలాన్ని చూడండి.",
+                launch_hub: "ప్రారంభించండి",
+                start_scan: "స్కాన్ ప్రారంభించండి",
+                weather_desc: "వర్షం, ఉష్ణోగ్రత మరియు స్థానిక వాతావరణ హెచ్చరికలను తనిఖీ చేయండి.",
+                view_weather: "వాతావరణం చూడండి",
+                view_prices: "ధరలు చూడండి"
+            },
+            kn: {
+                brand: "ಅಗ್ರಿಕೋರ್", tools: "ಪರಿಕರಗಳು", rapid: "ತ್ವರಿತ ಪರಿಶೀಲನೆ", recommend: "ಮಣ್ಣಿನ ತಪಾಸಣೆ",
+                assistant: "AI ಸಹಾಯಕ", status_ok: "ವ್ಯವಸ್ಥೆಯು ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ", nav_dash: "ಮುಖಪುಟ",
+                nav_scanner: "AI ಸ್ಕ್ಯಾನರ್",
+                nav_db: "ಉಳಿಸಿದ ಇತಿಹಾಸ", nav_leaf: "ಎಲೆ ರೋಗ ತಪಾಸಣೆ", nav_weather: "ಹವಾಮಾನ ಮಾಹಿತಿ",
+                login: "ಲಾಗಿನ್", hero_title_1: "ಉತ್ತಮ ಕೃಷಿ", hero_title_2: "AI ನೊಂದಿಗೆ",
+                hero_sub: "ಮಣ್ಣಿನ ಆರೋಗ್ಯವನ್ನು ಪರೀಕ್ಷಿಸಲು ಮತ್ತು ಬೆಳೆ ರೋಗಗಳನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸರಳ ಪರಿಕರಗಳು.",
+                assistant_card_title: "AI ಅನ್ನು ಕೇಳಿ", talk_ai: "AI ಜೊತೆ ಮಾತನಾಡಿ",
+                intake_title: "ನಿಮ್ಮ ಮಣ್ಣನ್ನು ಪರೀಕ್ಷಿಸಿ", intake_desc: "ಯಾವ ಬೆಳೆ ಚೆನ್ನಾಗಿ ಬೆಳೆಯುತ್ತದೆ ಎಂದು ತಿಳಿಯಲು ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ.",
+                auto_apply: "ಆಟೋ ಫಿಲ್", database: "ಇತಿಹಾಸ", chemistry_title: "ಮಣ್ಣಿನ ಆರೋಗ್ಯ",
+                run_ai: "ಫಲಿತಾಂಶ ನೋಡಿ", scan_title: "ಎಲೆ ರೋಗ ತಪಾಸಣೆ", scan_desc: "ರೋಗವನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಎಲೆಯ ಫೋಟೋ ತೆಗೆಯಿರಿ.",
+                scan_results: "ಫಲಿತಾಂಶ", match_conf: "ನಿಖರತೆ", treatment: "ಚಿಕಿತ್ಸೆ",
+                prevention: "ತಡೆಗಟ್ಟುವಿಕೆ", dash_title: "ವಿಶ್ಲೇಷಣೆಯ ಫಲಿತಾಂಶ", report_download: "ವರದಿ ಉಳಿಸಿ",
+                nitrogen: "ಸಾರಜನಕ", phosphorus: "ರಂಜಕ", potassium: "ಪೊಟ್ಯಾಸಿಯಮ್",
+                ph: "ಮಣ್ಣಿನ pH", temperature: "ತಾಪಮಾನ", humidity: "ಆರ್ದ್ರತೆ", rainfall: "ಮಳೆ",
+                recommended_crop: "ಶಿಫಾರಸು ಮಾಡಿದ ಬೆಳೆ", crop_details_title: "ಬೆಳೆಯ ವಿವರಗಳು",
+                run_another: "ಮತ್ತೆ ಪರೀಕ್ಷಿಸಿ", ask_bot_advice: "AI ಸಲಹೆ ಕೇಳಿ",
+                rice: "ಅಕ್ಕಿ", maize: "ಮೆಕ್ಕೆಜೋಳ", chickpea: "ಕಡಲೆ", kidneybeans: "ರಾಜ್ಮಾ",
+                pigeonpeas: "ತೊಗರಿ", mothbeans: "ಮೊಟ್ಟೆ ಕಾಳು", mungbean: "ಹೆಸರು ಕಾಳು",
+                blackgram: "ಉದ್ದಿನ ಕಾಳು", lentil: "ಮಸೂರ", pomegranate: "ದಾಳಿಂಬೆ",
+                banana: "ಬಾಳೆಹಣ್ಣು", mango: "ಮಾವಿನಹಣ್ಣು", grapes: "ದ್ರಾಕ್ಷಿ", watermelon: "ಕಲ್ಲಂಗಡಿ",
+                muskmelon: "ಕರ್ಬೂಜ", apple: "ಸೇಬು", orange: "ಕಿತ್ತಳೆ", papaya: "ಪಪ್ಪಾಯಿ",
+                coconut: "ತೆಂಗಿನಕಾಯಿ", cotton: "ಹತ್ತಿ", jute: "ಣಬು", coffee: "ಕಾಫಿ",
+                // Login History
+                login_activity: "ಲಾಗಿನ್ ಇತಿಹಾಸ",
+                date_time: "ದಿನಾಂಕ ಮತ್ತು ಸಮಯ",
+                device: "ಸಾಧನ",
+                ip_address: "IP ವಿಳಾಸ",
+                status: "ಸ್ಥಿತಿ",
+                success: "ಯಶಸ್ವಿ",
+                go_back: "ಹಿಂದಕ್ಕೆ ಹೋಗಿ",
+                account_secure: "ಖಾತೆ ಸುರಕ್ಷಿತವಾಗಿದೆ",
+                audit_desc: "ನಿಮ್ಮ ಖಾತೆಯ ಭದ್ರತಾ ಲಾಗ್‌ಗಳು ಮತ್ತು ಪ್ರವೇಶ ಇತಿಹಾಸವನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ.",
+                last_20: "ಕಳೆದ 20 ಲಾಗಿನ್ ಈವೆಂಟ್‌ಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ.",
+                download_audit: "ಭದ್ರತಾ ಆಡಿಟ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
+                // Market Prices
+                market_prices: "ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು",
+                mandi_connect: "ಮಂಡಿ ಬೆಲೆ ಸಂಪರ್ಕ",
+                mandi_desc: "ಪ್ರಮುಖ ಭಾರತೀಯ ಮಾರುಕಟ್ಟೆಗಳಲ್ಲಿ ಕೃಷಿ ಸರಕುಗಳ ನೈಜ-ಸಮಯದ ಬೆಲೆಗಳು.",
+                search_market: "ಬೆಳೆ ಅಥವಾ ಮಾರುಕಟ್ಟೆಯನ್ನು ಹುಡುಕಿ...",
+                commodity: "ಸರಕು",
+                market: "ಮಾರುಕಟ್ಟೆ (ಮಂಡಿ)",
+                state: "ರಾಜ್ಯ",
+                min_price: "ಕನಿಷ್ಠ ಬೆಲೆ",
+                max_price: "ಗರಿಷ್ಠ ಬೆಲೆ",
+                modal_price: "ಸರಾಸರಿ ಬೆಲೆ",
+                change: "ಬದಲಾವಣೆ",
+                top_gainer: "ಹೆಚ್ಚು ಲಾಭ",
+                top_loser: "ಹೆಚ್ಚು ನಷ್ಟ",
+                market_volume: "ಮಾರುಕಟ್ಟೆ ಪ್ರಮಾಣ",
+                live_prices: "ಲೈವ್ ಬೆಲೆಗಳು",
+                refresh: "ರಿಫ್ರೆಶ್",
+                export_pdf: "PDF ರಫ್ತು",
+                // Home Extra
+                farming_tools: "ಕೃಷಿ ಪರಿಕರಗಳು",
+                farming_tools_desc: "ನಿಮ್ಮ ಜಮೀನನ್ನು ನಿರ್ವಹಿಸಲು ಮತ್ತು ಉತ್ತಮ ಬೆಳೆಗಳನ್ನು ಬೆಳೆಯಲು ಸರಳ ಸಾಧನಗಳು.",
+                get_started: "ಪ್ರಾರಂಭಿಸಿ",
+                farm_view: "ಜಮೀನು ನೋಟ",
+                farm_view_desc: "ಉಪಗ್ರಹ ನಕ್ಷೆಗಳನ್ನು ಬಳಸಿ ಮೇಲಿನಿಂದ ನಿಮ್ಮ ಜಮೀನನ್ನು ನೋಡಿ.",
+                launch_hub: "ಪ್ರಾರಂಭಿಸಿ",
+                start_scan: "ಸ್ಕ್ಯಾನ್ ಪ್ರಾರಂಭಿಸಿ",
+                weather_desc: "ಮಳೆ, ತಾಪಮಾನ ಮತ್ತು ಸ್ಥಳೀಯ ಹವಾಮಾನ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
+                view_weather: "ಹವಾಮಾನ ನೋಡಿ",
+                view_prices: "ಬೆಲೆಗಳನ್ನು ನೋಡಿ"
+            }
+        };
+
+        window.currentLang = 'en';
+
+        function setLanguage(lang) {
+            window.currentLang = lang;
+            document.documentElement.setAttribute('data-lang', lang);
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
+                    el.innerText = TRANSLATIONS[lang][key];
+                }
+            });
+            
+            // Update Dropdown Label
+            const langNames = { en: "English", ta: "தமிழ்", hi: "हिन्दी", te: "తెలుగు", kn: "ಕನ್ನಡ" };
+            const label = document.getElementById('currentLangLabel');
+            if (label) label.innerText = langNames[lang] || "Language";
+
+            // Toggle active state on buttons
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('bg-agri-50', 'text-agri-600'));
+            const btn = document.querySelector(`.${lang}-btn`);
+            if (btn) btn.classList.add('bg-agri-50', 'text-agri-600');
+            
+            localStorage.setItem('agri_lang', lang);
+            
+            // Notify other components (like chatbot)
+            window.dispatchEvent(new CustomEvent('agriLangChanged', { detail: lang }));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('agri_lang') || 'en';
+            setLanguage(savedLang);
+        });
     </script>
+    {% block extra_head %}{% endblock %}
 </head>
 
-<body class="antialiased font-sans">
+<body class="antialiased font-sans flex flex-col min-h-screen relative bg-transparent">
 
-    <!-- Vibrant Integrated Navbar -->
-    <header class="w-full h-24 flex items-center justify-between px-6 md:px-12 bg-white/50 backdrop-blur-md relative z-50 animate-[fadeInDown_0.6s_ease-out]">
-        <!-- Brand Identity -->
-        <a href="/" class="flex items-center gap-4 group">
-            <div class="w-12 h-12 bg-agri-600 rounded-2xl flex items-center justify-center p-2 shadow-lg shadow-agri-600/30 group-hover:rotate-12 transition-transform">
-                <i class="fa-solid fa-seedling text-white text-xl"></i>
+    <!-- 🌾 Vibrant Farm Background (Lite Green Edition) -->
+    <!-- Global Premium Background (Solid Lite Green) -->
+    <div class="fixed inset-0 -z-[100] bg-emerald-50"></div>
+
+    <!-- Navbar (Lite Green & White) -->
+    <header class="w-full h-20 flex items-center justify-between px-6 md:px-12 bg-white sticky top-0 z-[110] border-b border-slate-900/10 shadow-sm">
+        <a href="{% if user.is_authenticated %}/dashboard/{% else %}/{% endif %}" class="flex items-center gap-3 group">
+            <div class="w-10 h-10 bg-agri-600 rounded-xl flex items-center justify-center p-2 shadow-lg group-hover:rotate-12 transition-transform">
+                <i class="fa-solid fa-seedling text-white text-lg"></i>
             </div>
-            <span class="text-2xl font-black text-slate-900 tracking-tight">AgriCore <span class="text-agri-600">AI</span></span>
+            <span class="text-xl font-black text-slate-900 tracking-tight" data-i18n="brand">AgriCore</span>
         </a>
 
-        <!-- Main Navigation Links -->
-        <nav class="hidden lg:flex items-center gap-10">
-            <a href="/" class="text-slate-500 font-bold hover:text-agri-700 transition-colors uppercase text-xs tracking-widest"><i class="fa-solid fa-house-chimney mr-2 opacity-30"></i> Dashboard</a>
-            <a href="/analysis/" class="text-slate-500 font-bold hover:text-agri-700 transition-colors uppercase text-xs tracking-widest"><i class="fa-solid fa-wand-magic-sparkles mr-2 opacity-30"></i> Smart Analysis</a>
-            <a href="/disease/" class="text-slate-500 font-bold hover:text-agri-700 transition-colors uppercase text-xs tracking-widest"><i class="fa-solid fa-leaf mr-2 opacity-30"></i> Leaf Scan</a>
-            <a href="/satellite/" class="text-slate-500 font-bold hover:text-agri-700 transition-colors uppercase text-xs tracking-widest"><i class="fa-solid fa-satellite mr-2 opacity-30"></i> Satellite Map</a>
-            <a href="/weather/" class="text-slate-500 font-bold hover:text-agri-700 transition-colors uppercase text-xs tracking-widest"><i class="fa-solid fa-cloud-bolt mr-2 opacity-30"></i> Weather</a>
+        <!-- Vertical Separator -->
+        <div class="hidden lg:block w-[1px] h-8 bg-slate-200 mx-8"></div>
+
+        <nav class="hidden lg:flex items-center h-full gap-3 xl:gap-6">
+            <a href="/dashboard/" class="text-slate-600 font-black hover:text-agri-600 transition-colors uppercase text-[9px] xl:text-[10px] tracking-[0.15em] flex items-center h-full" data-i18n="nav_dash">Dashboard</a>
+
+            <!-- AI Scanner Dropdown -->
+            <div class="relative group h-full">
+                <button class="text-slate-600 font-black hover:text-agri-600 transition-colors uppercase text-[9px] xl:text-[10px] tracking-[0.15em] flex items-center gap-1 h-full">
+                    <span data-i18n="nav_scanner">AI Scanner</span> <i class="fa-solid fa-chevron-down text-[7px] mt-0.5"></i>
+                </button>
+                <div class="absolute top-full left-1/2 -translate-x-1/2 w-64 pt-1 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300">
+                    <div class="bg-white/95 backdrop-blur-xl rounded-[1.5rem] shadow-2xl border border-slate-100 p-2">
+                        <a href="/recommend/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-microscope text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider" data-i18n="recommend">Check My Soil</span>
+                        </a>
+                        <a href="/soil/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-camera-retro text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider">Soil Image Scanner</span>
+                        </a>
+                        <a href="/disease/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-bug-slash text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider" data-i18n="nav_leaf">Leaf Disease Check</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More Tools Dropdown -->
+            <div class="relative group h-full">
+                <button class="text-slate-600 font-black hover:text-agri-600 transition-colors uppercase text-[9px] xl:text-[10px] tracking-[0.15em] flex items-center gap-1 h-full">
+                    <span data-i18n="tools">More Tools</span> <i class="fa-solid fa-chevron-down text-[7px] mt-0.5"></i>
+                </button>
+                <div class="absolute top-full left-1/2 -translate-x-1/2 w-64 pt-1 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300">
+                    <div class="bg-white/95 backdrop-blur-xl rounded-[1.5rem] shadow-2xl border border-slate-100 p-2">
+                        <a href="/recommend/history/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-clock-rotate-left text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider" data-i18n="nav_db">Saved History</span>
+                        </a>
+                        <a href="/weather/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-cloud-sun-rain text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider" data-i18n="nav_weather">Weather Info</span>
+                        </a>
+                        <a href="{% url 'login_history' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-shield-halved text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider" data-i18n="login_activity">Login Activity</span>
+                        </a>
+                        <div class="h-px bg-slate-100 mx-3 my-1"></div>
+                        <a href="/tools/market/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-indian-rupee-sign text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider" data-i18n="market_prices">Market Prices</span>
+                        </a>
+                        <a href="/tools/fertilizer/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-flask text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider">Fertilizer Helper</span>
+                        </a>
+                        <a href="/tools/profit/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-chart-line text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider">Profit Helper</span>
+                        </a>
+                        <a href="/yield/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <i class="fa-solid fa-wheat-awn text-agri-600 text-xs"></i>
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider">Yield Predictor</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </nav>
 
-        <!-- Dynamic Action Button -->
-        <div class="flex items-center gap-4">
-            <a href="/chatbot/" class="hidden sm:flex items-center gap-3 px-6 py-3 rounded-2xl bg-agri-700 text-white font-black hover:bg-agri-800 shadow-xl shadow-agri-700/30 hover:shadow-agri-700/50 transition-all transform hover:-translate-y-1">
-                <i class="fa-solid fa-comments text-lg"></i>
-                <span class="text-sm">AI Assistant</span>
+        <div class="flex items-center gap-2 xl:gap-4 shrink-0">
+            <!-- Language Dropdown -->
+            <div class="relative group h-9 hidden sm:block">
+                <button class="flex items-center gap-2 h-full px-4 rounded-xl bg-slate-100 text-slate-800 font-black text-[10px] hover:bg-slate-200 transition-all">
+                    <i class="fa-solid fa-language text-agri-600 text-sm"></i>
+                    <span id="currentLangLabel">English</span>
+                    <i class="fa-solid fa-chevron-down text-[7px] mt-0.5"></i>
+                </button>
+                <div class="absolute top-full right-0 w-32 pt-1 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-[120]">
+                    <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 p-1.5 flex flex-col gap-1">
+                        <button onclick="setLanguage('en')" class="lang-btn en-btn flex items-center justify-between p-2 rounded-lg text-[10px] font-black text-slate-600 hover:bg-agri-50 hover:text-agri-600 transition-all">
+                            <span>English</span>
+                            <span class="text-[8px] opacity-40">EN</span>
+                        </button>
+                        <button onclick="setLanguage('ta')" class="lang-btn ta-btn flex items-center justify-between p-2 rounded-lg text-[10px] font-black text-slate-600 hover:bg-agri-50 hover:text-agri-600 transition-all">
+                            <span>தமிழ்</span>
+                            <span class="text-[8px] opacity-40">TA</span>
+                        </button>
+                        <button onclick="setLanguage('hi')" class="lang-btn hi-btn flex items-center justify-between p-2 rounded-lg text-[10px] font-black text-slate-600 hover:bg-agri-50 hover:text-agri-600 transition-all">
+                            <span>हिन्दी</span>
+                            <span class="text-[8px] opacity-40">HI</span>
+                        </button>
+                        <button onclick="setLanguage('te')" class="lang-btn te-btn flex items-center justify-between p-2 rounded-lg text-[10px] font-black text-slate-600 hover:bg-agri-50 hover:text-agri-600 transition-all">
+                            <span>తెలుగు</span>
+                            <span class="text-[8px] opacity-40">TE</span>
+                        </button>
+                        <button onclick="setLanguage('kn')" class="lang-btn kn-btn flex items-center justify-between p-2 rounded-lg text-[10px] font-black text-slate-600 hover:bg-agri-50 hover:text-agri-600 transition-all">
+                            <span>ಕನ್ನಡ</span>
+                            <span class="text-[8px] opacity-40">KN</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="hidden sm:flex items-center h-11 px-2 bg-slate-100 border border-slate-200 rounded-2xl gap-2 xl:gap-3">
+                <div class="w-7 h-7 xl:w-8 xl:h-8 rounded-lg bg-agri-100 flex items-center justify-center text-agri-600 font-black text-xs">
+                    {{ user.first_name|default:user.username|slice:":1"|upper }}
+                </div>
+                <div class="flex flex-col justify-center hidden lg:flex">
+                    <p class="text-[6px] xl:text-[7px] font-black text-slate-400 uppercase tracking-widest leading-tight mb-0.5 whitespace-nowrap">Logged In</p>
+                    <p class="text-[10px] xl:text-[11px] font-black text-slate-800 leading-tight whitespace-nowrap">{{ user.first_name|default:user.username|truncatechars:12 }}</p>
+                </div>
+                <div class="h-6 w-px bg-slate-200 mx-1 hidden lg:block"></div>
+                <a href="/logout/" class="w-7 h-7 xl:w-8 xl:h-8 rounded-lg text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                </a>
+            </div>
+            {% else %}
+            <a href="/" class="hidden sm:flex items-center gap-2 h-10 px-5 rounded-2xl bg-white text-slate-700 font-black hover:bg-slate-50 border border-slate-100 transition-all shadow-sm">
+                <i class="fa-solid fa-user-circle text-sm"></i>
+                <span class="text-xs">Login</span>
             </a>
-            <!-- Mobile Menu Trigger -->
-            <button class="lg:hidden w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-500 shadow-md">
-                <i class="fa-solid fa-bars-staggered text-xl"></i>
-            </button>
+            {% endif %}
+
+            <a href="/chatbot/" class="flex items-center gap-2 xl:gap-3 h-10 xl:h-11 px-4 xl:px-6 rounded-2xl bg-agri-700 text-white font-black hover:bg-agri-800 shadow-xl shadow-agri-700/30 transition-all transform hover:-translate-y-1">
+                <i class="fa-solid fa-comments"></i>
+                <span class="text-[10px] xl:text-xs hidden md:inline" data-i18n="assistant">AI Assistant</span>
+            </a>
         </div>
     </header>
 
-    <!-- Main Dynamic Content -->
-    <main class="relative w-full overflow-hidden">
-        {% block content %}
-        {% endblock %}
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
     </main>
 
-    <!-- Vibrant Footer Component -->
-    {% block footer %}
-    <footer class="bg-slate-900 text-white pt-24 pb-12 mt-24 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-16 relative z-10">
-            <div class="space-y-6">
+    <footer class="bg-white border-t border-slate-100 pt-20 pb-10 mt-20">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+            <!-- Brand Column -->
+            <div class="md:col-span-1 space-y-6">
                 <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-seedling text-agri-500 text-3xl"></i>
-                    <span class="text-2xl font-black tracking-tight">AgriCore AI</span>
+                    <i class="fa-solid fa-seedling text-agri-600 text-3xl"></i>
+                    <span class="text-2xl font-black tracking-tighter" data-i18n="brand">AgriCore</span>
                 </div>
-                <p class="text-slate-400 font-medium leading-relaxed">Pioneering precision agriculture with world-class machine learning models tailored for smart farmers.</p>
+                <p class="text-slate-500 font-bold text-sm leading-relaxed">
+                    Supporting farmers with simple, powerful tools for better crop yields and healthy soil.
+                </p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-agri-50 hover:text-agri-600 transition-all"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-agri-50 hover:text-agri-600 transition-all"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-agri-50 hover:text-agri-600 transition-all"><i class="fa-brands fa-youtube"></i></a>
+                </div>
             </div>
-            
-            <div class="space-y-6">
-                <h4 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Quick Links</h4>
-                <ul class="space-y-4 font-bold text-slate-300">
-                    <li><a href="/analysis/" class="hover:text-white transition-colors">Yield Analysis</a></li>
-                    <li><a href="/soil/" class="hover:text-white transition-colors">Soil Classification</a></li>
-                    <li><a href="/satellite/" class="hover:text-white transition-colors">Farm Mapping</a></li>
+
+            <!-- Quick Links -->
+            <div class="md:col-span-1">
+                <h4 class="text-slate-900 font-black uppercase text-[10px] tracking-widest mb-6">Quick Tools</h4>
+                <ul class="space-y-4">
+                    <li><a href="/recommend/" class="text-slate-500 font-bold text-sm hover:text-agri-600 transition-colors" data-i18n="recommend">Check My Soil</a></li>
+                    <li><a href="/disease/" class="text-slate-500 font-bold text-sm hover:text-agri-600 transition-colors" data-i18n="nav_leaf">Leaf Disease Check</a></li>
+                    <li><a href="/weather/" class="text-slate-500 font-bold text-sm hover:text-agri-600 transition-colors" data-i18n="nav_weather">Weather Info</a></li>
                 </ul>
             </div>
 
-            <div class="space-y-6">
-                <h4 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Platform Status</h4>
-                <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 flex items-center gap-4">
-                    <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></div>
-                    <span class="text-sm font-bold text-slate-400">All AI Models Operational</span>
-                </div>
+            <!-- More Resources -->
+            <div class="md:col-span-1">
+                <h4 class="text-slate-900 font-black uppercase text-[10px] tracking-widest mb-6" data-i18n="tools">More Tools</h4>
+                <ul class="space-y-4">
+                    <li><a href="/chatbot/" class="text-slate-500 font-bold text-sm hover:text-agri-600 transition-colors" data-i18n="assistant">Ask Agri Bot</a></li>
+                    <li><a href="/recommend/history/" class="text-slate-500 font-bold text-sm hover:text-agri-600 transition-colors" data-i18n="nav_db">Saved History</a></li>
+                    <li><a href="#" class="text-slate-500 font-bold text-sm hover:text-agri-600 transition-colors">Farming Tips</a></li>
+                </ul>
             </div>
+
         </div>
-        <div class="mt-20 border-t border-slate-800 max-w-7xl mx-auto px-6 pt-10 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
-            <p class="text-slate-500 text-sm font-bold opacity-60">© 2026 AgriCore AI Platform. Built for the future of food.</p>
-            <div class="flex gap-6 text-xl text-slate-600">
-                <i class="fa-brands fa-twitter hover:text-white transition-colors cursor-pointer"></i>
-                <i class="fa-brands fa-github hover:text-white transition-colors cursor-pointer"></i>
+
+        <!-- Copyright -->
+        <div class="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">© 2026 AGRICORE PLATFORM. RURAL ACCESSIBILITY EDITION.</p>
+            <div class="flex gap-6">
+                <a href="#" class="text-slate-400 text-[9px] font-black uppercase tracking-widest hover:text-slate-600">Privacy Policy</a>
+                <a href="#" class="text-slate-400 text-[9px] font-black uppercase tracking-widest hover:text-slate-600">Terms of Use</a>
             </div>
         </div>
     </footer>
-    {% endblock %}
-
-    <!-- PWA Maintenance -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('SW Registered'))
-                    .catch(err => console.log('SW Failed'));
-            });
-        }
-    </script>
+    </footer>
 </body>
 </html>

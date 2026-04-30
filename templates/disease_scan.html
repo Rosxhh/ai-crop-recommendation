@@ -2,310 +2,373 @@
 {% load static %}
 
 {% block content %}
-<div class="relative w-full min-h-screen pb-20 mt-10">
-    <!-- Abstract Background Blobs -->
-    <div class="absolute top-0 left-0 w-1/3 h-1/2 bg-emerald-50 rounded-full blur-[120px] -z-10 opacity-70"></div>
-    <div class="absolute bottom-0 right-0 w-1/2 h-1/3 bg-agri-50 rounded-full blur-[100px] -z-10 opacity-50"></div>
+<div class="relative w-full min-h-screen pb-24 bg-transparent overflow-hidden">
 
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
-        <!-- Header Section -->
-        <div class="text-center mb-16 animate-[fadeInUp_0.8s_ease-out]">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-agri-100 text-agri-700 text-xs font-black uppercase tracking-widest mb-6 border border-agri-200">
-                <i class="fa-solid fa-microscope animate-pulse"></i> Plant Pathology AI
-            </div>
-            <h1 class="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-6 leading-tight">Leaf Disease <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-agri-600">Scanner</span></h1>
-            <p class="text-slate-500 text-lg max-w-2xl mx-auto font-medium leading-relaxed">Instantly identify crop ailments using deep learning. Point your camera at a damaged leaf for real-time analysis.</p>
-        </div>
+  <!-- Cinematic Background Accents -->
+  <div class="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-50 rounded-full blur-[160px] -z-10 opacity-70"></div>
+  <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[60%] bg-slate-100 rounded-full blur-[140px] -z-10 opacity-40"></div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            
-            <!-- Left Panel: Camera UI -->
-            <div class="animate-[fadeInLeft_0.6s_ease-out]">
-                <div class="bg-white rounded-[2.5rem] p-4 shadow-2xl shadow-emerald-900/10 border border-slate-100 relative overflow-hidden group">
-                    
-                    <!-- Scanner Corner Brackets for design -->
-                    <div class="absolute top-8 left-8 w-12 h-12 border-t-4 border-l-4 border-agri-500 rounded-tl-2xl opacity-50 z-20 transition-all duration-300 group-hover:scale-110"></div>
-                    <div class="absolute top-8 right-8 w-12 h-12 border-t-4 border-r-4 border-agri-500 rounded-tr-2xl opacity-50 z-20 transition-all duration-300 group-hover:scale-110"></div>
-                    <div class="absolute bottom-8 left-8 w-12 h-12 border-b-4 border-l-4 border-agri-500 rounded-bl-2xl opacity-50 z-20 transition-all duration-300 group-hover:scale-110"></div>
-                    <div class="absolute bottom-8 right-8 w-12 h-12 border-b-4 border-r-4 border-agri-500 rounded-br-2xl opacity-50 z-20 transition-all duration-300 group-hover:scale-110"></div>
+  <div class="max-w-6xl mx-auto px-6 py-12">
 
-                    <!-- Video Feed Section -->
-                    <div class="relative rounded-[2rem] overflow-hidden bg-slate-900 aspect-[4/3] shadow-inner mb-6 flex items-center justify-center">
-                        <video id="camera-stream" autoplay playsinline class="w-full h-full object-cover hidden"></video>
-                        <canvas id="camera-canvas" class="hidden w-full h-full object-cover absolute inset-0 z-10"></canvas>
+    <!-- Premium Navigation -->
+    <div class="mb-10 animate-[fadeIn_0.6s_ease-out]">
+      <a href="/dashboard/" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 backdrop-blur-sm border border-white shadow-sm text-slate-600 hover:text-agri-600 font-black text-[10px] uppercase tracking-[0.2em] transition-all group">
+        <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i> Return to Terminal
+      </a>
+    </div>
+
+    <!-- Main Header -->
+    <div class="text-center mb-16 animate-[fadeInDown_0.6s_ease-out]">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 border border-white/80 backdrop-blur-sm text-agri-700 text-[9px] font-black uppercase tracking-[0.2em] mb-6 shadow-sm">
+        <i class="fa-solid fa-virus-covid text-agri-500"></i> <span data-i18n="brand">AgriCore</span> v5.1
+      </div>
+      <h1 class="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter leading-[0.95] mb-6 drop-shadow-md" data-i18n="scan_title">
+        Leaf Disease Check
+      </h1>
+      <p class="text-slate-700 font-bold text-lg max-w-2xl mx-auto leading-relaxed drop-shadow-sm" data-i18n="scan_desc">
+        Take a photo of a sick leaf to find out what is wrong and how to fix it.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+        <!-- ── LEFT: TACTICAL VIEWER ── -->
+        <div class="lg:col-span-12 xl:col-span-7 animate-[fadeInLeft_0.8s_ease-out]">
+            <div class="bg-white rounded-[3.5rem] border border-emerald-100 overflow-hidden group shadow-2xl">
+                
+                <!-- Tab Mode Switcher -->
+                <div class="p-3 bg-slate-50/50 border-b border-slate-100">
+                    <div class="flex p-1 bg-white border border-slate-200 rounded-[1.75rem] shadow-sm w-full">
+                        <button id="tab-camera" class="flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 bg-white text-agri-600 shadow-md">
+                            <i class="fa-solid fa-video"></i> Live Feed
+                        </button>
+                        <button id="tab-upload" class="flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 text-slate-400 hover:text-slate-700">
+                            <i class="fa-solid fa-image"></i> High-Res Photo
+                        </button>
+                        <button id="tab-video" class="flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 text-slate-400 hover:text-slate-700">
+                            <i class="fa-solid fa-clapperboard"></i> Video Analysis
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shared Tactical Viewport -->
+                <div class="p-4">
+                    <div class="relative rounded-[2.5rem] overflow-hidden bg-slate-100 aspect-[4/3] shadow-inner border-4 border-white flex items-center justify-center">
                         
-                        <!-- Placeholder before camera starts -->
-                        <div id="camera-placeholder" class="text-center absolute z-20 p-6">
-                            <div class="w-20 h-20 bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-slate-700 shadow-xl">
-                                <i class="fa-solid fa-camera text-slate-400 text-3xl"></i>
+                        <video id="camera-stream" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+                        <video id="video-preview" controls class="w-full h-full object-cover hidden absolute inset-0 z-10"></video>
+                        <canvas id="camera-canvas" class="hidden w-full h-full object-cover absolute inset-0 z-10"></canvas>
+                        <img id="upload-preview" class="hidden absolute inset-0 w-full h-full object-cover z-10" alt="preview"/>
+
+                        <!-- Scanline UI -->
+                        <div id="scan-line" class="absolute inset-0 pointer-events-none hidden z-30">
+                            <div class="w-full h-1 bg-agri-500 shadow-[0_0_20px_#16a34a] animate-[liveScan_3s_ease-in-out_infinite]"></div>
+                            <div class="absolute inset-0 bg-agri-500/5 backdrop-blur-[1px]"></div>
+                        </div>
+
+                        <!-- Tactical HUD -->
+                        <div class="absolute inset-0 pointer-events-none border-[30px] border-white/50 opacity-50 z-20"></div>
+
+                        <!-- Placeholders -->
+                        <div id="camera-placeholder" class="text-center absolute z-20 p-8 flex flex-col items-center">
+                            <div class="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center mb-6 shadow-sm border border-slate-100">
+                                <i id="cam-icon" class="fa-solid fa-camera-retro text-slate-300 text-3xl"></i>
                             </div>
-                            <h3 class="text-white font-black text-xl mb-2">Camera Access Required</h3>
-                            <p class="text-slate-400 text-sm">Please allow camera permissions to begin scanning.</p>
-                            <button id="start-cam-btn" class="mt-6 px-6 py-3 rounded-2xl bg-white text-slate-900 font-bold hover:bg-agri-50 transition-colors">
-                                Open Camera
+                            <h3 id="cam-title" class="text-slate-800 font-black text-xl mb-1" data-i18n="establish_link">Ready to Scan</h3>
+                            <p id="cam-msg" class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-8">Ready to check your leaf</p>
+                            <button id="start-cam-btn" class="px-10 h-16 bg-agri-600 text-white font-black rounded-2xl shadow-xl hover:bg-agri-700 transition-all flex items-center gap-3">
+                                <i class="fa-solid fa-power-off"></i> <span data-i18n="init_link">Open Camera</span>
                             </button>
                         </div>
-                        
-                        <!-- Scanning Sweep Animation (Hidden by default) -->
-                        <div id="scan-line" class="absolute inset-x-0 h-2 pointer-events-none hidden z-30">
-                            <div class="w-full h-2 bg-agri-400 shadow-[0_0_20px_5px_rgba(34,197,94,0.5)] animate-[scan_2s_ease-in-out_infinite]"></div>
-                        </div>
-                    </div>
 
-                    <!-- Controls -->
-                    <div class="flex justify-center items-center gap-4 px-4 pb-4">
-                        <button id="capture-btn" disabled class="px-8 py-4 rounded-2xl bg-slate-100 text-slate-400 font-black text-lg transition-all flex items-center gap-3 w-full justify-center group relative overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed border border-slate-200">
-                            <span class="relative z-10 flex items-center gap-3">
-                                <i class="fa-solid fa-camera-retro"></i> Capture Frame
-                            </span>
-                        </button>
-                        <button id="retake-btn" class="hidden w-full px-8 py-4 rounded-2xl bg-slate-100 text-slate-600 font-black text-lg transition-all flex items-center gap-3 justify-center border border-slate-200 hover:bg-slate-200">
-                            <i class="fa-solid fa-rotate-right"></i> Retake
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Right Panel: Results UI -->
-            <div id="results-panel" class="opacity-0 translate-y-8 transition-all duration-700 pointer-events-none">
-                
-                <h2 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
-                    <i class="fa-solid fa-file-medical text-agri-500"></i> Diagnosis Report
-                </h2>
-
-                <!-- Main Diagnosis Card -->
-                <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-2xl shadow-slate-200/50 relative overflow-hidden mb-6">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-rose-50 rounded-bl-[4rem] -z-0 transition-colors duration-500" id="res-blob"></div>
-                    
-                    <div class="flex justify-between items-start mb-6 relative z-10">
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Detected Issue</p>
-                            <h3 id="res-disease" class="text-3xl font-black text-slate-900 leading-tight">Awaiting Scan...</h3>
-                        </div>
-                        <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100 shadow-sm flex-col">
-                            <span id="res-conf" class="text-lg font-black text-slate-800">0%</span>
-                            <span class="text-[8px] font-bold text-slate-400 uppercase">Match</span>
-                        </div>
-                    </div>
-
-                    <p id="res-desc" class="text-slate-600 font-medium leading-relaxed mb-6 border-l-4 border-slate-200 pl-4 py-1">
-                        Capture an image of a leaf to view the detailed pathology report, treatment plans, and AI-recommended actions.
-                    </p>
-                </div>
-
-                <!-- Treatment & Prevention Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Treatment -->
-                    <div class="bg-blue-50/50 rounded-3xl p-6 border border-blue-100 relative overflow-hidden">
-                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-100/50 rounded-full blur-[20px]"></div>
-                        <div class="flex items-center gap-3 mb-4 relative z-10">
-                            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center border border-white/50">
-                                <i class="fa-solid fa-prescription-bottle-medical"></i>
+                        <div id="upload-placeholder" class="hidden text-center absolute z-20 p-8 cursor-pointer w-full h-full flex flex-col items-center justify-center group/ph" onclick="document.getElementById('file-input').click()">
+                            <div class="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center mb-6 shadow-sm border border-slate-100 group-hover/ph:scale-110 transition-transform">
+                                <i class="fa-solid fa-cloud-arrow-up text-slate-300 text-3xl"></i>
                             </div>
-                            <h4 class="font-black text-slate-800">Treatment Plan</h4>
+                            <h3 class="text-slate-800 font-black text-xl mb-1" data-i18n="import_data">Upload Photo</h3>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Select a clear leaf picture</p>
                         </div>
-                        <p id="res-treat" class="text-sm font-medium text-slate-600 relative z-10 leading-relaxed">-</p>
+
+                        <div id="video-placeholder" class="hidden text-center absolute z-20 p-8 cursor-pointer w-full h-full flex flex-col items-center justify-center group/ph" onclick="document.getElementById('video-input').click()">
+                            <div class="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center mb-6 shadow-sm border border-slate-100 group-hover/ph:scale-110 transition-transform">
+                                <i class="fa-solid fa-clapperboard text-slate-300 text-3xl"></i>
+                            </div>
+                            <h3 class="text-slate-800 font-black text-xl mb-1">Video Stream</h3>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Select MP4 sequence for analysis</p>
+                        </div>
                     </div>
 
-                    <!-- Prevention -->
-                    <div class="bg-emerald-50/50 rounded-3xl p-6 border border-emerald-100 relative overflow-hidden">
-                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-100/50 rounded-full blur-[20px]"></div>
-                        <div class="flex items-center gap-3 mb-4 relative z-10">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center border border-white/50">
-                                <i class="fa-solid fa-shield-halved"></i>
-                            </div>
-                            <h4 class="font-black text-slate-800">Prevention</h4>
-                        </div>
-                        <p id="res-prev" class="text-sm font-medium text-slate-600 relative z-10 leading-relaxed">-</p>
+                    <div class="flex gap-4 mt-8 pb-4">
+                        <button id="main-btn" disabled class="flex-1 h-16 bg-agri-600 text-white font-black rounded-2xl shadow-2xl hover:bg-agri-700 disabled:opacity-80 transition-all flex items-center justify-center gap-3">
+                            <i id="main-btn-icon" class="fa-solid fa-camera"></i>
+                            <span id="main-btn-label" data-i18n="standby">Waiting...</span>
+                        </button>
+                        <button id="restart-btn" class="px-8 h-16 rounded-2xl font-black flex items-center justify-center gap-3 transition-all btn-3d btn-3d-slate shadow-sm">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                        <button id="clear-btn" class="hidden px-8 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-rose-500 font-black flex items-center justify-center gap-3 hover:bg-rose-100 transition-all">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 </div>
 
+                <!-- Hidden inputs -->
+                <input type="file" id="file-input" accept="image/*" class="hidden"/>
+                <input type="file" id="video-input" accept="video/*" class="hidden"/>
             </div>
         </div>
+
+        <!-- ── RIGHT: PATHOLOGY REPORT ── -->
+        <div id="results-panel" class="lg:col-span-12 xl:col-span-5 hidden opacity-0 translate-y-10 transition-all duration-700 pointer-events-none">
+            
+            <div class="bg-white rounded-[3rem] p-10 text-slate-900 relative overflow-hidden shadow-2xl border border-slate-100 mb-8 group">
+                <div id="res-blob" class="absolute top-0 right-0 w-32 h-32 opacity-10 blur-xl transition-all duration-700"></div>
+                <div class="relative z-10">
+                    <p class="text-[9px] font-black text-agri-500 uppercase tracking-[0.3em] mb-4" data-i18n="scan_results">Scan Result</p>
+                    <div class="flex justify-between items-start mb-8 pb-6 border-b border-slate-100">
+                        <div>
+                            <h3 id="res-disease" class="text-4xl font-black text-slate-900 tracking-tighter leading-none mb-2" data-i18n="scan_results">Scan Result</h3>
+                            <p id="res-conf-text" class="text-xs font-bold text-slate-500" data-i18n="match_conf">Match Accuracy</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-2xl bg-slate-50 flex flex-col items-center justify-center border border-slate-100">
+                            <span id="res-conf" class="text-xl font-black text-slate-900">0%</span>
+                            <span class="text-[7px] font-black text-agri-500 uppercase tracking-widest">Conf</span>
+                        </div>
+                    </div>
+                    <p id="res-desc" class="text-slate-700 text-sm font-bold leading-relaxed"></p>
+                    
+                    <div id="video-guide-container" class="mt-8 hidden">
+                        <a id="res-video" href="#" target="_blank" class="inline-flex items-center gap-3 px-6 h-12 rounded-xl bg-red-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl shadow-red-600/20">
+                            <i class="fa-brands fa-youtube text-base"></i> View Intervention Video
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Diagnostic Grid -->
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Intervention Card -->
+                <div class="bg-white border border-emerald-100 shadow-xl rounded-[2.5rem] p-8 flex gap-6 group hover:-translate-y-1 transition-transform">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-prescription-bottle-medical text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2" data-i18n="treatment">How to Fix</h4>
+                        <p id="res-treat" class="text-sm font-bold text-slate-800 leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <!-- Prophylaxis Card -->
+                <div class="bg-white border border-emerald-100 shadow-xl rounded-[2.5rem] p-8 flex gap-6 group hover:-translate-y-1 transition-transform">
+                    <div class="w-14 h-14 rounded-2xl bg-agri-50 text-agri-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2" data-i18n="prevention">How to Prevent</h4>
+                        <p id="res-prev" class="text-sm font-bold text-slate-800 leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <!-- Substrate Strategy -->
+                <div class="bg-white border border-emerald-100 shadow-xl rounded-[2.5rem] p-8 flex gap-6 group hover:-translate-y-1 transition-transform">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-flask-vial text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2" data-i18n="soil_advice">Soil Advice</h4>
+                        <p id="res-soil" class="text-sm font-bold text-slate-800 leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+  </div>
 </div>
 
-<!-- Add loading overlay to the page -->
-<div id="processing-overlay" class="fixed inset-0 z-[100] hidden bg-slate-900/80 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-300">
-    <div class="w-24 h-24 rounded-3xl bg-white flex items-center justify-center shadow-2xl shadow-agri-500/20 mb-8 border-4 border-slate-100 animate-bounce">
-        <i class="fa-solid fa-brain text-4xl text-agri-500 animate-pulse"></i>
+<!-- ANALYSING OVERLAY -->
+<div id="processing-overlay" class="fixed inset-0 z-[100] hidden bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
+    <div class="relative mb-12">
+        <div class="w-32 h-32 rounded-[3rem] bg-agri-100 flex items-center justify-center border border-agri-200 shadow-inner relative overflow-hidden">
+            <i class="fa-solid fa-microchip text-4xl text-agri-600 relative z-10 animate-pulse"></i>
+            <div class="absolute inset-0 bg-gradient-to-t from-agri-500/20 to-transparent translate-y-full animate-[scan_2s_ease-in-out_infinite]"></div>
+        </div>
     </div>
-    <h2 class="text-3xl font-black text-white tracking-tight mb-2">Analyzing Pathology</h2>
-    <p class="text-slate-300 font-medium max-w-sm text-center">Our deep learning model is diagnosing the leaf structure...</p>
+    <h2 class="text-3xl font-black text-slate-800 tracking-widest uppercase mb-2">Diagnostic Scan</h2>
+    <p class="text-slate-400 font-bold text-sm uppercase tracking-[0.3em] animate-pulse">Running Pathology Matcher v5.0</p>
 </div>
 
 <style>
-@keyframes scan {
-    0%, 100% { transform: translateY(-10px); }
-    50% { transform: translateY(300px); }
-}
+@keyframes liveScan { 0% { transform: translateY(0); opacity: 0.1; } 50% { transform: translateY(350px); opacity: 0.7; } 100% { transform: translateY(0); opacity: 0.1; } }
+@keyframes fadeInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('camera-stream');
+    const vidPreview = document.getElementById('video-preview');
     const canvas = document.getElementById('camera-canvas');
-    const captureBtn = document.getElementById('capture-btn');
-    const startCamBtn = document.getElementById('start-cam-btn');
-    const retakeBtn = document.getElementById('retake-btn');
-    const placeholder = document.getElementById('camera-placeholder');
-    const scanLine = document.getElementById('scan-line');
-    
-    // Results elements
+    const uploadPreview = document.getElementById('upload-preview');
+    const fileInput = document.getElementById('file-input');
+    const videoInput = document.getElementById('video-input');
+    const tabCamera = document.getElementById('tab-camera');
+    const tabUpload = document.getElementById('tab-upload');
+    const tabVideo = document.getElementById('tab-video');
+    const camPlaceholder = document.getElementById('camera-placeholder');
+    const upPlaceholder = document.getElementById('upload-placeholder');
+    const vidPlaceholder = document.getElementById('video-placeholder');
+    const mainBtn = document.getElementById('main-btn');
+    const mainBtnIcon = document.getElementById('main-btn-icon');
+    const mainBtnLabel = document.getElementById('main-btn-label');
+    const restartBtn = document.getElementById('restart-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const overlay = document.getElementById('processing-overlay');
     const resultsPanel = document.getElementById('results-panel');
     const resDisease = document.getElementById('res-disease');
     const resConf = document.getElementById('res-conf');
     const resDesc = document.getElementById('res-desc');
     const resTreat = document.getElementById('res-treat');
     const resPrev = document.getElementById('res-prev');
+    const resSoil = document.getElementById('res-soil');
+    const resVideo = document.getElementById('res-video');
+    const videoContainer = document.getElementById('video-guide-container');
     const resBlob = document.getElementById('res-blob');
-    const overlay = document.getElementById('processing-overlay');
+    const scanLine = document.getElementById('scan-line');
 
-    let stream = null;
+    let mode = 'camera', camStream = null, uploadFile = null, videoFile = null;
 
-    // 1. Initialize Camera
-    async function startCamera() {
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "environment" },
-                audio: false
-            });
-            video.srcObject = stream;
-            video.classList.remove('hidden');
-            placeholder.classList.add('hidden');
-            
-            // Enable capture btn
-            captureBtn.disabled = false;
-            captureBtn.classList.remove('bg-slate-100', 'text-slate-400', 'border-slate-200');
-            captureBtn.classList.add('bg-agri-600', 'text-white', 'hover:bg-agri-700', 'shadow-xl', 'shadow-agri-600/30', 'border-transparent');
-
-        } catch (err) {
-            console.error("Error accessing camera:", err);
-            placeholder.innerHTML = `
-                <div class="text-rose-500 text-4xl mb-4"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <h3 class="text-white font-black text-lg">Camera Error</h3>
-                <p class="text-slate-400 text-sm">Please ensure camera permissions are granted by your browser.</p>
-            `;
-        }
-    }
-
-    startCamBtn.addEventListener('click', startCamera);
-
-    // 2. Capture Frame
-    captureBtn.addEventListener('click', async () => {
-        // Render to canvas
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.translate(canvas.width, 0); // Mirror effect removal if needed, or leave it. We just draw.
-        ctx.scale(-1, 1);
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        ctx.setTransform(1,0,0,1,0,0);
+    function setTab(t) {
+        mode = t;
+        const btns = [tabCamera, tabUpload, tabVideo];
+        const pans = [camPlaceholder, upPlaceholder, vidPlaceholder];
+        btns.forEach(b => b.className = 'flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 text-slate-400 hover:text-slate-700');
+        const activeBtn = document.getElementById('tab-' + t);
+        activeBtn.className = 'flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 bg-white text-agri-600 shadow-md';
         
-        video.classList.add('hidden');
-        canvas.classList.remove('hidden');
-        scanLine.classList.remove('hidden'); // Show scan line
-        scanLine.classList.add('absolute', 'top-0');
-        
-        // UI Updates
-        captureBtn.classList.add('hidden');
-        retakeBtn.classList.remove('hidden');
-        overlay.classList.remove('hidden');
+        [video, vidPreview, canvas, uploadPreview, ...pans].forEach(el => el.classList.add('hidden'));
+        clearBtn.classList.add('hidden');
+        mainBtn.classList.remove('hidden');
 
-        // Extract Base64
-        const imageData = canvas.toDataURL('image/jpeg', 0.8);
-
-        // Send to backend API
-        try {
-            const response = await fetch('/disease/predict/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ image_data: imageData })
-            });
-
-            const result = await response.json();
-            
-            // Stop scanning effect
-            scanLine.classList.add('hidden');
-            overlay.classList.add('hidden');
-
-            if (result.success) {
-                displayResults(result);
-            } else {
-                // Show error gracefully in the UI
-                resDisease.innerText = "Scanning Failed";
-                resDisease.classList.remove('text-emerald-600', 'text-slate-900');
-                resDisease.classList.add('text-rose-600');
-                
-                resBlob.classList.remove('bg-emerald-50');
-                resBlob.classList.add('bg-rose-50');
-
-                resConf.innerText = "0%";
-                resDesc.innerText = result.error; // Show "No leaf detected" message here
-                resTreat.innerText = "Please ensure the leaf is clearly visible and well-lit.";
-                resPrev.innerText = "Do not scan objects, faces, or blurry images.";
-
-                resultsPanel.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none');
-                resultsPanel.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
-            }
-
-        } catch (error) {
-            console.error("API Error", error);
-            overlay.classList.add('hidden');
-            scanLine.classList.add('hidden');
-            alert("Failed to reach the deep learning service. Please try again.");
-            resetCamera();
-        }
-    });
-
-    // 3. Retake logic
-    retakeBtn.addEventListener('click', resetCamera);
-
-    function resetCamera() {
-        canvas.classList.add('hidden');
-        video.classList.remove('hidden');
-        retakeBtn.classList.add('hidden');
-        captureBtn.classList.remove('hidden');
-        
-        // Hide results gracefully
-        resultsPanel.classList.add('opacity-0', 'translate-y-8', 'pointer-events-none');
-        resultsPanel.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
-        
-        // Reset results text
-        resDisease.innerText = "Awaiting Scan...";
-        resConf.innerText = "0%";
-    }
-
-    function displayResults(data) {
-        // Populate results
-        resDisease.innerText = data.disease;
-        resConf.innerText = `${Math.round(data.confidence)}%`;
-        resDesc.innerText = data.description;
-        resTreat.innerText = data.treatment;
-        resPrev.innerText = data.prevention;
-
-        if (data.disease === "Healthy Leaf") {
-            // Apply healthy styling
-            resDisease.classList.remove('text-rose-600', 'text-slate-900');
-            resDisease.classList.add('text-emerald-600');
-            resBlob.classList.remove('bg-rose-50');
-            resBlob.classList.add('bg-emerald-50');
+        if (t === 'camera') {
+            mainBtnIcon.className = 'fa-solid fa-camera';
+            mainBtnLabel.innerText = 'Capture Spectrum';
+            if (camStream) { video.classList.remove('hidden'); enableMain(); } else { camPlaceholder.classList.remove('hidden'); disableMain(); }
+        } else if (t === 'upload') {
+            mainBtnIcon.className = 'fa-solid fa-magnifying-glass';
+            mainBtnLabel.innerText = 'Run Metadata Scan';
+            if (uploadFile) { uploadPreview.classList.remove('hidden'); clearBtn.classList.remove('hidden'); enableMain(); } else { upPlaceholder.classList.remove('hidden'); disableMain(); }
         } else {
-            // Apply diseased styling
-            resDisease.classList.remove('text-emerald-600', 'text-slate-900');
-            resDisease.classList.add('text-rose-600');
-            resBlob.classList.remove('bg-emerald-50');
-            resBlob.classList.add('bg-rose-50');
+            mainBtnIcon.className = 'fa-solid fa-bolt';
+            mainBtnLabel.innerText = 'Process Stream';
+            if (videoFile) { vidPreview.classList.remove('hidden'); clearBtn.classList.remove('hidden'); enableMain(); } else { vidPlaceholder.classList.remove('hidden'); disableMain(); }
         }
-
-        // Show panel
-        resultsPanel.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none');
-        resultsPanel.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
     }
+
+    tabCamera.onclick = () => setTab('camera');
+    tabUpload.onclick = () => setTab('upload');
+    tabVideo.onclick  = () => setTab('video');
+
+    async function startCam() {
+        document.getElementById('start-cam-btn').innerText = "Requesting Link...";
+        try {
+            camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            video.srcObject = camStream;
+            video.classList.remove('hidden');
+            camPlaceholder.classList.add('hidden');
+            enableMain();
+        } catch(e) { document.getElementById('start-cam-btn').innerText = "Link Failed - Retry"; }
+    }
+    document.getElementById('start-cam-btn').onclick = startCam;
+
+    fileInput.onchange = (e) => {
+        uploadFile = e.target.files[0];
+        if(!uploadFile) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            uploadPreview.src = ev.target.result;
+            setTab('upload');
+        };
+        reader.readAsDataURL(uploadFile);
+    };
+
+    videoInput.onchange = (e) => {
+        videoFile = e.target.files[0];
+        if(!videoFile) return;
+        vidPreview.src = URL.createObjectURL(videoFile);
+        setTab('video');
+    };
+
+    mainBtn.onclick = () => {
+        overlay.classList.remove('hidden');
+        scanLine.classList.remove('hidden');
+        if (mode === 'camera' || mode === 'video') {
+            const src = mode === 'camera' ? video : vidPreview;
+            canvas.width = src.videoWidth || 640;
+            canvas.height = src.videoHeight || 480;
+            canvas.getContext('2d').drawImage(src, 0, 0, canvas.width, canvas.height);
+            predict(canvas.toDataURL('image/jpeg', 0.85));
+        } else {
+            const reader = new FileReader();
+            reader.onload = (e) => predict(e.target.result);
+            reader.readAsDataURL(uploadFile);
+        }
+    };
+
+    function predict(b64) {
+        const currentLang = localStorage.getItem('agri_lang') || 'en';
+        fetch('/disease/predict/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify({ image_data: b64, language: currentLang })
+        })
+        .then(r => r.json())
+        .then(d => {
+            overlay.classList.add('hidden');
+            scanLine.classList.add('hidden');
+            if(d.success) showRes(d); else alert(d.error);
+        });
+    }
+
+    function showRes(d) {
+        resultsPanel.classList.remove('hidden');
+        // Small timeout to allow 'hidden' removal to register for CSS transitions
+        setTimeout(() => {
+            resultsPanel.classList.remove('opacity-0','translate-y-10','pointer-events-none');
+            resultsPanel.classList.add('animate-[fadeInRight_0.8s_ease-out]');
+        }, 50);
+        resDisease.innerText = d.disease;
+        resConf.innerText = Math.round(d.confidence) + '%';
+        document.getElementById('res-conf-text').innerText = `Pathology match: ${Math.round(d.confidence)}%`;
+        resDesc.innerText = d.description;
+        resTreat.innerText = d.treatment;
+        resPrev.innerText = d.prevention;
+        resSoil.innerText = d.soil_recommendation;
+        const healthy = d.disease === 'Healthy Leaf';
+        resDisease.className = 'text-4xl font-black tracking-tighter leading-none mb-2 ' + (healthy ? 'text-emerald-500' : 'text-rose-500');
+        resBlob.className = 'absolute top-0 right-0 w-32 h-32 opacity-20 blur-xl ' + (healthy ? 'bg-emerald-500' : 'bg-rose-500');
+        
+        if (d.youtube_search_query) {
+            resVideo.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(d.youtube_search_query)}`;
+            resVideo.innerText = "Search Intervention Videos on YouTube";
+            // Prepend the icon since innerText overwrites it
+            resVideo.innerHTML = '<i class="fa-brands fa-youtube text-base mr-2"></i> ' + resVideo.innerText;
+            videoContainer.classList.remove('hidden');
+        } else if (d.disease && d.disease !== 'Unknown') {
+            resVideo.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(d.disease + ' disease treatment')}`;
+            resVideo.innerText = "Search Intervention Videos on YouTube";
+            resVideo.innerHTML = '<i class="fa-brands fa-youtube text-base mr-2"></i> ' + resVideo.innerText;
+            videoContainer.classList.remove('hidden');
+        } else {
+            videoContainer.classList.add('hidden');
+        }
+    }
+
+    function enableMain(){ mainBtn.disabled = false; }
+    function disableMain(){ mainBtn.disabled = true; }
+    
+    restartBtn.onclick = () => location.reload();
+    clearBtn.onclick = () => location.reload();
 });
 </script>
 {% endblock %}

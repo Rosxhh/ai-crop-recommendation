@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Navigation Back -->
+        <div class="mb-8 flex justify-between items-center">
+            <a href="/yield/" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-sm shadow-sm hover:bg-slate-50 hover:shadow transition-all hover:-translate-x-1">
+                <i class="fa-solid fa-arrow-left"></i> Back to Predict
+            </a>
+            <a href="/dashboard/" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-agri-600 font-bold text-sm shadow-sm hover:bg-agri-50 hover:border-agri-200 transition-all hover:translate-x-1">
+                Dashboard <i class="fa-solid fa-house"></i>
+            </a>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-8 md:p-12 shadow-xl border border-slate-100 relative overflow-hidden">
+            <!-- Decorative background elements -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-agri-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 transform translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 transform -translate-x-1/2 translate-y-1/2"></div>
+
+            <div class="relative z-10">
+                <div class="text-center mb-10">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-agri-100 text-agri-600 mb-4 shadow-inner">
+                        <i class="fa-solid fa-wheat-awn text-3xl"></i>
+                    </div>
+                    {% if inputs.crop != 'Unknown' and inputs.soil != 'Unknown' %}
+                        <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4 capitalize">Yield for <span class="text-agri-600">{{ inputs.crop }}</span></h1>
+                        <p class="text-slate-500 font-bold text-sm uppercase tracking-widest bg-white inline-block px-4 py-1.5 rounded-full shadow-sm border border-slate-100"><i class="fa-solid fa-mound text-amber-600 mr-2"></i> {{ inputs.soil }} Soil</p>
+                    {% else %}
+                        <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Yield Prediction <span class="text-agri-600">Result</span></h1>
+                    {% endif %}
+                    <p class="text-slate-400 font-medium mt-4 text-sm">AI-driven analysis based on environmental data and your input area.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <!-- Total Yield Card -->
+                    <div class="bg-gradient-to-br from-agri-50 to-emerald-50 rounded-3xl p-8 border border-agri-100/50 shadow-sm flex flex-col items-center justify-center text-center transform hover:scale-[1.02] transition-transform">
+                        <p class="text-xs font-black text-agri-600 uppercase tracking-widest mb-2">Total Estimated Yield</p>
+                        <h2 class="text-6xl font-black text-slate-900 tracking-tighter">{{ yield|floatformat:2 }} <span class="text-2xl text-slate-500 font-bold tracking-normal">Tons</span></h2>
+                        <div class="mt-4 px-4 py-1.5 rounded-full bg-agri-600/10 text-agri-700 text-sm font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-check-circle"></i> Optimal Conditions
+                        </div>
+                    </div>
+
+                    <!-- Details Card -->
+                    <div class="bg-slate-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <i class="fa-solid fa-chart-line text-8xl"></i>
+                        </div>
+                        <div class="relative z-10 flex flex-col h-full justify-center">
+                            <div class="mb-6">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Per Hectare Yield</p>
+                                <p class="text-4xl font-black text-white">{{ yield_ph|floatformat:2 }} <span class="text-lg text-slate-400 font-bold">Tons/Ha</span></p>
+                            </div>
+                            <div class="w-full h-px bg-slate-800 mb-6"></div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Input Area</p>
+                                <p class="text-2xl font-black text-emerald-400">{{ inputs.area }} <span class="text-sm font-bold text-emerald-400/70">Hectares</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Financial & Suitability Insights -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                    
+                    <!-- Financial Projection -->
+                    <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-100 shadow-sm relative overflow-hidden group hover:-translate-y-1 transition-transform">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <i class="fa-solid fa-indian-rupee-sign text-8xl text-amber-600"></i>
+                        </div>
+                        <div class="relative z-10 flex flex-col h-full justify-between">
+                            <div>
+                                <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Estimated Market Value</p>
+                                <p class="text-amber-800/60 font-bold text-xs mb-4">Based on standard mandi rates.</p>
+                            </div>
+                            <div>
+                                <h2 class="text-4xl font-black text-slate-900 tracking-tighter flex items-center">
+                                    <span class="text-2xl text-amber-500 mr-1">₹</span>{{ revenue }}
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agronomic Insights -->
+                    <div class="lg:col-span-2 bg-white rounded-3xl p-8 border border-slate-200 shadow-sm relative">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                            <h3 class="text-lg font-black text-slate-900 flex items-center gap-3">
+                                <i class="fa-solid fa-lightbulb text-agri-500"></i> AI Agronomic Insights
+                            </h3>
+                            <div class="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100 shadow-inner">
+                                <i class="fa-solid fa-leaf text-emerald-600 text-xs"></i>
+                                <span class="text-xs font-black text-emerald-800">Suitability: {{ suitability }}%</span>
+                            </div>
+                        </div>
+                        <ul class="space-y-4 relative z-10">
+                            {% for tip in tips %}
+                            <li class="flex items-start gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-colors">
+                                <div class="w-8 h-8 rounded-xl bg-agri-50 border border-agri-100 flex items-center justify-center text-agri-600 mt-0.5 flex-shrink-0 shadow-sm">
+                                    <i class="fa-solid fa-check text-[10px]"></i>
+                                </div>
+                                <p class="text-slate-600 font-medium text-sm leading-relaxed pt-1">{{ tip }}</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Input Parameters Summary -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-black text-slate-900 mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-microchip text-slate-400"></i> Analysis Parameters Used
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Crop Type</span>
+                            <span class="text-lg font-black text-slate-800 capitalize">{{ inputs.crop }}</span>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Soil Type</span>
+                            <span class="text-lg font-black text-slate-800 capitalize">{{ inputs.soil }}</span>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Nitrogen</span>
+                            <span class="text-lg font-black text-slate-800">{{ inputs.nitrogen }}</span>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Phosphorus</span>
+                            <span class="text-lg font-black text-slate-800">{{ inputs.phosphorus }}</span>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Potassium</span>
+                            <span class="text-lg font-black text-slate-800">{{ inputs.potassium }}</span>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">pH Level</span>
+                            <span class="text-lg font-black text-slate-800">{{ inputs.ph }}</span>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Temperature</span>
+                            <span class="text-lg font-black text-slate-800">{{ inputs.temperature }}°C</span>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Humidity</span>
+                            <span class="text-lg font-black text-slate-800">{{ inputs.humidity }}%</span>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center">
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Rainfall</span>
+                            <span class="text-lg font-black text-slate-800">{{ inputs.rainfall }} mm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Visualization (Chart) -->
+                <div class="mt-8 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-agri-600 px-8 py-4">
+                        <h3 class="text-lg font-bold text-white text-center">
+                            Crop Yield Prediction Visualization
+                        </h3>
+                    </div>
+                    <div class="p-8">
+                        <div class="relative h-[350px] w-full">
+                            <canvas id="yieldChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-center text-slate-500 text-xs font-medium">
+                            Comparison of input features and predicted yield value.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('yieldChart').getContext('2d');
+        
+        // Define labels and data based on input parameters
+        const labels = ['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH Level', 'Rainfall', 'Area', 'Total Yield'];
+        const dataValues = [
+            {{ inputs.nitrogen|default:0 }},
+            {{ inputs.phosphorus|default:0 }},
+            {{ inputs.potassium|default:0 }},
+            {{ inputs.temperature|default:0 }},
+            {{ inputs.humidity|default:0 }},
+            {{ inputs.ph|default:0 }},
+            {{ inputs.rainfall|default:0 }},
+            {{ inputs.area|default:0 }},
+            {{ yield|default:0 }}
+        ];
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Feature Values',
+                    data: dataValues,
+                    borderColor: '#10b981', // agri-500
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#ef4444', // red-500 (matching the user's image style for points)
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: { weight: '600' },
+                            color: '#64748b'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { weight: '600' },
+                            color: '#64748b'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

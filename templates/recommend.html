@@ -1,87 +1,219 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="relative w-full min-h-screen">
-
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="relative w-full min-h-screen pb-20 overflow-hidden bg-transparent">
     
-    <!-- Header -->
-    <div class="text-center mb-10 animate-[fadeInUp_0.5s_ease-out]">
-        <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-emerald-50 text-emerald-600 shadow-xl shadow-emerald-50 p-2 mb-4 border border-emerald-100">
-            <i class="fa-solid fa-seedling text-3xl"></i>
-        </div>
-        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">Crop Recommendation AI</h2>
-        <p class="text-slate-500 mt-3 text-lg">Input soil nutrients and environmental data to discover the most profitable crop for your land.</p>
-    </div>
+    <!-- Background Accents (Light Mode) -->
+    <div class="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-50 rounded-full blur-[160px] -z-10 opacity-70"></div>
+    <div class="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[140px] -z-10 opacity-40"></div>
 
-    <!-- Error Alert -->
-    {% if error %}
-    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-r-xl shadow-sm animate-[fadeInUp_0.3s_ease-out]">
-        <div class="flex items-center">
-            <div class="flex-shrink-0"><i class="fa-solid fa-circle-exclamation text-red-500"></i></div>
-            <div class="ml-3"><p class="text-sm text-red-700 font-medium">{{ error }}</p></div>
-        </div>
-    </div>
-    {% endif %}
+    <div class="max-w-5xl mx-auto px-6 py-12">
 
-    <!-- Form Card -->
-    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 md:p-10 animate-[fadeInUp_0.7s_ease-out]">
-        <form method="post" class="space-y-8">
+        <!-- Navigation Hub -->
+        <div class="mb-10 animate-[fadeIn_0.6s_ease-out]">
+            <a href="{% url 'soil_predict' %}" class="inline-flex items-center px-8 py-4 rounded-xl bg-agri-600 text-white font-bold hover:bg-agri-500 shadow-xl shadow-agri-600/30 hover:-translate-y-1 transition-all">
+                <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i> Return to Tactical Hub
+            </a>
+        </div>
+        
+        <!-- Premium Header Section -->
+        <div class="bg-white p-10 rounded-[2.5rem] border border-emerald-100 shadow-2xl relative overflow-hidden animate-[fadeInRight_0.6s_ease-out]">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-white/80 backdrop-blur-sm text-agri-700 text-[10px] font-black uppercase tracking-widest mb-6 shadow-sm">
+                <i class="fa-solid fa-microchip text-agri-500"></i> <span data-i18n="brand">AgriCore</span> v3.2
+            </div>
+            <h1 class="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter leading-[0.95] mb-6 drop-shadow-md" data-i18n="intake_title">
+                Check Your Soil
+            </h1>
+            <p class="text-slate-700 font-bold text-lg max-w-xl mx-auto leading-relaxed drop-shadow-sm" data-i18n="intake_desc">
+                Enter your soil details below to see which crop will grow best in your land.
+            </p>
+        </div>
+
+        <!-- Smart Console (V3.2 Unified) -->
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 mb-10 text-slate-900 border border-emerald-100 relative overflow-hidden animate-[fadeInUp_0.6s_ease-out]">
+            <div class="group relative bg-white/90 backdrop-blur-md border border-white p-2 rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] focus-within:border-agri-300 transition-all duration-500">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <div class="flex-1 relative flex items-center">
+                        <div class="pl-6 pr-4 text-slate-400 group-focus-within:text-agri-500 transition-colors">
+                            <i class="fa-solid fa-wand-sparkles text-lg"></i>
+                        </div>
+                        <input type="text" id="smartInput" placeholder="Paste data here (e.g. N90 P42) or leave empty for demo..." 
+                               class="w-full bg-transparent border-none py-5 pr-6 text-base font-bold text-slate-900 placeholder:text-slate-400 outline-none">
+                    </div>
+                    <button onclick="smartFillData(this)" class="px-10 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all btn-3d shadow-lg">
+                        <i class="fa-solid fa-bolt mr-2"></i> <span data-i18n="auto_apply">Auto Fill</span>
+                    </button>
+                    <a href="/recommend/history/" class="px-8 py-4 border border-slate-100 flex items-center justify-center rounded-[1.5rem] bg-slate-50 text-slate-600 font-bold text-xs uppercase tracking-widest hover:text-agri-600 transition-all btn-3d shadow-sm" title="Database History">
+                        <i class="fa-solid fa-database mr-2"></i> <span data-i18n="database">History</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if error %}
+        <div class="max-w-xl mx-auto mb-12 bg-rose-50 border border-rose-100 rounded-3xl p-6 flex items-center gap-5 text-rose-700 shadow-xl shadow-rose-950/5 animate-shake">
+            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-rose-100">
+                <i class="fa-solid fa-circle-exclamation text-xl"></i>
+            </div>
+            <span class="font-bold text-sm tracking-tight capitalize">{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- FORM ENGINE -->
+        <form method="post" enctype="multipart/form-data" class="space-y-12 animate-[fadeInUp_0.8s_ease-out]">
             {% csrf_token %}
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                
+                <!-- Chemistry Grid -->
+                <div class="bg-white border border-emerald-100 rounded-[3rem] p-10 shadow-2xl flex flex-col">
+                    <div class="flex items-center gap-4 mb-10 pb-6 border-b border-slate-100">
+                        <div class="w-12 h-12 rounded-2xl bg-agri-100 text-agri-600 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-atom"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-slate-900" data-i18n="chemistry_title">Soil Chemistry</h3>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest" data-i18n="chemistry_sub">Nutrients in your soil</p>
+                        </div>
+                    </div>
 
-            <div>
-                <h3 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2 mb-6"><i class="fa-solid fa-flask text-emerald-500 mr-2"></i> Soil Nutrients (NPK)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Nitrogen -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Nitrogen (N)</label>
-                        <input type="number" step="any" name="nitrogen" required class="w-full rounded-2xl border-slate-200 bg-slate-50 py-3 px-4 text-slate-700 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all outline-none" placeholder="Ratio">
-                    </div>
-                    <!-- Phosphorus -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Phosphorus (P)</label>
-                        <input type="number" step="any" name="phosphorus" required class="w-full rounded-2xl border-slate-200 bg-slate-50 py-3 px-4 text-slate-700 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all outline-none" placeholder="Ratio">
-                    </div>
-                    <!-- Potassium -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Potassium (K)</label>
-                        <input type="number" step="any" name="potassium" required class="w-full rounded-2xl border-slate-200 bg-slate-50 py-3 px-4 text-slate-700 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all outline-none" placeholder="Ratio">
+                    <div class="space-y-10 flex-grow">
+                        {% for field, label, color, min, max, icon in npk_fields %}
+                        <div class="relative group">
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                    <i class="{{ icon }}"></i> {{ label }}
+                                </label>
+                                <span class="text-[9px] font-black text-slate-400">{{ min }} ~ {{ max }} mg/kg</span>
+                            </div>
+                            <input type="number" step="any" name="{{ field }}" required
+                                   class="w-full h-14 bg-transparent border-b-2 border-slate-200 px-0 font-black text-2xl text-slate-900 outline-none focus:border-agri-500 transition-all placeholder:text-slate-300"
+                                   placeholder="000">
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-            </div>
 
-            <div>
-                <h3 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2 mb-6"><i class="fa-solid fa-cloud-sun text-blue-500 mr-2"></i> Environmental Factors</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Temperature -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Temperature <span class="text-slate-400 font-normal">(°C)</span></label>
-                        <input type="number" step="any" name="temperature" required class="w-full rounded-2xl border-slate-200 bg-slate-50 py-3 px-4 text-slate-700 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all outline-none">
+                <!-- Climate Grid (Light Version) -->
+                <div class="bg-white border border-emerald-100 rounded-[3rem] p-10 shadow-2xl flex flex-col h-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none text-blue-600">
+                        <i class="fa-solid fa-cloud-bolt text-[15rem]"></i>
                     </div>
-                    <!-- Humidity -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Humidity <span class="text-slate-400 font-normal">(%)</span></label>
-                        <input type="number" step="any" name="humidity" required class="w-full rounded-2xl border-slate-200 bg-slate-50 py-3 px-4 text-slate-700 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all outline-none">
+                    
+                    <div class="flex items-center gap-4 mb-10 pb-6 border-b border-slate-100 relative z-10">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-temperature-full"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-slate-900" data-i18n="climate_title">Weather Details</h3>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest" data-i18n="climate_sub">Current environment</p>
+                        </div>
                     </div>
-                    <!-- pH -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Soil pH</label>
-                        <input type="number" step="any" name="ph" required class="w-full rounded-2xl border-slate-200 bg-slate-50 py-3 px-4 text-slate-700 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all outline-none" placeholder="1-14">
+                    
+                    <div class="space-y-10 flex-grow relative z-10">
+                        {% for field, label, unit, icon in env_fields %}
+                        <div class="group">
+                            <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 block flex items-center gap-2">
+                                <i class="{{ icon }}"></i> {{ label }}
+                            </label>
+                            <div class="flex items-baseline gap-2 border-b-2 border-slate-200 focus-within:border-blue-500 pb-2 transition-colors">
+                                <input type="number" step="any" name="{{ field }}" required
+                                       class="w-full bg-transparent border-none p-0 font-black text-2xl text-slate-900 outline-none placeholder:text-slate-300"
+                                       placeholder="0.0">
+                                <span class="text-xs font-black text-blue-500 uppercase">{{ unit }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+
                     </div>
-                    <!-- Rainfall -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700">Rainfall <span class="text-slate-400 font-normal">(mm)</span></label>
-                        <input type="number" step="any" name="rainfall" required class="w-full rounded-2xl border-slate-200 bg-slate-50 py-3 px-4 text-slate-700 hover:bg-white focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all outline-none">
+
+                    <div class="pt-12 relative z-10">
+                        <button type="submit" class="w-full h-20 bg-agri-600 text-white font-black rounded-3xl shadow-2xl hover:bg-agri-700 transition-all flex items-center justify-center gap-4 text-xl uppercase tracking-widest">
+                            <span data-i18n="run_ai">See Result</span>
+                            <i class="fa-solid fa-paper-plane opacity-80"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="pt-6">
-                <button type="submit" class="w-full flex justify-center items-center py-4 px-6 rounded-2xl shadow-lg text-lg font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transform hover:-translate-y-1 transition-all duration-300">
-                    <i class="fa-solid fa-microchip mr-3"></i> Analyze & Recommend
-                </button>
             </div>
         </form>
     </div>
 </div>
+
+<style>
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+</style>
+
+<script>
+    function smartFillData(btn) {
+        const input = document.getElementById('smartInput');
+        const text = input.value.trim().toLowerCase();
+        const originalContent = btn.innerHTML;
+        
+        let results = {};
+        let filled = 0;
+
+        if (text === "") {
+            // Demo Mode: High-quality sample data
+            results = {
+                'nitrogen': 90, 'phosphorus': 42, 'potassium': 43,
+                'temperature': 20.8, 'humidity': 82.0, 'ph': 6.5, 'rainfall': 202.9
+            };
+        } else {
+            // Smart Sync: Parse pasted/typed text
+            const mapping = {
+                'nitrogen': ['nitrogen', 'n', 'nitro'],
+                'phosphorus': ['phosphorus', 'p', 'phospho'],
+                'potassium': ['potassium', 'k', 'potans', 'potash', 'pota'],
+                'temperature': ['temperature', 'temp', 'heat', 'deg'],
+                'humidity': ['humidity', 'hum', 'relative'],
+                'ph': ['ph', 'acidity', 'alkaline'],
+                'rainfall': ['rainfall', 'rain', 'water']
+            };
+
+            for (const [field, keywords] of Object.entries(mapping)) {
+                for (const key of keywords) {
+                    const regex = new RegExp(`${key}\\s*[:=is]*\\s*(\\d+(?:\\.\\d+)?)`, 'i');
+                    const match = text.match(regex);
+                    if (match) { results[field] = match[1]; break; }
+                }
+            }
+        }
+
+        // Apply findings with animations
+        for (const [name, val] of Object.entries(results)) {
+            const fieldInput = document.querySelector(`input[name="${name}"]`);
+            if (fieldInput) {
+                fieldInput.value = val;
+                const parent = fieldInput.closest('div.relative, div.group');
+                if (parent) {
+                    parent.style.transform = 'translateY(-5px) scale(1.02)';
+                    setTimeout(() => parent.style.transform = '', 400);
+                }
+                filled++;
+            }
+        }
+
+        if (filled > 0) {
+            const typeMsg = text === "" ? "Demo Applied" : `Synced ${filled}`;
+            btn.innerHTML = `<i class="fa-solid fa-check-double mr-2"></i> ${typeMsg}`;
+            btn.classList.add('bg-agri-50', 'border-agri-200', 'ring-4', 'ring-agri-500/10');
+            
+            setTimeout(() => {
+                btn.classList.remove('bg-agri-50', 'border-agri-200', 'ring-4', 'ring-agri-500/10'); 
+                btn.innerHTML = originalContent;
+            }, 1000);
+        } else {
+            btn.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-2"></i> No Data Found';
+            btn.classList.add('bg-rose-600');
+            setTimeout(() => { 
+                btn.innerHTML = originalContent; 
+                btn.classList.remove('bg-rose-600'); 
+            }, 2000);
+        }
+    }
+</script>
 {% endblock %}

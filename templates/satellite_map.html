@@ -1,438 +1,936 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block footer %}{% endblock %}
 {% block content %}
-<!-- Leaflet CSS & JS -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SMART FARMING MAP — Farmer-Friendly Agriculture Map Dashboard
+     AgriCore | Water Intelligence + Crop Guidance
+═══════════════════════════════════════════════════════════════ -->
+
+<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-
-<div class="relative w-full min-h-screen bg-slate-100 flex flex-col z-[30]">
-    <!-- Custom Style to Hide Base Nav -->
-    <style>
-        nav { display: none !important; }
-        body { padding-top: 0 !important; overflow-y: auto !important; }
-        .ui-element { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .ui-hidden { opacity: 0 !important; pointer-events: none !important; transform: scale(0.9) !important; }
-    </style>
-    <!-- Full Screen Map Container -->
-    <div id="map" class="w-full h-[100vh] z-0 relative">
-        <!-- Floating Home/Back Button -->
-        <div class="absolute top-8 left-8 z-[1001] pointer-events-auto ui-element group/dash">
-            <a href="/" class="group flex items-center gap-3 bg-white pl-3 pr-6 py-3 rounded-[1.5rem] shadow-2xl border border-slate-100 text-slate-700 font-bold hover:bg-agri-600 hover:text-white transition-all duration-300 active:scale-95 relative">
-                <button onclick="event.preventDefault(); this.parentElement.parentElement.classList.add('ui-hidden')" class="absolute -top-2 -right-2 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10" title="Hide">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1 shadow-inner border border-slate-100">
-                    {% load static %}
-                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="w-full h-full object-contain">
-                </div>
-                <span class="hidden md:block">Dashboard</span>
-            </a>
-        </div>
-
-        <!-- Floating Search & Identification Card -->
-        <div class="absolute top-8 left-1/2 -translate-x-1/2 z-[1001] pointer-events-auto w-full max-w-xl px-4 ui-element group/search">
-            <div class="bg-white p-4 rounded-[2rem] shadow-2xl border border-slate-100 flex flex-col gap-3 relative">
-                <button onclick="this.parentElement.parentElement.classList.add('ui-hidden')" class="absolute -top-2 -right-1 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10" title="Hide Search">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                    <input type="text" id="villageSearch" placeholder="Find village, survey number, or location..." 
-                        class="w-full pl-12 pr-28 py-4 bg-slate-100 rounded-2xl border border-slate-200 focus:bg-white focus:border-agri-500 focus:ring-4 focus:ring-agri-100 outline-none transition-all font-bold text-sm text-slate-800">
-                    <i class="fa-solid fa-earth-asia absolute left-5 top-1/2 -translate-y-1/2 text-agri-600 text-lg"></i>
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                        <button onclick="searchVillage()" class="px-5 py-2.5 bg-agri-700 text-white rounded-xl font-black hover:bg-agri-800 transition-all text-[10px] uppercase tracking-wider">Search</button>
-                    </div>
-                </div>
-                
-                <div class="flex items-center justify-between gap-4 px-2">
-                    <div class="flex items-center gap-4">
-                        <button onclick="detectMyLocation()" class="text-[10px] font-black text-slate-500 hover:text-agri-600 flex items-center gap-2 uppercase tracking-widest transition-colors">
-                            <i class="fa-solid fa-location-crosshairs text-base"></i> Detect Me
-                        </button>
-                        <div class="w-[1px] h-4 bg-slate-200"></div>
-                        <button onclick="document.getElementById('coordMenu').classList.toggle('hidden')" class="text-[10px] font-black text-slate-500 hover:text-blue-600 flex items-center gap-2 uppercase tracking-widest transition-colors">
-                            <i class="fa-solid fa-hashtag text-base"></i> Coordinates
-                        </button>
-                    </div>
-                    <div id="statusIndicator" class="hidden animate-pulse flex items-center gap-2 text-[10px] font-black text-agri-600 uppercase tracking-widest">
-                        <span class="w-2 h-2 rounded-full bg-agri-600"></span> Located
-                    </div>
-                </div>
-
-                <!-- Hidden Coordinate Menu -->
-                <div id="coordMenu" class="hidden pt-3 border-t border-slate-100">
-                    <div class="flex gap-2">
-                        <input type="number" step="any" id="latInput" placeholder="Latitude" class="w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 outline-none font-bold text-xs">
-                        <input type="number" step="any" id="lonInput" placeholder="Longitude" class="w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 outline-none font-bold text-xs">
-                        <button onclick="jumpToCoords()" class="aspect-square bg-blue-600 text-white px-4 rounded-xl font-bold hover:bg-blue-700 transition-all"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Floating Layer Switcher (Top Right - below search) -->
-        <div class="absolute top-8 right-8 z-[1001] flex flex-col gap-3 pointer-events-auto ui-element">
-             <div id="layerMenu" class="hidden absolute top-0 right-full mr-4 bg-white p-3 rounded-3xl shadow-2xl border border-slate-200 flex flex-col gap-2 min-w-[160px] animate-[fadeInRight_0.3s_ease-out]">
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-3 py-1">Map Layers</p>
-                <button onclick="setBaseLayer('satellite')" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-agri-50 text-slate-700 font-bold transition-all text-xs border border-transparent hover:border-agri-100 group">
-                    <div class="w-8 h-8 rounded-lg bg-agri-100 text-agri-600 flex items-center justify-center"><i class="fa-solid fa-earth-asia"></i></div>
-                    Satellite
-                </button>
-                <button onclick="setBaseLayer('terrain')" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-blue-50 text-slate-700 font-bold transition-all text-xs border border-transparent hover:border-blue-100">
-                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-mountain-sun"></i></div>
-                    Terrain
-                </button>
-                <button onclick="setBaseLayer('roads')" class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-100 text-slate-700 font-bold transition-all text-xs border border-transparent hover:border-slate-200">
-                    <div class="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-road"></i></div>
-                    Standard
-                </button>
-             </div>
-             
-             <div class="relative group">
-                <button onclick="document.getElementById('layerMenu').classList.toggle('hidden')" class="w-14 h-14 rounded-2xl bg-white shadow-2xl border border-slate-100 text-slate-700 flex items-center justify-center hover:bg-agri-600 hover:text-white transition-all scale-110 active:scale-95 shadow-agri-200">
-                    <div class="w-10 h-10 rounded-xl bg-agri-50 group-hover:bg-white flex items-center justify-center p-1 transition-colors">
-                        <i class="fa-solid fa-layer-group text-xl text-agri-600"></i>
-                    </div>
-                </button>
-                <button onclick="this.parentElement.parentElement.classList.add('ui-hidden')" class="absolute -top-2 -right-1 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10" title="Hide Controller">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-             </div>
-        </div>
-
-        <!-- Global UI Hide Toggle -->
-        <div class="absolute bottom-10 left-8 z-[1001] pointer-events-auto">
-            <button onclick="toggleGlobalUI()" id="btnToggleUI" class="w-14 h-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 transition-all shadow-2xl active:scale-90 border border-slate-700" title="Toggle UI Visibility">
-                <i class="fa-solid fa-eye-slash text-xl"></i>
-            </button>
-        </div>
-
-        <!-- Floating Zoom Controls (Bottom Right) -->
-        <div class="absolute bottom-10 right-8 z-[1001] flex flex-col gap-3 pointer-events-auto ui-element">
-             <div class="bg-white p-2 rounded-2xl shadow-2xl border border-slate-200 flex flex-col gap-2">
-                <button onclick="map.zoomIn()" title="Zoom In" class="w-14 h-14 rounded-xl bg-slate-50 text-slate-900 font-black text-3xl hover:bg-agri-600 hover:text-white transition-all flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 shadow-inner">
-                    +
-                </button>
-                <div class="w-full h-[1px] bg-slate-200/50"></div>
-                <button onclick="map.zoomOut()" title="Zoom Out" class="w-14 h-14 rounded-xl bg-slate-50 text-slate-900 font-black text-3xl hover:bg-agri-600 hover:text-white transition-all flex items-center justify-center border border-slate-100 shadow-sm active:scale-90 shadow-inner leading-none pb-1">
-                    -
-                </button>
-             </div>
-        </div>
-
-        <!-- Minimal Side Toolbar -->
-        <div class="absolute top-1/2 -translate-y-1/2 left-8 z-[1001] flex flex-col gap-4 pointer-events-auto ui-element group/toolbar">
-            <div class="bg-white p-3 rounded-[2.5rem] shadow-2xl border border-slate-200 flex flex-col gap-4 items-center relative">
-                <button onclick="this.parentElement.parentElement.classList.add('ui-hidden')" class="absolute -top-1 -right-1 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="w-8 h-[1px] bg-slate-200 mt-2 opacity-50"></div>
-                
-                <button onclick="startDrawing()" id="btnDraw" class="group relative w-14 h-14 rounded-full bg-agri-50 text-agri-600 hover:bg-agri-600 hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg active:scale-90">
-                    <i class="fa-solid fa-draw-polygon text-xl"></i>
-                    <span class="absolute left-full ml-6 px-4 py-3 bg-slate-900 text-white text-[11px] font-black rounded-2xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap pointer-events-none shadow-2xl z-[1001]">Draw Farm</span>
-                </button>
-
-                <button onclick="startEditing()" id="btnEdit" class="group relative w-14 h-14 rounded-full bg-slate-50 text-slate-400 hover:bg-amber-500 hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg active:scale-90">
-                    <i class="fa-solid fa-pen-nib text-xl"></i>
-                    <span class="absolute left-full ml-6 px-4 py-3 bg-slate-900 text-white text-[11px] font-black rounded-2xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap pointer-events-none shadow-2xl z-[1001]">Edit Boundary</span>
-                </button>
-
-                <button onclick="clearMap()" id="btnClear" class="group relative w-14 h-14 rounded-full bg-slate-50 text-rose-400 hover:bg-rose-500 hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg active:scale-90">
-                    <i class="fa-solid fa-trash-can text-xl"></i>
-                    <span class="absolute left-full ml-6 px-4 py-3 bg-slate-900 text-white text-[11px] font-black rounded-2xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 whitespace-nowrap pointer-events-none shadow-2xl z-[1001]">Clear Map</span>
-                </button>
-
-                <div class="w-8 h-[1px] bg-slate-200 mb-2 opacity-50"></div>
-            </div>
-        </div>
-
-        <!-- Floating Result Panel (Visible after drawing) -->
-        <div id="measurementResults" class="hidden absolute bottom-12 left-1/2 -translate-x-1/2 z-[1001] pointer-events-auto px-4 w-full max-w-2xl animate-[slideUp_0.4s_ease-out]">
-            <div class="bg-slate-900 p-6 rounded-[2.5rem] shadow-2xl border border-slate-800 flex flex-col md:flex-row items-center gap-8">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-2xl bg-agri-500/20 text-agri-400 flex items-center justify-center text-2xl shadow-inner border border-agri-500/30">
-                        <i class="fa-solid fa-maximize"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Land Area</p>
-                        <p class="text-3xl font-black text-white" id="areaM2">0 <span class="text-xs text-slate-500 font-bold uppercase ml-1">m²</span></p>
-                    </div>
-                </div>
-
-                <div class="hidden md:block w-[1px] h-12 bg-white/10"></div>
-
-                <div class="flex gap-8">
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Acres</p>
-                        <p class="text-xl font-black text-emerald-400" id="areaAcres">0.00</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hectares</p>
-                        <p class="text-xl font-black text-amber-400" id="areaHectares">0.00</p>
-                    </div>
-                </div>
-
-                <div class="flex-grow"></div>
-
-                <div class="flex gap-3 w-full md:w-auto">
-                    <button onclick="saveBoundary()" class="flex-grow md:flex-none px-8 py-4 rounded-2xl bg-agri-600 text-white font-black hover:bg-agri-700 transition-all shadow-xl shadow-agri-900/20 active:scale-95 text-sm">
-                        Save Farm
-                    </button>
-                    <button onclick="clearMap()" class="aspect-square bg-white/10 text-white rounded-2xl hover:bg-rose-500 transition-all flex items-center justify-center w-[52px]">
-                        <i class="fa-solid fa-rotate-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Drawing Tip Overlay -->
-        <div id="drawingTip" class="absolute bottom-10 left-32 z-[1001] pointer-events-none max-w-[280px] ui-element group/tip">
-            <div class="bg-white p-5 rounded-[2rem] shadow-2xl border border-slate-200 flex items-start gap-4 ring-1 ring-slate-900/5 relative pointer-events-auto">
-                <button onclick="document.getElementById('drawingTip').classList.add('ui-hidden')" class="absolute -top-2 -right-1 w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center text-[10px] opacity-70 hover:opacity-100 transition-opacity shadow-lg z-10">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="w-10 h-10 rounded-full bg-agri-100 text-agri-600 flex items-center justify-center flex-shrink-0 animate-bounce">
-                    <i class="fa-solid fa-pencil"></i>
-                </div>
-                <div>
-                    <h4 class="font-black text-slate-800 text-sm mb-1 tracking-tight">Quick Tip</h4>
-                    <p class="text-[11px] text-slate-500 font-bold leading-relaxed">Zoom in deep to identify landmarks like roads or canals before drawing.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let map, drawnItems, satelliteLayer, terrainLayer, roadsLayer;
-    let farmMarker = null;
-    let polygonHandler, editHandler;
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Initialize Map
-        map = L.map('map', {
-            zoomControl: false,
-            attributionControl: false
-        }).setView([20.5937, 78.9629], 5);
-
-        // Map Layers
-        satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 19
-        }).addTo(map);
-
-        terrainLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            maxZoom: 17
-        });
-
-        roadsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19
-        });
-
-        // Initialize Objects
-        drawnItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
-
-        // Handlers
-        polygonHandler = new L.Draw.Polygon(map, {
-            allowIntersection: false,
-            shapeOptions: { color: '#22c55e', fillOpacity: 0.3, weight: 3 }
-        });
-
-        editHandler = new L.EditToolbar.Edit(map, {
-            featureGroup: drawnItems,
-            selectedPathOptions: {
-                dashArray: '10, 10',
-                fill: true,
-                fillColor: '#feebc8',
-                fillOpacity: 0.1
-            }
-        });
-
-        // Events
-        map.on(L.Draw.Event.CREATED, function (e) {
-            drawnItems.clearLayers();
-            drawnItems.addLayer(e.layer);
-            calculateMeasurements(e.layer);
-            document.getElementById('drawingTip').classList.add('hidden');
-        });
-
-        map.on(L.Draw.Event.EDITED, function (e) {
-            e.layers.eachLayer(calculateMeasurements);
-        });
-
-        // Auto-load boundary
-        const saved = localStorage.getItem('agriCoreFarmBoundary_v2');
-        if(saved) {
-            const data = JSON.parse(saved);
-            const layer = L.geoJSON(data, {
-                style: { color: '#22c55e', fillOpacity: 0.3, weight: 3 }
-            });
-            layer.eachLayer(l => {
-                drawnItems.addLayer(l);
-                calculateMeasurements(l);
-                setTimeout(() => map.fitBounds(drawnItems.getBounds()), 500);
-            });
-        }
-
-        // 🔥 Disease Surveillance Mapping (User's Module 2 Integration)
-        fetch('/analysis/api/disease-markers/')
-            .then(res => res.json())
-            .then(data => {
-                data.markers.forEach(m => {
-                    L.circleMarker([m.lat, m.lng], {
-                        radius: 5, color: '#ff0000', fillColor: '#ff0000', fillOpacity: 0.9, weight: 2
-                    }).addTo(map).bindPopup(`<b>Outbreak Detected: ${m.name}</b><br><small>Reported: ${m.date}</small>`);
-                });
-            });
-    });
-
-
-    function setBaseLayer(type) {
-        map.removeLayer(satelliteLayer);
-        map.removeLayer(terrainLayer);
-        map.removeLayer(roadsLayer);
-
-        if (type === 'satellite') satelliteLayer.addTo(map);
-        else if (type === 'terrain') terrainLayer.addTo(map);
-        else if (type === 'roads') roadsLayer.addTo(map);
-        
-        document.getElementById('layerMenu').classList.add('hidden');
-    }
-
-    async function searchVillage() {
-        const query = document.getElementById('villageSearch').value;
-        if (!query) return;
-        
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
-            const data = await res.json();
-            if (data.length > 0) {
-                placeMarker(data[0].lat, data[0].lon);
-                const status = document.getElementById('statusIndicator');
-                status.classList.remove('hidden');
-                setTimeout(() => status.classList.add('hidden'), 3000);
-            } else {
-                alert("Location not found.");
-            }
-        } catch (e) { console.error(e); }
-    }
-
-    function detectMyLocation() {
-        if (!navigator.geolocation) return alert("GPS not supported.");
-        navigator.geolocation.getCurrentPosition(p => {
-            placeMarker(p.coords.latitude, p.coords.longitude);
-        }, () => alert("GPS access denied."));
-    }
-
-    function jumpToCoords() {
-        const lat = parseFloat(document.getElementById('latInput').value);
-        const lon = parseFloat(document.getElementById('lonInput').value);
-        if (!isNaN(lat) && !isNaN(lon)) placeMarker(lat, lon);
-        else alert("Invalid coordinates.");
-    }
-
-    function startDrawing() {
-        cancelAction();
-        polygonHandler.enable();
-        document.getElementById('btnDraw').classList.replace('bg-agri-50', 'bg-agri-600');
-        document.getElementById('btnDraw').classList.replace('text-agri-600', 'text-white');
-    }
-
-    function startEditing() {
-        cancelAction();
-        if (drawnItems.getLayers().length === 0) return alert("Draw a boundary first!");
-        editHandler.enable();
-        document.getElementById('btnEdit').classList.replace('bg-slate-50', 'bg-amber-500');
-        document.getElementById('btnEdit').classList.replace('text-slate-400', 'text-white');
-    }
-
-    function cancelAction() {
-        if (polygonHandler.enabled()) polygonHandler.disable();
-        if (editHandler.enabled()) editHandler.disable();
-        
-        document.getElementById('btnEdit').classList.add('bg-slate-50', 'text-slate-400');
-        document.getElementById('btnEdit').classList.remove('bg-amber-500', 'text-white');
-        document.getElementById('btnDraw').classList.add('bg-agri-50', 'text-agri-600');
-        document.getElementById('btnDraw').classList.remove('bg-agri-600', 'text-white');
-    }
-
-    function placeMarker(lat, lon) {
-        const pos = [lat, lon];
-        map.flyTo(pos, 17);
-        if (farmMarker) farmMarker.setLatLng(pos);
-        else {
-            farmMarker = L.marker(pos, {
-                icon: L.divIcon({ 
-                    className: 'custom-farm-marker', 
-                    html: "<div class='marker-pulse'></div>", 
-                    iconSize:[30,30], iconAnchor:[15,15] 
-                })
-            }).addTo(map);
-        }
-    }
-
-    function calculateMeasurements(layer) {
-        const geojson = layer.toGeoJSON();
-        const area = turf.area(geojson);
-        
-        document.getElementById('measurementResults').classList.remove('hidden');
-        document.getElementById('areaM2').innerHTML = `${Math.round(area).toLocaleString()} <span class="text-xs text-slate-500 font-bold uppercase ml-1">m²</span>`;
-        document.getElementById('areaAcres').innerText = (area * 0.000247105).toFixed(2);
-        document.getElementById('areaHectares').innerText = (area * 0.0001).toFixed(2);
-    }
-
-    function clearMap() {
-        drawnItems.clearLayers();
-        if(farmMarker) { map.removeLayer(farmMarker); farmMarker = null; }
-        localStorage.removeItem('agriCoreFarmBoundary_v2');
-        document.getElementById('measurementResults').classList.add('hidden');
-        document.getElementById('drawingTip').classList.remove('hidden');
-    }
-
-    function saveBoundary() {
-        if(drawnItems.getLayers().length === 0) return alert("No boundary to save.");
-        const data = drawnItems.toGeoJSON();
-        localStorage.setItem('agriCoreFarmBoundary_v2', JSON.stringify(data));
-        alert("Boundary saved!");
-    }
-
-    function toggleGlobalUI() {
-        const elements = document.querySelectorAll('.ui-element');
-        const btn = document.getElementById('btnToggleUI');
-        const isHidden = elements[0].classList.contains('ui-hidden');
-        
-        elements.forEach(el => {
-            if (isHidden) el.classList.remove('ui-hidden');
-            else el.classList.add('ui-hidden');
-        });
-        
-        btn.innerHTML = isHidden ? '<i class="fa-solid fa-eye-slash text-xl"></i>' : '<i class="fa-solid fa-eye text-xl"></i>';
-        btn.classList.toggle('bg-agri-600', !isHidden);
-        btn.classList.toggle('bg-slate-900/90', isHidden);
-    }
-</script>
 
 <style>
-    .marker-pulse {
-        width: 16px; height: 16px; background: #16a34a; border: 3px solid white; border-radius: 50%;
-        box-shadow: 0 0 0 rgba(22, 163, 74, 0.4); animation: pulse 2s infinite; margin: 7px;
-    }
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
-        70% { box-shadow: 0 0 0 25px rgba(22, 163, 74, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
-    }
-    @keyframes slideUp {
-        from { opacity: 0; transform: translate(-50%, 40px); }
-        to { opacity: 1; transform: translate(-50%, 0); }
-    }
-    @keyframes fadeInRight {
-        from { opacity: 0; transform: translateX(20px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-    .leaflet-bar { border: none !important; box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important; border-radius: 16px !important; overflow: hidden; }
-    .leaflet-container { font-family: inherit; }
+  /* ── Layout Reset for full-screen map ── */
+  body { overflow: hidden !important; }
+
+  /* ── Map Container ── */
+  #agri-map-wrap {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 96px); /* subtract header height */
+    background: #e8f5e9;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  #map {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  /* ── Floating Card Base ── */
+  .float-card {
+    position: absolute;
+    z-index: 900;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid rgba(255,255,255,0.8);
+  }
+
+  /* ── Search Bar ── */
+  #search-card {
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(520px, calc(100% - 32px));
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #search-card input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  #search-card input::placeholder { color: #94a3b8; font-weight: 500; }
+
+  .search-btn {
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    transition: all 0.2s ease;
+  }
+  .search-btn-primary { background: #16a34a; color: white; }
+  .search-btn-primary:hover { background: #15803d; transform: translateY(-1px); }
+  .search-btn-locate { background: #eff6ff; color: #3b82f6; }
+  .search-btn-locate:hover { background: #dbeafe; }
+
+  /* ── Layer Toggle Pills (Top Right) ── */
+  #layer-toggles {
+    top: 16px;
+    right: 16px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .layer-label {
+    font-size: 9px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 2px;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+  }
+
+  .toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .toggle-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .toggle-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+    line-height: 1.2;
+  }
+  .toggle-text small { font-weight: 500; color: #94a3b8; font-size: 9px; display: block; }
+
+  /* iOS-style toggle switch */
+  .switch {
+    position: relative;
+    width: 38px;
+    height: 22px;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #e2e8f0;
+    transition: 0.3s; border-radius: 22px;
+  }
+  .slider:before {
+    position: absolute; content: "";
+    height: 16px; width: 16px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: 0.3s; border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  input:checked + .slider { background-color: #16a34a; }
+  input:checked + .slider:before { transform: translateX(16px); }
+
+  .toggle-sat input:checked + .slider { background-color: #3b82f6; }
+
+  /* ── Map Type Switcher (small, bottom-left) ── */
+  #maptype-switch {
+    bottom: 88px;
+    left: 16px;
+    padding: 8px;
+    display: flex;
+    gap: 6px;
+  }
+
+  .maptype-btn {
+    padding: 7px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .maptype-btn.active { background: #16a34a; color: white; }
+  .maptype-btn:not(.active) { background: #f1f5f9; color: #64748b; }
+  .maptype-btn:not(.active):hover { background: #e2e8f0; }
+
+  /* ── Zoom Controls (Bottom Right) ── */
+  #zoom-controls {
+    bottom: 24px;
+    right: 16px;
+    overflow: hidden;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .zoom-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: 700;
+    background: white;
+    color: #334155;
+    border-radius: 14px;
+    transition: all 0.15s ease;
+    font-family: 'Outfit', sans-serif;
+    line-height: 1;
+  }
+  .zoom-btn:hover { background: #16a34a; color: white; transform: scale(1.05); }
+  .zoom-btn:active { transform: scale(0.95); }
+
+  .zoom-divider { height: 1px; background: #f1f5f9; margin: 1px 4px; }
+
+  /* ── Locate Me Button (Bottom Right, above zoom) ── */
+  #locate-btn {
+    bottom: 156px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    font-size: 18px;
+    background: white;
+    color: #3b82f6;
+    transition: all 0.2s ease;
+    border-radius: 14px;
+  }
+  #locate-btn:hover { background: #eff6ff; transform: scale(1.08); }
+
+  /* ── Water Legend (Bottom Center) ── */
+  #water-legend {
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    white-space: nowrap;
+  }
+
+  .legend-title {
+    font-size: 10px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-right: 12px;
+    border-right: 1px solid #e2e8f0;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+  }
+
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── Smart Click Popup ── */
+  .agri-popup .leaflet-popup-content-wrapper {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    border: none;
+    padding: 0;
+    overflow: hidden;
+    min-width: 220px;
+  }
+  .agri-popup .leaflet-popup-tip-container { display: none; }
+  .agri-popup .leaflet-popup-content { margin: 0; }
+
+  .popup-header {
+    padding: 12px 16px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .popup-water-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .popup-water-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }
+  .popup-water-status { font-size: 17px; font-weight: 800; color: #1e293b; line-height: 1.2; margin-top: 1px; }
+
+  .popup-divider { height: 1px; background: #f8fafc; margin: 0 16px; }
+
+  .popup-body { padding: 10px 16px 14px; }
+
+  .popup-crop-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .popup-crop-icon { font-size: 16px; }
+  .popup-crop-name { font-size: 12px; font-weight: 700; color: #334155; }
+  .popup-crop-badge {
+    margin-left: auto;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .popup-tip {
+    margin-top: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: #f8fafc;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+  .popup-tip-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* ── Water Source Popup ── */
+  .water-popup .leaflet-popup-content-wrapper {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border: none;
+    padding: 0;
+    min-width: 180px;
+  }
+  .water-popup .leaflet-popup-tip-container { display: none; }
+  .water-popup .leaflet-popup-content { margin: 0; }
+  .ws-popup { padding: 12px 14px; }
+  .ws-popup-title { font-size: 12px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 6px; }
+  .ws-popup-sub { font-size: 10px; font-weight: 600; color: #64748b; margin-top: 4px; }
+  .ws-popup-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Loading Pulse ── */
+  #map-loading {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    font-size: 12px;
+    font-weight: 700;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.4s ease;
+  }
+  .loading-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #16a34a; animation: loadPulse 1s infinite;
+  }
+  @keyframes loadPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.6); }
+  }
+
+  /* ── Leaflet Override ── */
+  .leaflet-control-zoom { display: none !important; }
+  .leaflet-control-attribution { display: none !important; }
+  .leaflet-container { font-family: 'Outfit', sans-serif; }
+
+  /* ── Mobile friendly ── */
+  @media (max-width: 640px) {
+    #search-card { top: 10px; padding: 8px 10px; gap: 6px; }
+    #layer-toggles { top: 10px; right: 10px; padding: 8px 10px; }
+    #water-legend { padding: 8px 12px; gap: 10px; }
+    .legend-title { display: none; }
+  }
 </style>
+
+<!-- ═══════════════════════ MAP WRAPPER ═══════════════════════ -->
+<div id="agri-map-wrap">
+
+  <!-- Map Canvas -->
+  <div id="map"></div>
+
+  <!-- Loading Indicator -->
+  <div id="map-loading">
+    <div class="loading-dot"></div>
+    Loading smart map…
+  </div>
+
+  <!-- ── Search Bar ── -->
+  <div class="float-card" id="search-card">
+    <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8;font-size:14px;flex-shrink:0;"></i>
+    <input type="text" id="locationSearch"
+           placeholder="Enter village or farm location…"
+           onkeydown="if(event.key==='Enter')searchLocation()">
+    <button class="search-btn search-btn-primary" onclick="searchLocation()" id="btn-search">
+      <i class="fa-solid fa-search"></i> Search
+    </button>
+    <button class="search-btn search-btn-locate" onclick="locateMe()" title="Use GPS Location">
+      <i class="fa-solid fa-location-crosshairs"></i>
+    </button>
+  </div>
+
+  <!-- ── Layer Toggle Panel ── -->
+  <div class="float-card" id="layer-toggles">
+    <div class="layer-label">Map Layers</div>
+
+    <!-- Water Availability -->
+    <div class="toggle-row">
+      <div class="toggle-item">
+        <div class="toggle-icon" style="background:#eff6ff;">💧</div>
+        <div class="toggle-text">Water Layer <small>High / Medium / Low</small></div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="toggle-water" checked onchange="toggleWaterLayer(this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Satellite View -->
+    <div class="toggle-row" style="padding-top:6px;border-top:1px solid #f1f5f9;margin-top:4px;">
+      <div class="toggle-item">
+        <div class="toggle-icon" style="background:#f0f9ff;">🛰️</div>
+        <div class="toggle-text">Satellite View <small>Switch map style</small></div>
+      </div>
+      <label class="switch toggle-sat">
+        <input type="checkbox" id="toggle-satellite" onchange="toggleSatellite(this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ── Map Type Switch ── -->
+  <div class="float-card" id="maptype-switch">
+    <button class="maptype-btn active" id="btn-light" onclick="setMapType('light')">
+      🗺️ Standard
+    </button>
+    <button class="maptype-btn" id="btn-sat" onclick="setMapType('satellite')">
+      🛰️ Satellite
+    </button>
+  </div>
+
+  <!-- ── Locate Me Button ── -->
+  <div class="float-card" id="locate-btn" onclick="locateMe()" title="Use My Location">
+    <i class="fa-solid fa-location-crosshairs"></i>
+  </div>
+
+  <!-- ── Zoom Controls ── -->
+  <div class="float-card" id="zoom-controls">
+    <button class="zoom-btn" onclick="mapZoomIn()" title="Zoom In">+</button>
+    <div class="zoom-divider"></div>
+    <button class="zoom-btn" onclick="mapZoomOut()" title="Zoom Out">−</button>
+  </div>
+
+  <!-- ── Water Legend ── -->
+  <div class="float-card" id="water-legend">
+    <span class="legend-title">💧 Water Level</span>
+    <span class="legend-item">
+      <span class="legend-dot" style="background:#3b82f6;opacity:0.85;"></span> High
+    </span>
+    <span class="legend-item">
+      <span class="legend-dot" style="background:#f59e0b;opacity:0.85;"></span> Medium
+    </span>
+    <span class="legend-item">
+      <span class="legend-dot" style="background:#ef4444;opacity:0.85;"></span> Low
+    </span>
+    <span style="width:1px;height:18px;background:#e2e8f0;display:inline-block;margin:0 4px;"></span>
+    <span class="legend-item">🔵 River</span>
+    <span class="legend-item">🟦 Lake</span>
+    <span class="legend-item">🟩 Canal</span>
+  </div>
+
+</div><!-- end #agri-map-wrap -->
+
+
+<!-- ═══════════════════════ LEAFLET JS ═══════════════════════ -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  SMART FARMING MAP — Core Logic
+// ══════════════════════════════════════════════════════════════
+
+let map, lightLayer, satelliteLayer, waterOverlayLayer, waterSourceLayer;
+let currentMapType = 'light';
+let locationMarker = null;
+
+// ── Water Zone Data (India regions — semi-realistic zones) ──
+const WATER_ZONES = [
+  // HIGH WATER (Blue) — River deltas, coastal, heavy rain belt
+  { level:'high', color:'#3b82f6', coords:[[20.0,80.0],[22.0,80.0],[22.0,88.0],[20.0,88.0]] }, // Eastern coast / Gangetic delta
+  { level:'high', color:'#3b82f6', coords:[[22.0,88.0],[24.0,88.0],[24.0,92.0],[22.0,92.0]] }, // NE Bengal
+  { level:'high', color:'#3b82f6', coords:[[9.0,76.0],[11.0,76.0],[11.0,79.0],[9.0,79.0]]  }, // Kerala coastal belt
+  { level:'high', color:'#3b82f6', coords:[[15.0,73.5],[17.0,73.5],[17.0,74.5],[15.0,74.5]] }, // Konkan coast
+  { level:'high', color:'#3b82f6', coords:[[25.0,82.0],[27.0,82.0],[27.0,84.0],[25.0,84.0]] }, // UP / Ganga belt
+  { level:'high', color:'#3b82f6', coords:[[28.5,76.5],[30.5,76.5],[30.5,78.5],[28.5,78.5]] }, // Yamuna UP / Haryana tract
+  { level:'high', color:'#3b82f6', coords:[[23.5,85.0],[25.0,85.0],[25.0,86.5],[23.5,86.5]] }, // Jharkhand / Damodar
+  { level:'high', color:'#3b82f6', coords:[[16.5,80.5],[18.0,80.5],[18.0,82.0],[16.5,82.0]] }, // Krishna–Godavari delta
+
+  // MEDIUM WATER (Yellow) — Semi-irrigated, seasonal rivers
+  { level:'medium', color:'#f59e0b', coords:[[17.0,74.5],[19.5,74.5],[19.5,77.5],[17.0,77.5]] }, // Maharashtra Deccan
+  { level:'medium', color:'#f59e0b', coords:[[24.0,77.0],[26.0,77.0],[26.0,80.0],[24.0,80.0]] }, // MP central
+  { level:'medium', color:'#f59e0b', coords:[[13.0,76.5],[15.0,76.5],[15.0,78.5],[13.0,78.5]] }, // Karnataka interior
+  { level:'medium', color:'#f59e0b', coords:[[20.0,72.8],[22.0,72.8],[22.0,74.5],[20.0,74.5]] }, // Gujarat Saurashtra
+  { level:'medium', color:'#f59e0b', coords:[[30.0,73.5],[32.0,73.5],[32.0,76.5],[30.0,76.5]] }, // Punjab irrigated
+  { level:'medium', color:'#f59e0b', coords:[[18.5,77.5],[20.5,77.5],[20.5,80.5],[18.5,80.5]] }, // Vidarbha / Telangana mid
+  { level:'medium', color:'#f59e0b', coords:[[11.0,77.0],[13.0,77.0],[13.0,80.0],[11.0,80.0]] }, // TN interior
+  { level:'medium', color:'#f59e0b', coords:[[22.5,84.0],[24.0,84.0],[24.0,86.5],[22.5,86.5]] }, // Odisha inland
+
+  // LOW WATER (Red) — Arid, drought-prone, low rainfall regions
+  { level:'low', color:'#ef4444', coords:[[24.0,69.0],[28.5,69.0],[28.5,74.5],[24.0,74.5]] }, // Rajasthan desert
+  { level:'low', color:'#ef4444', coords:[[21.0,68.5],[24.0,68.5],[24.0,72.5],[21.0,72.5]] }, // Kutch / Saurashtra dry
+  { level:'low', color:'#ef4444', coords:[[15.0,75.5],[17.0,75.5],[17.0,77.5],[15.0,77.5]] }, // Karnataka dry belt
+  { level:'low', color:'#ef4444', coords:[[13.5,78.5],[15.5,78.5],[15.5,79.8],[13.5,79.8]] }, // Rayalaseema drought
+  { level:'low', color:'#ef4444', coords:[[30.5,74.0],[32.5,74.0],[32.5,76.0],[30.5,76.0]] }, // Himachal dry foothills
+];
+
+// ── Water source markers (India) ──
+const WATER_SOURCES = [
+  // Rivers
+  { type:'river', name:'Ganga River', lat:25.3176, lng:82.9739, note:'Major perennial river. Irrigation suitable year-round.' },
+  { type:'river', name:'Yamuna River', lat:27.1767, lng:78.0081, note:'Key irrigation source for UP, Haryana, Delhi region.' },
+  { type:'river', name:'Godavari River', lat:16.9691, lng:81.7799, note:'Largest river in South India. High irrigation potential.' },
+  { type:'river', name:'Krishna River', lat:16.5193, lng:80.6363, note:'Supports extensive delta irrigation in AP & Telangana.' },
+  { type:'river', name:'Cauvery River', lat:10.7905, lng:79.8019, note:'Vital for rice farming in TN and Karnataka.' },
+  { type:'river', name:'Brahmaputra', lat:26.1445, lng:91.7362, note:'NE India. High flow. Fertile flood plains.' },
+  { type:'river', name:'Mahanadi', lat:20.4625, lng:85.8828, note:'Odisha. Supports paddy cultivation.' },
+  { type:'river', name:'Narmada River', lat:22.3333, lng:76.9667, note:'MP/Gujarat. Major canal irrigation network.' },
+
+  // Lakes
+  { type:'lake', name:'Chilika Lake', lat:19.7085, lng:85.3165, note:'Largest coastal lagoon. Nearby fields well irrigated.' },
+  { type:'lake', name:'Wular Lake', lat:34.3548, lng:74.5283, note:'Kashmir. Supports local agriculture.' },
+  { type:'lake', name:'Sambhar Lake', lat:26.9000, lng:75.1833, note:'Rajasthan. Seasonal water. Limited irrigation.' },
+  { type:'lake', name:'Kolleru Lake', lat:16.6214, lng:81.1953, note:'AP. Supports aquaculture and farming.' },
+  { type:'lake', name:'Vembanad Lake', lat:9.6068, lng:76.4025, note:'Kerala. Surrounded by paddy-rich kuttanad region.' },
+
+  // Canals
+  { type:'canal', name:'Indira Gandhi Canal', lat:28.0200, lng:72.4500, note:'Rajasthan. Transforms desert into farmland.' },
+  { type:'canal', name:'Upper Ganga Canal', lat:29.9254, lng:77.7022, note:'UP/Haryana. Major irrigation canal.' },
+  { type:'canal', name:'Nadiad Canal (Mahi)', lat:22.6916, lng:72.8634, note:'Gujarat. Supports sugarcane & cotton irrigation.' },
+  { type:'canal', name:'Tungabhadra Canal', lat:15.2640, lng:76.3298, note:'Karnataka. Rice & groundnut irrigation.' },
+  { type:'canal', name:'Periyar Canal', lat:9.5913, lng:77.1674, note:'Tamil Nadu. Powers Madurai region irrigation.' },
+];
+
+// ── Crop guide by water level ──
+const WATER_CROP_GUIDE = {
+  high: {
+    label: 'High Water',
+    color: '#3b82f6',
+    bg: '#eff6ff',
+    iconBg: '#dbeafe',
+    icon: '💧',
+    crops: [
+      { name: 'Rice (Paddy)', icon: '🌾', badge: 'Best Choice', badgeBg: '#dcfce7', badgeColor: '#166534' },
+      { name: 'Sugarcane', icon: '🎋', badge: 'Excellent', badgeBg: '#dbeafe', badgeColor: '#1e40af' },
+    ],
+    tip: '✅ Good water access — ideal for water-intensive crops like rice and sugarcane.',
+  },
+  medium: {
+    label: 'Medium Water',
+    color: '#f59e0b',
+    bg: '#fffbeb',
+    iconBg: '#fef3c7',
+    icon: '🌤️',
+    crops: [
+      { name: 'Wheat', icon: '🌾', badge: 'Good Choice', badgeBg: '#fef3c7', badgeColor: '#92400e' },
+      { name: 'Soybean', icon: '🫘', badge: 'Recommended', badgeBg: '#dcfce7', badgeColor: '#166534' },
+    ],
+    tip: '💡 Moderate water — use drip irrigation for best results.',
+  },
+  low: {
+    label: 'Low Water',
+    color: '#ef4444',
+    bg: '#fff1f2',
+    iconBg: '#fee2e2',
+    icon: '🏜️',
+    crops: [
+      { name: 'Millets / Bajra', icon: '🌿', badge: 'Best Fit', badgeBg: '#fef9c3', badgeColor: '#713f12' },
+      { name: 'Chickpea / Gram', icon: '🫘', badge: 'Low Water', badgeBg: '#fce7f3', badgeColor: '#9d174d' },
+    ],
+    tip: '⚠️ Dry zone — choose drought-resistant crops. Consider rainwater harvesting.',
+  },
+};
+
+// ── Init Map ──
+document.addEventListener('DOMContentLoaded', function () {
+  initMap();
+});
+
+function initMap() {
+  map = L.map('map', {
+    zoomControl: false,
+    attributionControl: false,
+  }).setView([20.5937, 78.9629], 5);
+
+  // Light (Standard) tile layer — default
+  lightLayer = L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    { maxZoom: 19, subdomains: 'abcd' }
+  ).addTo(map);
+
+  // Satellite tile layer — hidden by default
+  satelliteLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { maxZoom: 19 }
+  );
+
+  // Build water overlay
+  buildWaterOverlay();
+
+  // Build water source markers
+  buildWaterSources();
+
+  // Click handler — smart popup
+  map.on('click', function (e) {
+    showSmartPopup(e.latlng);
+  });
+
+  // Hide loading spinner
+  setTimeout(() => {
+    const loader = document.getElementById('map-loading');
+    if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 400); }
+  }, 1200);
+}
+
+// ── Build Water Availability Overlay ──
+function buildWaterOverlay() {
+  const layers = [];
+
+  WATER_ZONES.forEach(zone => {
+    const poly = L.polygon(zone.coords, {
+      color: zone.color,
+      fillColor: zone.color,
+      fillOpacity: 0.28,
+      weight: 1,
+      opacity: 0.5,
+      className: 'water-zone-poly',
+      interactive: false, // zones are non-clickable; map click handles it
+    });
+    layers.push(poly);
+  });
+
+  waterOverlayLayer = L.layerGroup(layers).addTo(map);
+}
+
+// ── Build Water Source Markers ──
+function buildWaterSources() {
+  const markers = [];
+
+  WATER_SOURCES.forEach(src => {
+    const cfg = {
+      river: { emoji: '🔵', color: '#3b82f6', bg: '#eff6ff', label: 'River' },
+      lake:  { emoji: '🟦', color: '#60a5fa', bg: '#dbeafe', label: 'Lake'  },
+      canal: { emoji: '🟩', color: '#22c55e', bg: '#dcfce7', label: 'Canal' },
+    }[src.type];
+
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="
+        background:${cfg.bg};
+        border: 2px solid ${cfg.color};
+        border-radius: 50%;
+        width: 28px; height: 28px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        transition: transform 0.15s ease;
+      " title="${src.name}">${cfg.emoji}</div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+    });
+
+    const popupHtml = `
+      <div class="ws-popup">
+        <div class="ws-popup-title">${cfg.emoji} ${src.name}</div>
+        <div class="ws-popup-sub">Water Source: ${cfg.label}</div>
+        <div class="ws-popup-sub" style="margin-top:4px;">${src.note}</div>
+        <div class="ws-popup-badge">✅ Nearby irrigation possible</div>
+      </div>`;
+
+    const marker = L.marker([src.lat, src.lng], { icon })
+      .bindPopup(popupHtml, { className: 'water-popup', maxWidth: 240, closeButton: false });
+
+    markers.push(marker);
+  });
+
+  waterSourceLayer = L.layerGroup(markers).addTo(map);
+}
+
+// ── Detect Water Level at lat/lng ──
+function detectWaterLevel(lat, lng) {
+  for (const zone of WATER_ZONES) {
+    const [[s, w], , [n, e]] = [zone.coords[0], zone.coords[1], zone.coords[2]];
+    if (lat >= s && lat <= n && lng >= w && lng <= e) return zone.level;
+  }
+  return 'medium'; // default if outside defined zones
+}
+
+// ── Smart Click Popup ──
+function showSmartPopup(latlng) {
+  const level = detectWaterLevel(latlng.lat, latlng.lng);
+  const guide = WATER_CROP_GUIDE[level];
+
+  let cropsHtml = guide.crops.map(c => `
+    <div class="popup-crop-row">
+      <span class="popup-crop-icon">${c.icon}</span>
+      <span class="popup-crop-name">${c.name}</span>
+      <span class="popup-crop-badge" style="background:${c.badgeBg};color:${c.badgeColor};">${c.badge}</span>
+    </div>`).join('');
+
+  const html = `
+    <div>
+      <div class="popup-header" style="background:${guide.bg};">
+        <div class="popup-water-icon" style="background:${guide.iconBg};">${guide.icon}</div>
+        <div>
+          <div class="popup-water-label">Water Availability</div>
+          <div class="popup-water-status" style="color:${guide.color};">${guide.label}</div>
+        </div>
+      </div>
+      <div class="popup-divider"></div>
+      <div class="popup-body">
+        <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;">
+          Recommended Crops
+        </div>
+        ${cropsHtml}
+        <div class="popup-tip">
+          <span class="popup-tip-icon">💡</span>
+          ${guide.tip}
+        </div>
+      </div>
+    </div>`;
+
+  L.popup({ className: 'agri-popup', maxWidth: 270, closeButton: true })
+    .setLatLng(latlng)
+    .setContent(html)
+    .openOn(map);
+}
+
+// ── Search Location ──
+async function searchLocation() {
+  const query = document.getElementById('locationSearch').value.trim();
+  if (!query) return;
+
+  const btn = document.getElementById('btn-search');
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`,
+      { headers: { 'Accept-Language': 'en' } }
+    );
+    const data = await res.json();
+
+    if (data.length > 0) {
+      const { lat, lon, display_name } = data[0];
+      flyToLocation(parseFloat(lat), parseFloat(lon), display_name);
+    } else {
+      showToast('Location not found. Try a different name.', 'error');
+    }
+  } catch (e) {
+    showToast('Search failed. Check internet connection.', 'error');
+  }
+
+  btn.innerHTML = '<i class="fa-solid fa-search"></i> Search';
+  btn.disabled = false;
+}
+
+// ── Locate Me (GPS) ──
+function locateMe() {
+  if (!navigator.geolocation) {
+    showToast('GPS not supported on this device.', 'error');
+    return;
+  }
+  showToast('Detecting your location…', 'info');
+  navigator.geolocation.getCurrentPosition(
+    pos => flyToLocation(pos.coords.latitude, pos.coords.longitude, 'Your Location'),
+    () => showToast('Location access denied. Please allow GPS.', 'error')
+  );
+}
+
+// ── Fly To Location ──
+function flyToLocation(lat, lng, label = '') {
+  map.flyTo([lat, lng], 13, { duration: 1.6, easeLinearity: 0.25 });
+
+  if (locationMarker) map.removeLayer(locationMarker);
+
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="
+      width:22px; height:22px;
+      background:#16a34a; border:3px solid white;
+      border-radius:50%;
+      box-shadow:0 0 0 6px rgba(22,163,74,0.25), 0 4px 12px rgba(0,0,0,0.2);
+      animation: locPulse 2s infinite;
+    "></div>
+    <style>
+      @keyframes locPulse {
+        0%,100%{box-shadow:0 0 0 6px rgba(22,163,74,0.25),0 4px 12px rgba(0,0,0,0.2);}
+        50%{box-shadow:0 0 0 14px rgba(22,163,74,0.1),0 4px 12px rgba(0,0,0,0.2);}
+      }
+    </style>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+  });
+
+  locationMarker = L.marker([lat, lng], { icon }).addTo(map);
+  if (label) showToast(`📍 ${label}`, 'success');
+}
+
+// ── Toggle Water Overlay ──
+function toggleWaterLayer(on) {
+  if (on) {
+    if (!map.hasLayer(waterOverlayLayer)) waterOverlayLayer.addTo(map);
+    if (!map.hasLayer(waterSourceLayer)) waterSourceLayer.addTo(map);
+  } else {
+    if (map.hasLayer(waterOverlayLayer)) map.removeLayer(waterOverlayLayer);
+    if (map.hasLayer(waterSourceLayer)) map.removeLayer(waterSourceLayer);
+  }
+}
+
+// ── Toggle Satellite (sync with maptype) ──
+function toggleSatellite(on) {
+  setMapTypeSilent(on ? 'satellite' : 'light');
+  document.getElementById('btn-light').classList.toggle('active', !on);
+  document.getElementById('btn-sat').classList.toggle('active', on);
+}
+
+// ── Map Type Buttons ──
+function setMapType(type) {
+  setMapTypeSilent(type);
+  document.getElementById('toggle-satellite').checked = (type === 'satellite');
+  document.getElementById('btn-light').classList.toggle('active', type === 'light');
+  document.getElementById('btn-sat').classList.toggle('active', type === 'satellite');
+}
+
+function setMapTypeSilent(type) {
+  currentMapType = type;
+  if (type === 'satellite') {
+    if (!map.hasLayer(satelliteLayer)) satelliteLayer.addTo(map);
+    if (map.hasLayer(lightLayer)) map.removeLayer(lightLayer);
+  } else {
+    if (!map.hasLayer(lightLayer)) lightLayer.addTo(map);
+    if (map.hasLayer(satelliteLayer)) map.removeLayer(satelliteLayer);
+  }
+  // Re-bring overlays to top
+  if (map.hasLayer(waterOverlayLayer)) waterOverlayLayer.bringToFront();
+  if (map.hasLayer(waterSourceLayer)) waterSourceLayer.bringToFront();
+}
+
+// ── Zoom Controls ──
+function mapZoomIn()  { map.zoomIn(); }
+function mapZoomOut() { map.zoomOut(); }
+
+// ── Toast Notification ──
+let toastTimer;
+function showToast(msg, type = 'info') {
+  let toast = document.getElementById('agri-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'agri-toast';
+    toast.style.cssText = `
+      position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
+      z-index:9999; padding:10px 20px; border-radius:20px;
+      font-family:'Outfit',sans-serif; font-size:13px; font-weight:700;
+      box-shadow:0 8px 24px rgba(0,0,0,0.15); opacity:0;
+      transition:all 0.3s ease; white-space:nowrap; pointer-events:none;
+    `;
+    document.body.appendChild(toast);
+  }
+
+  const styles = {
+    success: 'background:#dcfce7; color:#166534;',
+    error:   'background:#fee2e2; color:#991b1b;',
+    info:    'background:#eff6ff; color:#1e40af;',
+  };
+
+  toast.style.cssText += styles[type] || styles.info;
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 3000);
+}
+</script>
+
 {% endblock %}

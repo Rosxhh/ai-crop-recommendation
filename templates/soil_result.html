@@ -1,63 +1,74 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="relative w-full min-h-screen">
+<div class="relative w-full min-h-screen bg-transparent overflow-hidden">
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     
     <!-- Back Navigator -->
-    <div class="mb-6 animate-[fadeInUp_0.4s_ease-out]">
-        <a href="{% url 'soil_predict' %}" class="inline-flex items-center text-slate-500 hover:text-amber-600 font-bold transition-colors">
-            <i class="fa-solid fa-arrow-left mr-2"></i> Back to Upload
+    <div class="mb-8 animate-[fadeInUp_0.4s_ease-out]">
+        <a href="{% url 'soil_predict' %}" class="inline-flex items-center px-6 py-3 rounded-xl bg-agri-600 text-white font-bold hover:bg-agri-700 transition-all shadow-lg shadow-agri-600/20">
+            <i class="fa-solid fa-arrow-left mr-2"></i> Back
         </a>
     </div>
 
     <!-- Title Area -->
     <div class="text-center mb-10 animate-[fadeInUp_0.5s_ease-out]">
-        <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-amber-50 text-amber-600 shadow-xl shadow-amber-50 p-2 mb-4 border border-amber-100">
-            <i class="fa-solid fa-vial text-3xl"></i>
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 shadow-lg border border-amber-100 mb-4">
+            <i class="fa-solid fa-bolt text-2xl"></i>
         </div>
-        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">Soil Analysis Complete</h2>
-        <p class="text-slate-500 mt-2 text-lg">AI-powered insights based on your uploaded sample.</p>
+        <h2 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Quick Soil Check</h2>
+        <p class="text-slate-500 mt-2 text-lg font-bold italic">"Fast way to find out your soil type."</p>
     </div>
 
     <!-- Main Prediction Card -->
-    {% if result == "Invalid Image Detected" %}
-    <div class="bg-white rounded-[2.5rem] shadow-xl p-10 mb-10 border border-slate-100 text-center animate-[fadeInUp_0.6s_ease-out]">
-        <div class="w-20 h-20 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-3xl mx-auto mb-6 animate-bounce">
+    {% if result == "Scout: Invalid Imagery" %}
+    <div class="bg-white rounded-[2.5rem] shadow-xl p-10 mb-10 border border-emerald-100 text-center animate-[fadeInUp_0.6s_ease-out]">
+        <div class="w-20 h-20 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center text-3xl mx-auto mb-6 animate-bounce border border-rose-100">
             <i class="fa-solid fa-camera-rotate"></i>
         </div>
-        <h3 class="text-3xl font-black text-slate-800 mb-4">Incorrect Image Detected</h3>
-        <p class="text-slate-500 text-lg font-medium mb-8 max-w-lg mx-auto">{{ characteristics.0 }}</p>
+        <h3 class="text-3xl font-black text-slate-900 mb-4">Image Not Clear</h3>
+        <p class="text-slate-600 text-lg font-bold mb-8 max-w-lg mx-auto">{{ characteristics.0 }}</p>
         
         <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="{% url 'soil_predict' %}" class="px-8 py-4 bg-red-500 text-white font-bold rounded-2xl hover:bg-red-600 transition-all shadow-lg shadow-red-200">
-                Try Soil Again <i class="fa-solid fa-rotate-right ml-2 text-sm"></i>
+            <a href="{% url 'soil_predict' %}" class="px-8 py-4 bg-rose-500 text-white font-black rounded-2xl hover:bg-rose-600 transition-all shadow-lg shadow-rose-200">
+                Check Again <i class="fa-solid fa-rotate-right ml-2 text-sm"></i>
             </a>
-            <a href="{% url 'disease_scan' %}" class="px-8 py-4 bg-slate-100 text-slate-700 font-bold rounded-2xl hover:bg-slate-200 transition-all border border-slate-200">
-                Go to Leaf Scanner <i class="fa-solid fa-leaf ml-2 text-emerald-600"></i>
+            <a href="{% url 'disease_scan' %}" class="px-8 py-4 bg-emerald-50 text-emerald-700 font-black rounded-2xl hover:bg-emerald-100 transition-all border border-emerald-200">
+                Switch to Leaf Scan <i class="fa-solid fa-leaf ml-2"></i>
             </a>
         </div>
     </div>
     {% else %}
-    <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-[2.5rem] shadow-2xl p-8 mb-10 text-white relative overflow-hidden animate-[fadeInUp_0.6s_ease-out]">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full mix-blend-overlay filter blur-xl transform translate-x-20 -translate-y-20"></div>
-        <div class="absolute bottom-0 left-0 w-40 h-40 bg-black opacity-10 rounded-full mix-blend-overlay filter blur-lg transform -translate-x-10 translate-y-10"></div>
+    <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 mb-10 text-slate-900 border border-emerald-100 relative overflow-hidden animate-[fadeInUp_0.6s_ease-out]">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500 opacity-10 rounded-full filter blur-3xl transform translate-x-20 -translate-y-20"></div>
         
         <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="text-center md:text-left">
-                <p class="text-amber-100 font-bold uppercase tracking-widest text-sm mb-2"><i class="fa-solid fa-trophy mr-2 text-amber-200"></i> Primary Identification</p>
-                <h3 class="text-5xl font-black capitalize tracking-tight drop-shadow-md">
-                    {{ result }}{% if "Soil" not in result and "Recognized" not in result and "Error" not in result and result != "Unclassified" %} Soil{% endif %}
-                </h3>
+            <div class="flex flex-col md:flex-row items-center gap-6 w-full md:w-2/3">
+                {% if uploaded_image_uri %}
+                <div class="w-32 h-32 rounded-3xl overflow-hidden shadow-lg border-4 border-white flex-shrink-0">
+                    <img src="{{ uploaded_image_uri }}" alt="Uploaded Soil" class="w-full h-full object-cover">
+                </div>
+                {% endif %}
+                <div class="text-center md:text-left">
+                    <p class="text-amber-600 font-black uppercase tracking-[0.2em] text-[10px] mb-3 flex items-center justify-center md:justify-start gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Soil Match Found
+                    </p>
+                    <h3 class="text-4xl md:text-5xl font-black capitalize tracking-tighter text-slate-900">
+                        {{ result }}
+                    </h3>
+                    {% if indian_soil_name %}
+                    <p class="text-slate-500 font-black mt-2 text-lg uppercase tracking-tight">Local Name: <span class="text-amber-600">{{ indian_soil_name }}</span></p>
+                    {% endif %}
+                </div>
             </div>
             
-            <div class="w-full md:w-1/3 bg-white/10 rounded-2xl p-5 border border-white/20">
+            <div class="w-full md:w-1/3 bg-slate-50 rounded-2xl p-5 border border-slate-200">
                 <div class="flex justify-between items-end mb-2">
-                    <span class="text-amber-50 font-medium text-sm">AI Confidence</span>
-                    <span class="text-2xl font-bold">{{ confidence }}</span>
+                    <span class="text-slate-500 font-black text-[10px] uppercase tracking-widest">AI Confidence</span>
+                    <span class="text-2xl font-black text-slate-900">{{ confidence }}%</span>
                 </div>
-                <div class="w-full bg-black/20 rounded-full h-3">
-                    <div class="bg-white h-3 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.7)] transition-all duration-1000 ease-out" style="width: 0%" data-width="{{ confidence }}"></div>
+                <div class="w-full bg-slate-200 rounded-full h-3">
+                    <div class="bg-amber-500 h-3 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.4)] transition-all duration-1000 ease-out" style="width: 0%" data-width="{{ confidence }}%"></div>
                 </div>
             </div>
         </div>
@@ -78,14 +89,14 @@
             <!-- Characteristics -->
             {% if characteristics %}
             <div class="animate-[fadeInUp_0.8s_ease-out]">
-                <h4 class="text-xl font-bold text-slate-800 mb-6 flex items-center"><i class="fa-solid fa-list-ul text-slate-400 mr-3"></i> Soil DNA</h4>
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col gap-4">
+                <h4 class="text-xl font-black text-slate-900 mb-6 flex items-center tracking-tight"><i class="fa-solid fa-list-ul text-agri-600 mr-3"></i> Soil Details</h4>
+                <div class="bg-white rounded-[2rem] p-6 shadow-xl border border-emerald-100 flex flex-col gap-4">
                     {% for char in characteristics %}
                     <div class="flex items-start">
-                        <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 mr-4 flex-shrink-0 mt-0.5">
+                        <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 mr-4 flex-shrink-0 mt-0.5 border border-emerald-100">
                             <i class="fa-solid fa-check text-xs"></i>
                         </div>
-                        <p class="text-slate-600 font-medium leading-relaxed pt-1">{{ char }}</p>
+                        <p class="text-slate-800 font-bold leading-relaxed pt-1">{{ char }}</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -94,31 +105,39 @@
 
             <!-- Recommendations -->
             <div class="animate-[fadeInUp_1s_ease-out] flex-grow">
-                <h4 class="text-xl font-bold text-slate-800 mb-6 flex items-center"><i class="fa-solid fa-seedling text-slate-400 mr-3"></i> Recommended Crops</h4>
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 h-full flex flex-col">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <h4 class="text-xl font-black text-slate-900 mb-6 flex items-center tracking-tight"><i class="fa-solid fa-seedling text-agri-600 mr-3"></i> Recommended Crops</h4>
+                <div class="bg-white rounded-[2rem] p-6 shadow-xl border border-emerald-100 h-full flex flex-col">
+                    <div class="grid grid-cols-1 gap-4 mb-6">
                         {% for crop in rich_crops %}
-                        <div class="bg-slate-50/50 rounded-2xl border border-slate-100 p-4 shadow-sm hover:border-amber-400 hover:bg-white transition-all flex items-center gap-4 group">
-                            <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-400 group-hover:text-amber-500 transition-colors">
+                        <div class="bg-slate-50/50 rounded-2xl border border-slate-100 p-4 shadow-sm hover:border-agri-400 hover:bg-white transition-all flex items-center gap-4 group overflow-hidden">
+                            <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-400 group-hover:text-agri-600 transition-colors flex-shrink-0">
                                 <i class="fa-solid fa-leaf text-xl text-emerald-500"></i>
                             </div>
-                            <div>
-                                <h5 class="text-base font-black text-slate-800 tracking-tight capitalize mb-1">{{ crop.name }}</h5>
-                                <p class="text-[11px] text-slate-500 leading-tight pr-4 font-medium">{{ crop.description|truncatechars:70 }}</p>
+                            <div class="flex-grow min-w-0">
+                                <h5 class="text-base font-black text-slate-800 tracking-tight capitalize mb-1 truncate">{{ crop.name }}</h5>
+                                <p class="text-[11px] text-slate-500 leading-tight font-bold mb-2 truncate">{{ crop.description }}</p>
+                                <div class="flex flex-wrap items-center gap-2 mt-1">
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-black text-amber-600 uppercase bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100 whitespace-nowrap">
+                                        <i class="fa-solid fa-weight-hanging"></i> {{ crop.meta.yield_per_ha }} Tons/Ha
+                                    </span>
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-black text-emerald-600 uppercase bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 whitespace-nowrap">
+                                        <i class="fa-solid fa-indian-rupee-sign"></i> {{ crop.meta.market_price }}/Qtl
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         {% empty %}
-                        <div class="col-span-2 flex flex-col items-center justify-center py-8 w-full text-slate-400 text-center">
+                        <div class="flex flex-col items-center justify-center py-8 w-full text-slate-400 text-center">
                             <i class="fa-solid fa-circle-info text-2xl mb-2 opacity-20"></i>
-                            <p class="text-sm">Upload a soil image to see recommendations.</p>
+                            <p class="text-sm font-bold">No crop data available for this soil.</p>
                         </div>
                         {% endfor %}
                     </div>
                     
                     {% if tips %}
-                    <div class="mt-auto bg-blue-50/50 rounded-2xl p-5 border border-blue-100/50">
-                        <h5 class="text-sm font-bold text-blue-800 uppercase tracking-widest mb-2 flex items-center"><i class="fa-solid fa-lightbulb text-yellow-400 mr-2 text-lg drop-shadow-sm"></i> Pro Tip</h5>
-                        <p class="text-blue-900 font-medium">{{ tips }}</p>
+                    <div class="mt-auto bg-blue-50/50 rounded-2xl p-5 border border-blue-100">
+                        <h5 class="text-xs font-black text-blue-800 uppercase tracking-widest mb-2 flex items-center"><i class="fa-solid fa-lightbulb text-amber-500 mr-2 text-lg"></i> Farmer Tips</h5>
+                        <p class="text-blue-900 font-bold text-sm leading-relaxed">{{ tips }}</p>
                     </div>
                     {% endif %}
                 </div>
@@ -128,48 +147,48 @@
         <!-- Right Column: Ideal Weather -->
         {% if ideal_weather %}
         <div class="animate-[fadeInUp_0.9s_ease-out]">
-            <h4 class="text-xl font-bold text-slate-800 mb-6 flex items-center"><i class="fa-solid fa-cloud-sun text-slate-400 mr-3"></i> Ideal Climate Match</h4>
-            <div class="bg-gradient-to-b from-blue-50 to-white rounded-3xl p-8 shadow-sm border border-blue-100 h-full flex flex-col">
-                <p class="text-slate-500 font-medium mb-8">For maximum yield, these crops require the following weather conditions when grown in {{ result }} soil:</p>
+            <h4 class="text-xl font-black text-slate-900 mb-6 flex items-center tracking-tight"><i class="fa-solid fa-cloud-sun text-blue-600 mr-3"></i> Best Weather Match</h4>
+            <div class="bg-white rounded-[2rem] p-8 shadow-xl border border-emerald-100 h-full flex flex-col">
+                <p class="text-slate-600 font-bold mb-8 leading-relaxed">Best weather for growing crops in <span class="text-slate-900 font-black">{{ result }}</span> soil:</p>
                 
                 <div class="space-y-6 flex-grow">
                     <!-- Temperature -->
                     <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-500 flex items-center justify-center text-xl flex-shrink-0 shadow-sm">
+                        <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl flex-shrink-0 shadow-sm border border-orange-100">
                             <i class="fa-solid fa-temperature-half"></i>
                         </div>
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Temperature</p>
-                            <p class="text-base font-bold text-slate-700">{{ ideal_weather.temperature }}</p>
+                            <p class="text-base font-black text-slate-800">{{ ideal_weather.temperature }}</p>
                         </div>
                     </div>
 
                     <!-- Humidity -->
                     <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-500 flex items-center justify-center text-xl flex-shrink-0 shadow-sm">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0 shadow-sm border border-blue-100">
                             <i class="fa-solid fa-droplet"></i>
                         </div>
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Humidity</p>
-                            <p class="text-base font-bold text-slate-700">{{ ideal_weather.humidity }}</p>
+                            <p class="text-base font-black text-slate-800">{{ ideal_weather.humidity }}</p>
                         </div>
                     </div>
 
                     <!-- Rainfall -->
                     <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-500 flex items-center justify-center text-xl flex-shrink-0 shadow-sm">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl flex-shrink-0 shadow-sm border border-indigo-100">
                             <i class="fa-solid fa-cloud-showers-water"></i>
                         </div>
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Rainfall Need</p>
-                            <p class="text-base font-bold text-slate-700">{{ ideal_weather.rainfall }}</p>
+                            <p class="text-base font-black text-slate-800">{{ ideal_weather.rainfall }}</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-8 pt-6 border-t border-slate-100">
-                    <a href="/weather/" class="w-full py-4 rounded-xl bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 font-bold transition-all flex items-center justify-center gap-2">
-                        Check Current Farm Weather <i class="fa-solid fa-arrow-right"></i>
+                    <a href="/weather/" class="w-full h-14 rounded-xl bg-white border-2 border-slate-100 hover:border-agri-400 hover:text-agri-700 text-slate-600 font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                        View Weather Info <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -179,8 +198,8 @@
     
     <!-- Action Button -->
     <div class="text-center animate-[fadeInUp_1.2s_ease-out]">
-        <a href="{% url 'soil_predict' %}" class="inline-flex items-center px-8 py-4 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 shadow-xl hover:-translate-y-1 transition-all">
-            <i class="fa-solid fa-rotate-right mr-3"></i> Analyze Another Image
+        <a href="{% url 'soil_predict' %}" class="inline-flex items-center px-12 h-16 rounded-2xl bg-agri-600 text-white font-black text-xs uppercase tracking-widest hover:bg-agri-700 shadow-xl shadow-agri-600/30 hover:-translate-y-1 transition-all">
+            <i class="fa-solid fa-rotate-right mr-3"></i> Check Another Soil
         </a>
     </div>
 </div>

@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="relative w-full min-h-screen pb-20 mt-10 bg-transparent overflow-hidden">
+    <!-- Animated background elements -->
+    <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-agri-100 rounded-full blur-[120px] -z-10 opacity-60 animate-pulse"></div>
+    <div class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-100 rounded-full blur-[100px] -z-10 opacity-40 animate-pulse"></div>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <!-- Navigation Hub -->
+        <div class="mb-10 animate-up">
+            <a href="/dashboard/" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-slate-600 hover:text-agri-600 font-black text-[10px] uppercase tracking-[0.2em] transition-all group btn-3d btn-3d-slate shadow-sm">
+                <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i> Return to Tactical Hub
+            </a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="text-center mb-12 animate-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/60 border border-white/80 backdrop-blur-sm text-agri-700 text-[9px] font-black uppercase tracking-[0.2em] mb-6 shadow-sm">
+                <i class="fa-solid fa-microscope text-agri-500"></i> Smart Decision Engine
+            </div>
+            <h1 class="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-6 leading-tight drop-shadow-md">
+                Advanced <span class="agri-gradient-text">Crop Matcher</span>
+            </h1>
+            <p class="text-slate-700 text-lg max-w-2xl mx-auto font-bold leading-relaxed drop-shadow-sm">
+                A robust heuristic model designed for real-world agricultural scenarios. Optimized for precision and practical usability.
+            </p>
+        </div>
+
+        {% if error %}
+        <div class="mb-8 bg-rose-50 border-2 border-rose-100 rounded-3xl p-5 flex items-center gap-4 text-rose-700 animate-shake">
+            <div class="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <div>
+                <p class="font-black text-sm uppercase tracking-wider">System Alert</p>
+                <p class="text-xs font-bold opacity-80">{{ error }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Progressive Form -->
+        <div class="bg-white rounded-[3.5rem] p-8 md:p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-emerald-100 animate-up">
+        <form method="post" id="recommendationEngine" class="space-y-12">
+            {% csrf_token %}
+            
+            <!-- PROGRESS TRACKER -->
+            <div class="flex justify-between mb-16 relative">
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 -z-10 rounded-full"></div>
+                <div id="progressBar" class="absolute top-1/2 left-0 w-0 h-1 bg-agri-500 -translate-y-1/2 -z-10 rounded-full transition-all duration-500"></div>
+                
+                {% for i in "12345" %}
+                <div class="step-indicator w-10 h-10 rounded-full bg-white border-2 border-slate-100 flex items-center justify-center text-xs font-black text-slate-400 transition-all duration-300" data-step="{{ i }}">
+                    {{ i }}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- STEP 1: NUTRIENTS -->
+            <div class="engine-step active" data-step="1">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-black text-slate-800 mb-2 tracking-tight">Soil Nutrient Profile</h3>
+                    <p class="text-slate-500 text-sm font-bold">Assess the primary fertilization history of your plot.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {% for val, title, sub, icon in nutrients_opts %}
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="nutrients" value="{{ val }}" {% if val == 'good' %}checked{% endif %} class="peer hidden">
+                        <div class="glass-input p-8">
+                            <div class="icon-box mb-6"><i class="{{ icon }}"></i></div>
+                            <h4 class="font-black text-slate-800 text-lg">{{ title }}</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 line-clamp-1">{{ sub }}</p>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- STEP 2: SOIL TEXTURE -->
+            <div class="engine-step" data-step="2">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-black text-slate-800 mb-2 tracking-tight">Soil Physical Texture</h3>
+                    <p class="text-slate-500 text-sm font-bold">Physical structure determines drainage and aeration efficiency.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="texture" value="sandy" class="peer hidden">
+                        <div class="glass-input p-8">
+                            <div class="icon-box mb-6"><i class="fa-solid fa-hill-rockslide"></i></div>
+                            <h4 class="font-black text-slate-800 text-lg">Sandy</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Fast Drainage</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="texture" value="loamy" checked class="peer hidden">
+                        <div class="glass-input p-8">
+                            <div class="icon-box mb-6"><i class="fa-solid fa-mountain-sun"></i></div>
+                            <h4 class="font-black text-slate-800 text-lg">Loamy</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Ideal Balance</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="texture" value="clayey" class="peer hidden">
+                        <div class="glass-input p-8">
+                            <div class="icon-box mb-6"><i class="fa-solid fa-layer-group"></i></div>
+                            <h4 class="font-black text-slate-800 text-lg">Clayey</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">High Retention</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- STEP 3: LAND TOPOGRAPHY -->
+            <div class="engine-step" data-step="3">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-black text-slate-800 mb-2 tracking-tight">Land Topography</h3>
+                    <p class="text-slate-500 text-sm font-bold">Topography influences how rainfall interacts with your soil.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="land" value="upland" checked class="peer hidden">
+                        <div class="glass-input p-10 flex items-center gap-6">
+                            <div class="icon-box"><i class="fa-solid fa-mountain"></i></div>
+                            <div>
+                                <h4 class="font-black text-slate-800 text-lg">Upland / Sloped</h4>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Excellent Drainage</p>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="land" value="lowland" class="peer hidden">
+                        <div class="glass-input p-10 flex items-center gap-6">
+                            <div class="icon-box"><i class="fa-solid fa-water"></i></div>
+                            <div>
+                                <h4 class="font-black text-slate-800 text-lg">Lowland / Delta</h4>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Waterlogging Prone</p>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- STEP 4: CLIMATE CONTEXT -->
+            <div class="engine-step" data-step="4">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-black text-slate-800 mb-2 tracking-tight">Climate & Season</h3>
+                    <p class="text-slate-500 text-sm font-bold">Select the seasonal baseline for your prediction.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    {% for val, title, sub, icon in season_opts %}
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="season" value="{{ val }}" {% if val == 'monsoon' %}checked{% endif %} class="peer hidden">
+                        <div class="glass-input p-6">
+                            <div class="icon-box w-12 h-12 mb-4 text-lg"><i class="{{ icon }}"></i></div>
+                            <h4 class="font-bold text-slate-800">{{ title }}</h4>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {% for val, title, sub, icon in weather_opts %}
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="weather" value="{{ val }}" {% if val == 'balanced' %}checked{% endif %} class="peer hidden">
+                        <div class="glass-input p-6 border-dashed">
+                            <div class="icon-box w-12 h-12 mb-4 text-lg"><i class="{{ icon }}"></i></div>
+                            <h4 class="font-bold text-slate-800">{{ title }}</h4>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- STEP 5: PH OBSERVATION -->
+            <div class="engine-step" data-step="5">
+                <div class="mb-8">
+                    <h3 class="text-2xl font-black text-slate-800 mb-2 tracking-tight">Soil Reaction (pH)</h3>
+                    <p class="text-slate-500 text-sm font-bold">Visual or physical indicators of soil acidity/alkalinity.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="ph_obs" value="acidic" class="peer hidden">
+                        <div class="glass-input p-8">
+                            <div class="icon-box mb-6"><i class="fa-solid fa-flask-vial"></i></div>
+                            <h4 class="font-black text-slate-800 text-lg">Acidic / Sour</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Iron/Reddish Soil</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="ph_obs" value="balanced" checked class="peer hidden">
+                        <div class="glass-input p-8">
+                            <div class="icon-box mb-6"><i class="fa-solid fa-scale-balanced"></i></div>
+                            <h4 class="font-black text-slate-800 text-lg">Balanced</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Dark/Brown Soil</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer group">
+                        <input type="radio" name="ph_obs" value="alkaline" class="peer hidden">
+                        <div class="glass-input p-8">
+                            <div class="icon-box mb-6"><i class="fa-solid fa-vial-circle-check"></i></div>
+                            <h4 class="font-black text-slate-800 text-lg">Alkaline</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">White/Salty Crust</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- NAVIGATION BUTTONS -->
+            <div class="flex items-center justify-between pt-12 border-t border-slate-100">
+                <button type="button" id="prevBtn" class="px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all invisible btn-3d btn-3d-slate">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Previous
+                </button>
+                
+                <button type="button" id="nextBtn" class="h-16 px-10 btn-agri-main">
+                    Next Step <i class="fa-solid fa-arrow-right ml-2 opacity-50"></i>
+                </button>
++
+                <button type="submit" id="submitBtn" class="hidden h-16 px-12 btn-agri-main">
+                    Run Analysis <i class="fa-solid fa-bolt-lightning ml-2"></i>
+                </button>
+            </div>
+
+        </form>
+        </div>
+
+        <div class="mt-16 bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-slate-200 shadow-lg flex items-start gap-6 animate-up">
+            <div class="w-12 h-12 rounded-2xl bg-agri-50 flex items-center justify-center text-agri-600 shadow-inner text-xl flex-shrink-0">
+                <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <div>
+                <h4 class="font-black text-slate-800 text-lg mb-2">Real-World Logic</h4>
+                <p class="text-slate-600 font-bold text-sm leading-relaxed">
+                    This engine uses professional heuristics to translate your practical observations into precise scientific parameters. By combining soil physics, topography, and seasonal data, we provide a high-accuracy match for your specific "real-life" farming experience.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentStep = 1;
+        const totalSteps = 5;
+        const steps = document.querySelectorAll('.engine-step');
+        const indicators = document.querySelectorAll('.step-indicator');
+        const progressBar = document.getElementById('progressBar');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function updateUI() {
+            // Update steps
+            steps.forEach(s => s.classList.remove('active'));
+            document.querySelector(`.engine-step[data-step="${currentStep}"]`).classList.add('active');
+
+            // Update indicators
+            indicators.forEach(ind => {
+                const step = parseInt(ind.dataset.step);
+                if (step < currentStep) {
+                    ind.classList.add('bg-agri-500', 'border-agri-500', 'text-white');
+                    ind.classList.remove('bg-white', 'border-slate-100', 'text-slate-400');
+                    ind.innerHTML = '<i class="fa-solid fa-check"></i>';
+                } else if (step === currentStep) {
+                    ind.classList.add('border-agri-500', 'text-agri-600', 'scale-125');
+                    ind.classList.remove('bg-agri-500', 'text-white');
+                    ind.innerHTML = step;
+                } else {
+                    ind.classList.remove('bg-agri-500', 'border-agri-500', 'text-white', 'text-agri-600', 'scale-125');
+                    ind.classList.add('bg-white', 'border-slate-100', 'text-slate-400');
+                    ind.innerHTML = step;
+                }
+            });
+
+            // Update Progress Bar
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Update Buttons
+            if (currentStep === 1) {
+                prevBtn.classList.add('invisible');
+            } else {
+                prevBtn.classList.remove('invisible');
+            }
+
+            if (currentStep === totalSteps) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateUI();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        });
+
+        // Initialize UI
+        updateUI();
+    });
+</script>
+
+<style>
+    .animate-shake { animation: shake 0.5s ease-in-out; }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+</style>
+{% endblock %}

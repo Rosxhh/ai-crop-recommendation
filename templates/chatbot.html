@@ -3,32 +3,38 @@
 {% block content %}
 <div class="h-[calc(100vh-80px)] w-full flex overflow-hidden lg:animate-[fade-in-up_0.5s_ease-out] relative">
     
-    <!-- Sidebar: ChatGPT Style -->
-    <div id="sidebar" class="w-72 bg-slate-900 text-slate-100 flex flex-col transition-all duration-300 -translate-x-full fixed inset-y-0 left-0 z-[100] lg:relative lg:translate-x-0 border-r border-slate-800 shadow-2xl lg:shadow-none">
-        <!-- New Chat Button -->
+    <!-- Sidebar: ChatGPT Style (Lite Green Theme) -->
+    <div id="sidebar" style="background-color: #f0fdf4 !important;" class="w-72 bg-emerald-50 text-slate-900 flex flex-col transition-all duration-300 -translate-x-full fixed top-20 bottom-0 left-0 z-[100] lg:relative lg:translate-x-0 lg:top-0 border-r border-slate-900/10 shadow-2xl lg:shadow-none">
         <div class="p-4">
-            <button onclick="startNewChat()" class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl transition-all group font-bold">
+            <button onclick="startNewChat()" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all group font-black btn-3d btn-3d-slate shadow-sm">
                 <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-plus text-sm group-hover:rotate-90 transition-transform"></i>
-                    <span>New Chat</span>
+                    <i class="fa-solid fa-plus text-agri-600 text-sm group-hover:rotate-90 transition-transform"></i>
+                    <span class="text-slate-700 uppercase tracking-widest text-[10px]">New Chat</span>
                 </div>
             </button>
         </div>
 
         <!-- Recent Chats List -->
         <div class="flex-1 overflow-y-auto px-1 space-y-1 custom-scrollbar" id="chatHistoryList">
-            <div class="px-4 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">History</div>
-            <div class="p-8 text-center text-slate-600 text-xs italic">Loading history...</div>
+            <div class="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">History</div>
+            <div class="p-8 text-center text-slate-400 text-xs italic">Loading history...</div>
         </div>
 
-        <!-- Sidebar Footer -->
-        <div class="p-4 border-t border-slate-800/50 bg-slate-900">
-            <div class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 transition-colors group">
+        <div class="px-4 py-2 space-y-2 border-t border-slate-100">
+            <a href="/dashboard/" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all group font-black text-[10px] uppercase tracking-widest btn-3d btn-3d-slate shadow-sm">
+                <i class="fa-solid fa-arrow-left text-[10px] group-hover:-translate-x-1 transition-transform"></i>
+                <span>Return to Hub</span>
+            </a>
+        </div>
+
+        <!-- Sidebar Footer (Lite Green Theme) -->
+        <div class="p-4 border-t border-emerald-100 bg-emerald-200/20">
+            <div class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white transition-colors group">
                 <div class="w-8 h-8 rounded-lg bg-agri-600 text-white flex items-center justify-center text-sm font-black shadow-lg">VR</div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-[10px] text-slate-500 truncate font-black uppercase tracking-widest">AgriCore <span class="text-white">Premium</span></p>
+                    <p class="text-[10px] text-slate-400 truncate font-black uppercase tracking-widest">AgriCore <span class="text-agri-600">Premium</span></p>
                 </div>
-                <button onclick="toggleSidebar()" class="lg:hidden text-slate-500 hover:text-white">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-slate-900">
                     <i class="fa-solid fa-angles-left"></i>
                 </button>
             </div>
@@ -39,10 +45,10 @@
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden transition-opacity"></div>
 
     <!-- Main Chat Window -->
-    <div class="flex-1 flex flex-col min-w-0 relative bg-slate-50 overflow-hidden">
+    <div class="flex-1 flex flex-col min-w-0 relative bg-white overflow-hidden">
         
         <!-- Header -->
-        <div class="bg-white px-4 sm:px-8 py-4 border-b border-slate-100 flex justify-between items-center relative z-20 shadow-sm">
+        <div class="bg-white px-4 sm:px-8 py-4 border-b border-slate-900/10 flex justify-between items-center relative z-20 shadow-sm">
             <div class="flex items-center gap-2 sm:gap-4">
                 <a href="/" class="w-10 h-10 bg-slate-50 shadow-sm rounded-xl flex items-center justify-center text-slate-400 hover:text-agri-600 border border-slate-100 transition-colors" title="Back to Dashboard">
                     <i class="fa-solid fa-arrow-left"></i>
@@ -55,7 +61,7 @@
                         <i class="fa-solid fa-robot text-xl"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-black text-slate-800 leading-none">AgriCore <span class="text-agri-600">AI</span></h2>
+                        <h2 class="text-lg font-black text-slate-800 leading-none" data-i18n="brand">AgriCore</h2>
                         <p class="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1 hidden sm:flex items-center gap-1.5">
                             <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span> Specialist Online
                         </p>
@@ -79,7 +85,7 @@
         </div>
 
         <!-- Input Section -->
-        <div class="p-4 sm:p-8 bg-white border-t border-slate-100 z-20">
+        <div class="p-4 sm:p-8 bg-emerald-50 border-t border-slate-900/10 z-20">
             
             <!-- Image Preview -->
             <div id="imagePreviewContainer" class="hidden max-w-4xl mx-auto mb-6">
@@ -97,11 +103,11 @@
                 <div class="relative flex items-end gap-2 sm:gap-4">
                     
                     <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
-                    <button onclick="document.getElementById('imageInput').click()" class="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-white text-slate-400 hover:text-agri-600 rounded-2xl flex items-center justify-center transition-all border border-slate-100 shadow-sm" title="Attach Image">
+                    <button onclick="document.getElementById('imageInput').click()" class="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 rounded-2xl flex items-center justify-center transition-all shadow-sm btn-3d btn-3d-slate" title="Attach Image">
                         <i class="fa-solid fa-paperclip text-lg sm:text-xl"></i>
                     </button>
 
-                    <div class="flex-1 min-h-[56px] bg-white border-2 border-slate-100 rounded-2xl sm:rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] focus-within:border-agri-400/50 transition-all flex items-center overflow-hidden">
+                    <div class="flex-1 min-h-[56px] bg-white border-2 border-slate-900/10 rounded-2xl sm:rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] focus-within:border-agri-400/50 transition-all flex items-center overflow-hidden">
                         <textarea id="messageInput" rows="1" class="flex-1 bg-transparent border-none px-4 sm:px-6 py-4 outline-none resize-none text-slate-700 font-medium placeholder:text-slate-300 max-h-40" placeholder="Type or ask in your language..."></textarea>
                         
                         <div class="flex items-center gap-1 sm:gap-2 pr-2 sm:pr-4 pl-2 border-l border-slate-50 ml-2">
@@ -116,13 +122,15 @@
                             <button id="voiceToggleBtn" onclick="toggleVoice()" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-300 hover:text-agri-500">
                                 <i class="fa-solid fa-volume-high" id="voiceIcon"></i>
                             </button>
-                            <button id="micBtn" onclick="toggleSpeech()" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-300 hover:text-red-500">
-                                <i class="fa-solid fa-microphone" id="micIcon"></i>
+                            <button id="micBtn" onclick="toggleSpeech()" class="relative w-12 h-12 rounded-full flex flex-col items-center justify-center text-slate-300 hover:text-red-500 transition-all border border-transparent hover:border-red-100 group">
+                                <div id="micGlow" class="hidden mic-active-glow"></div>
+                                <i class="fa-solid fa-microphone text-lg" id="micIcon"></i>
+                                <span id="micLangLabel" class="text-[7px] font-black uppercase mt-0.5 opacity-60">EN</span>
                             </button>
                         </div>
                     </div>
 
-                    <button id="sendBtn" onclick="sendMessage()" class="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-gradient-to-br from-agri-500 to-agri-700 text-white rounded-2xl sm:rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-agri-600/20 hover:shadow-agri-600/40 hover:-translate-y-1 transition-all active:scale-95 group">
+                    <button id="sendBtn" onclick="sendMessage()" class="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 bg-agri-600 text-white rounded-2xl flex items-center justify-center hover:bg-agri-700 shadow-xl shadow-agri-600/20 transition-all group">
                         <i class="fa-solid fa-paper-plane text-lg sm:text-xl group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
                     </button>
                 </div>
@@ -171,6 +179,11 @@
             'Telugu': 'వాయిస్ మోడ్ యాక్టివ్. తెలుగు సిద్ధంగా ఉంది.',
             'Kannada': 'ಧ್ವನಿ ಮೋಡ್ ಸಕ್ರಿಯವಾಗಿದೆ. ಕನ್ನಡ ಸಿದ್ಧವಾಗಿದೆ.'
         };
+        
+        // Update UI indicator
+        const shortCodes = { 'English': 'EN', 'Tamil': 'TA', 'Hindi': 'HI', 'Telugu': 'TE', 'Kannada': 'KN' };
+        document.getElementById('micLangLabel').innerText = shortCodes[lang] || 'EN';
+        
         speakText(msgMap[lang], lang);
     }
 
@@ -181,16 +194,27 @@
         const clean = text.replace(/[*#_]/g, '').replace(/<[^>]*>/g, '').replace(/\*\*.*?\*\*/g, '');
         const utterance = new SpeechSynthesisUtterance(clean);
         const code = langMap[lang];
-        
-        // Advanced logic to find NATIVE voices
-        const targetVoice = voices.find(v => v.lang === code && (v.name.includes("Google") || v.localService)) || 
-                            voices.find(v => v.lang === code) ||
-                            voices.find(v => v.lang.startsWith(code.split('-')[0])) ||
-                            voices.find(v => v.name.toLowerCase().includes(lang.toLowerCase()));
-        
-        if (targetVoice) utterance.voice = targetVoice;
         utterance.lang = code;
         utterance.rate = 1.0;
+        
+        let availableVoices = window.speechSynthesis.getVoices();
+        if (availableVoices.length === 0) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                availableVoices = window.speechSynthesis.getVoices();
+                performSpeak(utterance, availableVoices, code, lang);
+            };
+        } else {
+            performSpeak(utterance, availableVoices, code, lang);
+        }
+    }
+
+    function performSpeak(utterance, voicesList, code, langName) {
+        const targetVoice = voicesList.find(v => v.lang === code && (v.name.includes("Google") || v.localService)) || 
+                            voicesList.find(v => v.lang === code) ||
+                            voicesList.find(v => v.lang.startsWith(code.split('-')[0])) ||
+                            voicesList.find(v => v.name.toLowerCase().includes(langName.toLowerCase()));
+        
+        if (targetVoice) utterance.voice = targetVoice;
         window.speechSynthesis.speak(utterance);
     }
 
@@ -215,7 +239,7 @@
             data.chats.forEach(chat => {
                 const isActive = chat.session_id === currentSessionId;
                 const div = document.createElement('div');
-                div.className = `mx-2 px-3 py-3 rounded-xl cursor-default flex items-center gap-3 transition-all group/item ${isActive ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'}`;
+                div.className = `mx-2 px-3 py-3 rounded-xl cursor-default flex items-center gap-3 transition-all group/item ${isActive ? 'bg-emerald-100 text-slate-900 font-black' : 'text-slate-600 hover:bg-white/50 hover:text-slate-900'}`;
                 
                 div.innerHTML = `
                     <div class="flex-1 flex items-center gap-3 cursor-pointer min-w-0" onclick="loadSession('${chat.session_id}')">
@@ -286,9 +310,10 @@
         if (text === "[Image Content]") messageContent = "";
 
         const content = isTyping 
-            ? `<div class="bg-white border border-slate-100 px-6 py-4 rounded-3xl flex items-center gap-3 shadow-sm"><div class="dot-typing"></div></div>`
+            ? `<div class="bg-white border border-emerald-100 px-6 py-4 rounded-3xl flex items-center gap-3 shadow-sm"><div class="dot-typing"></div></div>`
             : `<div class="relative flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-full">
-                <div class="${isUser ? 'bg-slate-800 text-white shadow-xl' : 'bg-white border border-slate-100 shadow-md'} px-6 py-4 rounded-3xl rounded-${isUser?'tr':'tl'}-sm font-medium leading-relaxed text-base sm:text-lg overflow-hidden break-words">
+                <div class="${isUser ? 'bg-agri-600 text-white shadow-xl' : 'bg-white border border-emerald-100 shadow-md'} px-6 py-4 rounded-3xl rounded-${isUser?'tr':'tl'}-sm font-bold leading-relaxed text-base sm:text-lg overflow-hidden break-words text-slate-900">
+                    ${isUser ? `<style>.text-slate-900 { color: white !important; }</style>` : '<style>.text-slate-900 { color: black !important; }</style>'}
                     ${imageUrl ? `<img src="${imageUrl}" class="max-w-full h-auto rounded-xl mb-3 border border-white/20 shadow-sm" alt="Shared Image">` : ''}
                     ${messageContent}
                 </div>
@@ -331,7 +356,15 @@
             const data = await res.json();
             typing.remove();
             
-            const reply = data.reply.replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-agri-700">$1</strong>');
+            // Sophisticated Markdown Parser for UNLIMITED responses
+            let reply = data.reply
+                .replace(/\*\*\*(.*?)\*\*\*/g, '<strong class="font-extrabold text-agri-800 underline">$1</strong>') // Bold Italics
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-agri-700">$1</strong>') // Bold
+                .replace(/^\* (.*$)/gm, '<li class="ml-4 list-disc text-slate-800">$1</li>') // Bullet points
+                .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-black text-slate-900 mt-4 mb-2">$1</h1>') // H1
+                .replace(/^## (.*$)/gm, '<h2 class="text-xl font-black text-slate-800 mt-3 mb-1">$1</h2>') // H2
+                .replace(/`(.*?)`/g, '<code class="bg-slate-100 px-2 py-0.5 rounded text-rose-600 font-mono text-sm">$1</code>'); // Inline code
+
             addMessage(reply);
             speakText(data.reply, languageSelect.value);
             loadChatHistory();
@@ -343,13 +376,36 @@
         const res = await fetch('/chatbot/api/');
         const data = await res.json();
         currentSessionId = data.session_id;
-        if (data.history?.length > 0) {
+
+        // Sync language with global setting
+        const globalLang = localStorage.getItem('agri_lang') || 'en';
+        const langMapReverse = { 'en': 'English', 'ta': 'Tamil', 'hi': 'Hindi', 'te': 'Telugu', 'kn': 'Kannada' };
+        if (langMapReverse[globalLang]) {
+            languageSelect.value = langMapReverse[globalLang];
+        }
+        
+        const initialMessage = `{{ initial_message|escapejs }}`;
+        
+        if (initialMessage && initialMessage.trim() !== "") {
+            messagesEl.innerHTML = '';
+            inputEl.value = initialMessage;
+            sendMessage();
+        }
+        else if (data.history?.length > 0) {
             messagesEl.innerHTML = '';
             data.history.forEach(m => addMessage(m.content, m.role === 'user', false, m.image_data));
         } else {
-             addMessage("Namaste! I am your **AgriCore AI Master**. 🌾 How can I help you today?", false);
+             addMessage("Namaste! I am your **AgriCore Master**. 🌾 How can I help you today?", false);
         }
         loadChatHistory();
+    });
+
+    window.addEventListener('agriLangChanged', (e) => {
+        const langMapReverse = { 'en': 'English', 'ta': 'Tamil', 'hi': 'Hindi', 'te': 'Telugu', 'kn': 'Kannada' };
+        if (langMapReverse[e.detail]) {
+            languageSelect.value = langMapReverse[e.detail];
+            onLanguageChange();
+        }
     });
 
     // Standard Handlers
@@ -383,13 +439,94 @@
     }
 
     let recognition;
-    if ('webkitSpeechRecognition' in window) {
-        recognition = new webkitSpeechRecognition();
-        recognition.onstart = () => micIcon.className = "fa-solid fa-circle-stop text-red-500 animate-pulse";
-        recognition.onresult = (e) => { inputEl.value = e.results[0][0].transcript; inputEl.dispatchEvent(new Event('input')); sendMessage(); };
-        recognition.onend = () => micIcon.className = "fa-solid fa-microphone text-lg";
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            const langName = languageSelect.value;
+            console.log(`🎤 Mic session started in ${langName}`);
+            micIcon.className = "fa-solid fa-stop text-red-500 animate-pulse";
+            document.getElementById('micGlow').classList.remove('hidden');
+            inputEl.placeholder = `Listening in ${langName}... Speak now! 🌾`;
+            inputEl.focus();
+        };
+
+        recognition.onresult = (e) => {
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = e.resultIndex; i < e.results.length; ++i) {
+                if (e.results[i].isFinal) {
+                    finalTranscript += e.results[i][0].transcript;
+                } else {
+                    interimTranscript += e.results[i][0].transcript;
+                }
+            }
+
+            if (finalTranscript) {
+                inputEl.value = finalTranscript;
+            } else if (interimTranscript) {
+                inputEl.value = interimTranscript;
+            }
+
+            inputEl.dispatchEvent(new Event('input'));
+
+            if (finalTranscript) {
+                recognition.stop();
+                setTimeout(() => {
+                    if (inputEl.value.trim() !== "") {
+                        sendMessage();
+                    }
+                }, 700);
+            }
+        };
+
+        recognition.onerror = (e) => {
+            console.error("❌ Mic Error:", e.error);
+            micIcon.className = "fa-solid fa-microphone text-lg";
+            document.getElementById('micGlow').classList.add('hidden');
+            
+            const errorMap = {
+                'no-speech': "No speech detected. Try again.",
+                'not-allowed': "⚠️ Browser blocked mic. Check address bar settings!",
+                'network': "Internet error. Voice needs cloud sync.",
+                'aborted': "Mic session aborted."
+            };
+            inputEl.placeholder = errorMap[e.error] || `Mic Error: ${e.error}`;
+        };
+
+        recognition.onend = () => {
+            console.log("🎤 Mic session ended");
+            micIcon.className = "fa-solid fa-microphone text-lg";
+            document.getElementById('micGlow').classList.add('hidden');
+            if (!inputEl.value) {
+                inputEl.placeholder = "Type or ask in your language... (V3.2)";
+            }
+        };
     }
-    function toggleSpeech() { if (!recognition) return; recognition.lang = langMap[languageSelect.value]; recognition.start(); }
+
+    function toggleSpeech() { 
+        if (!recognition) {
+            alert("This browser does not support voice features. Please use Chrome.");
+            return; 
+        }
+        
+        try {
+            // Force reset to prevent getting stuck
+            recognition.stop();
+            setTimeout(() => {
+                recognition.lang = langMap[languageSelect.value];
+                recognition.start();
+            }, 100);
+        } catch(e) {
+            console.log("Mic toggle notice:", e);
+            recognition.stop();
+        }
+    }
 
     window.handleImageSelection = function(e) {
         const file = e.files ? e.files[0] : (e.target.files ? e.target.files[0] : null);
@@ -414,5 +551,22 @@
     @keyframes dotTyping { 33% { opacity: 0; } 66% { opacity: 1; } 100% { opacity: 0; } }
     @keyframes dotTypingAfter { 0% { opacity: 0; } 66% { opacity: 0; } 100% { opacity: 1; } }
 </style>
+    <style>
+        #agriSpeakBtn { display: none !important; } /* Hide global FAB on Chat page */
+        
+        .mic-active-glow {
+            position: absolute;
+            inset: -4px;
+            background: rgba(239, 68, 68, 0.2);
+            border-radius: 9999px;
+            animation: pulse-red 2s infinite;
+            z-index: -1;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); opacity: 0.8; }
+            70% { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+    </style>
 </div>
 {% endblock %}

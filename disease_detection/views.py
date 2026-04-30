@@ -21,12 +21,13 @@ def predict_disease_api(request):
         try:
             body = json.loads(request.body)
             b64_img = body.get('image_data')
+            lang = body.get('language', 'en')
 
             if not b64_img:
                 return JsonResponse({"error": "No image data provided"}, status=400)
 
             # Pass the base64 string to our ML service
-            result = detector.predict_from_base64(b64_img)
+            result = detector.predict_from_base64(b64_img, lang=lang)
 
             if result.get("success"):
                 return JsonResponse({
@@ -35,7 +36,11 @@ def predict_disease_api(request):
                     "confidence": result["confidence"],
                     "description": result["description"],
                     "treatment": result["treatment"],
-                    "prevention": result["prevention"]
+                    "prevention": result["prevention"],
+                    "soil_recommendation": result["soil_recommendation"],
+                    "disease_details": result["disease_details"],
+                    "youtube_search_query": result["youtube_search_query"],
+                    "youtube_video_id": result["youtube_video_id"]
                 })
             else:
                 return JsonResponse({"error": result.get("error", "Prediction failed")}, status=500)

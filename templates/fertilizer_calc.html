@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="relative w-full min-h-screen pb-24 bg-transparent overflow-hidden">
+  <div class="absolute top-0 left-0 w-96 h-96 bg-green-50 rounded-full blur-[120px] -z-10 opacity-70"></div>
+  <div class="absolute bottom-0 right-0 w-96 h-96 bg-lime-50 rounded-full blur-[100px] -z-10 opacity-60"></div>
+
+  <div class="max-w-5xl mx-auto px-4 py-10">
+    <a href="/" class="inline-flex items-center text-slate-500 hover:text-green-600 font-bold text-sm mb-6 transition-colors">
+      <i class="fa-solid fa-arrow-left mr-2"></i> Dashboard
+    </a>
+
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-green-100 text-green-700 shadow-lg border border-green-200 mb-4">
+        <i class="fa-solid fa-flask-vial text-2xl"></i>
+      </div>
+      <h1 class="text-4xl font-black text-slate-900 tracking-tight mb-2">Fertilizer <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-lime-500">Calculator</span></h1>
+      <p class="text-slate-500 text-base max-w-lg mx-auto">Enter your field details to get exact NPK fertilizer quantities and cost estimates.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- INPUT PANEL -->
+      <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+        <h2 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-green-500"></i> Field Details
+        </h2>
+
+        <div class="space-y-5">
+          <div>
+            <label class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">Soil Type</label>
+            <select id="soil" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-400">
+              <option value="Loamy">Loamy</option>
+              <option value="Sandy">Sandy</option>
+              <option value="Clay">Clay</option>
+              <option value="Silty">Silty</option>
+              <option value="Peaty">Peaty</option>
+              <option value="Chalky">Chalky</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">Crop</label>
+            <select id="crop" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-400">
+              <option value="Rice">Rice</option>
+              <option value="Wheat">Wheat</option>
+              <option value="Maize">Maize (Corn)</option>
+              <option value="Cotton">Cotton</option>
+              <option value="Sugarcane">Sugarcane</option>
+              <option value="Groundnut">Groundnut</option>
+              <option value="Soybean">Soybean</option>
+              <option value="Tomato">Tomato</option>
+              <option value="Potato">Potato</option>
+              <option value="Sunflower">Sunflower</option>
+              <option value="Barley">Barley</option>
+              <option value="Chickpea">Chickpea</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">Land Area</label>
+            <div class="flex gap-3">
+              <input id="area" type="number" value="1" min="0.1" step="0.1"
+                class="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-400">
+              <select id="unit" class="px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-green-400">
+                <option value="ha">Hectares</option>
+                <option value="acre">Acres</option>
+                <option value="bigha">Bigha</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="calculate()"
+            class="w-full py-4 rounded-2xl bg-gradient-to-r from-green-500 to-lime-500 text-white font-black text-lg shadow-lg hover:from-green-600 hover:to-lime-600 transform hover:-translate-y-0.5 transition-all">
+            <i class="fa-solid fa-calculator mr-2"></i> Calculate Fertilizer
+          </button>
+        </div>
+      </div>
+
+      <!-- RESULTS PANEL -->
+      <div id="results" class="space-y-4 opacity-0 transition-all duration-500">
+
+        <!-- Recommendation header -->
+        <div class="bg-gradient-to-br from-green-600 to-lime-600 rounded-3xl p-6 text-white shadow-xl">
+          <p class="text-green-100 text-xs font-black uppercase tracking-widest mb-1">Recommendation for</p>
+          <h3 id="res-heading" class="text-2xl font-black">— on — soil</h3>
+          <p id="res-area-label" class="text-green-200 text-sm font-bold mt-1">Area: —</p>
+        </div>
+
+        <!-- NPK cards -->
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100 text-center">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl mx-auto mb-2 flex items-center justify-center">
+              <span class="font-black text-blue-700 text-sm">N</span>
+            </div>
+            <p id="n-val" class="text-2xl font-black text-blue-800">—</p>
+            <p class="text-xs text-blue-500 font-bold">kg Nitrogen</p>
+          </div>
+          <div class="bg-orange-50 rounded-2xl p-4 border border-orange-100 text-center">
+            <div class="w-10 h-10 bg-orange-100 rounded-xl mx-auto mb-2 flex items-center justify-center">
+              <span class="font-black text-orange-700 text-sm">P</span>
+            </div>
+            <p id="p-val" class="text-2xl font-black text-orange-800">—</p>
+            <p class="text-xs text-orange-500 font-bold">kg Phosphorus</p>
+          </div>
+          <div class="bg-purple-50 rounded-2xl p-4 border border-purple-100 text-center">
+            <div class="w-10 h-10 bg-purple-100 rounded-xl mx-auto mb-2 flex items-center justify-center">
+              <span class="font-black text-purple-700 text-sm">K</span>
+            </div>
+            <p id="k-val" class="text-2xl font-black text-purple-800">—</p>
+            <p class="text-xs text-purple-500 font-bold">kg Potassium</p>
+          </div>
+        </div>
+
+        <!-- Fertilizer bags -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-lg p-5 space-y-4">
+          <h4 class="font-black text-slate-700 text-sm uppercase tracking-wide">Fertilizer Bags Required</h4>
+          <div id="fert-urea" class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center text-yellow-700 text-xs font-black">U</div>
+              <div>
+                <p class="font-black text-slate-800 text-sm">Urea (46% N)</p>
+                <p class="text-xs text-slate-500">₹6.5/kg</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p id="urea-kg" class="font-black text-slate-900">— kg</p>
+              <p id="urea-cost" class="text-xs text-green-600 font-bold">₹—</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-700 text-xs font-black">D</div>
+              <div>
+                <p class="font-black text-slate-800 text-sm">DAP (46% P₂O₅)</p>
+                <p class="text-xs text-slate-500">₹27/kg</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p id="dap-kg" class="font-black text-slate-900">— kg</p>
+              <p id="dap-cost" class="text-xs text-green-600 font-bold">₹—</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-700 text-xs font-black">M</div>
+              <div>
+                <p class="font-black text-slate-800 text-sm">MOP (60% K₂O)</p>
+                <p class="text-xs text-slate-500">₹17/kg</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p id="mop-kg" class="font-black text-slate-900">— kg</p>
+              <p id="mop-cost" class="text-xs text-green-600 font-bold">₹—</p>
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="border-t border-slate-200 pt-4 flex justify-between items-center">
+            <span class="font-black text-slate-800">💰 Total Estimated Cost</span>
+            <span id="total-cost" class="text-2xl font-black text-green-700">₹—</span>
+          </div>
+        </div>
+
+        <!-- Application tip -->
+        <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 flex gap-3">
+          <i class="fa-solid fa-lightbulb text-amber-500 mt-0.5"></i>
+          <p id="app-tip" class="text-sm text-amber-800 font-medium leading-relaxed">—</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NPK = {
+  Rice:      {N:120, P:60,  K:60},
+  Wheat:     {N:120, P:60,  K:40},
+  Maize:     {N:150, P:75,  K:40},
+  Cotton:    {N:120, P:60,  K:60},
+  Sugarcane: {N:250, P:100, K:100},
+  Groundnut: {N:25,  P:50,  K:50},
+  Soybean:   {N:30,  P:60,  K:40},
+  Tomato:    {N:150, P:100, K:100},
+  Potato:    {N:180, P:80,  K:120},
+  Sunflower: {N:80,  P:60,  K:60},
+  Barley:    {N:100, P:50,  K:30},
+  Chickpea:  {N:40,  P:60,  K:30},
+};
+const SOIL_MULT = {
+  Loamy:  {N:1.0, P:1.0, K:1.0},
+  Sandy:  {N:1.3, P:1.2, K:1.2},
+  Clay:   {N:0.9, P:0.9, K:0.8},
+  Silty:  {N:1.0, P:0.9, K:0.9},
+  Peaty:  {N:0.8, P:1.1, K:1.1},
+  Chalky: {N:1.1, P:1.2, K:1.0},
+};
+const TIPS = {
+  Rice: 'Apply N in 3 splits: 50% basal, 25% at tillering, 25% at panicle initiation.',
+  Wheat: 'Apply 50% N + full P+K as basal, remaining N at first irrigation.',
+  Maize: 'Apply P+K at sowing; split N into 3 applications across the season.',
+  Cotton: 'Apply all P+K as basal. Split N — 30% basal, 40% at squaring, 30% at boll development.',
+  Sugarcane: 'Apply full P+K at planting. Split N over 4 applications during growth.',
+  Groundnut: 'Apply all at sowing — low N as it fixes its own. Focus on P+K for pod development.',
+  Soybean: 'Low starter N only. Inoculate seeds with Rhizobium. Focus on P+K.',
+  Tomato: 'Apply P+K at transplant. Split N weekly. Foliar spray at flowering.',
+  Potato: 'Apply 60% N + full P+K at planting. Remaining N at earthing up.',
+  Sunflower: 'Apply full dose at sowing time. Boron micronutrient spray at bud stage recommended.',
+  Barley: 'Apply all in a single basal dose at sowing time.',
+  Chickpea: 'Starter dose only. Soil-applied Rhizobium inoculation reduces N requirement significantly.',
+};
+const UNIT_TO_HA = { ha: 1, acre: 0.4047, bigha: 0.2529 };
+
+function fmt(n) { return n.toFixed(1); }
+function fmtRs(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+
+function calculate() {
+  const crop = document.getElementById('crop').value;
+  const soil = document.getElementById('soil').value;
+  const area = parseFloat(document.getElementById('area').value) || 1;
+  const unit = document.getElementById('unit').value;
+  const ha = area * UNIT_TO_HA[unit];
+
+  const base = NPK[crop];
+  const mult = SOIL_MULT[soil];
+  const N = base.N * mult.N * ha;
+  const P = base.P * mult.P * ha;
+  const K = base.K * mult.K * ha;
+
+  const urea = N / 0.46;
+  const dap  = P / 0.46;
+  const mop  = K / 0.60;
+
+  const ureaCost = urea * 6.5;
+  const dapCost  = dap  * 27;
+  const mopCost  = mop  * 17;
+  const total    = ureaCost + dapCost + mopCost;
+
+  document.getElementById('n-val').innerText = fmt(N);
+  document.getElementById('p-val').innerText = fmt(P);
+  document.getElementById('k-val').innerText = fmt(K);
+  document.getElementById('urea-kg').innerText   = fmt(urea) + ' kg';
+  document.getElementById('urea-cost').innerText = fmtRs(ureaCost);
+  document.getElementById('dap-kg').innerText    = fmt(dap)  + ' kg';
+  document.getElementById('dap-cost').innerText  = fmtRs(dapCost);
+  document.getElementById('mop-kg').innerText    = fmt(mop)  + ' kg';
+  document.getElementById('mop-cost').innerText  = fmtRs(mopCost);
+  document.getElementById('total-cost').innerText = fmtRs(total);
+  document.getElementById('res-heading').innerText = crop + ' on ' + soil + ' soil';
+  document.getElementById('res-area-label').innerText = `Area: ${fmt(area)} ${unit} (${fmt(ha)} ha)`;
+  document.getElementById('app-tip').innerText = TIPS[crop] || 'Split fertilizer applications across the season for best results.';
+
+  const r = document.getElementById('results');
+  r.classList.remove('opacity-0');
+  r.classList.add('opacity-100');
+}
+</script>
+{% endblock %}

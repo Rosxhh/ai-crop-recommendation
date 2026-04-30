@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="relative w-full min-h-screen pb-12 overflow-hidden bg-transparent">
+    
+    <!-- Background Accents -->
+    <div class="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-50 rounded-full blur-[160px] -z-10 opacity-60"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[60%] bg-blue-50 rounded-full blur-[140px] -z-10 opacity-40"></div>
+
+    <div class="max-w-6xl mx-auto px-6 relative z-10">
+        
+        <!-- Header & Back Button -->
+        <div class="flex items-center gap-6 mb-12 animate-[fadeInDown_0.6s_ease-out]">
+            <a href="{% url 'recommendation_history' %}" class="w-14 h-14 rounded-2xl flex items-center justify-center bg-agri-600 text-white hover:bg-agri-700 transition-all shadow-xl shadow-agri-600/30">
+                <i class="fa-solid fa-arrow-left text-xl"></i>
+            </a>
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 border border-white/80 backdrop-blur-sm text-slate-700 text-[10px] font-black uppercase tracking-[0.2em] mb-2 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-agri-500 animate-pulse"></span>
+                    Protocol ACR-{{ report.id|stringformat:"04d" }}
+                </div>
+                <h1 class="text-4xl font-black text-slate-900 tracking-tighter">Detailed Analysis Report</h1>
+                <p class="text-slate-500 font-medium text-sm mt-1">Check generated on {{ report.created_at|date:"F j, Y, g:i a" }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Primary Recommendation & Image -->
+            <div class="lg:col-span-1 space-y-8 animate-[fadeInUp_0.8s_ease-out]">
+                
+                <!-- Prediction Card -->
+                <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-agri-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity -z-10 translate-x-10 -translate-y-10"></div>
+                    
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Recommended Crop</p>
+                    
+                    <div class="w-24 h-24 rounded-[2rem] bg-agri-50 text-agri-600 flex items-center justify-center text-4xl border border-agri-100 shadow-inner mb-6">
+                        <i class="{{ crop_details.icon }}"></i>
+                    </div>
+                    
+                    <h2 class="text-5xl font-black text-slate-900 capitalize tracking-tighter mb-4">{{ report.predicted_crop }}</h2>
+                    <p class="text-slate-600 font-medium leading-relaxed">{{ crop_details.description }}</p>
+                </div>
+
+                <!-- Leaf Scan Image (If available) -->
+                {% if report.image %}
+                <div class="bg-white rounded-[2.5rem] p-4 border border-slate-100 shadow-xl">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-4">Leaf Scan Original</p>
+                    <div class="relative rounded-[2rem] overflow-hidden aspect-square group/img">
+                        <img src="{{ report.image.url }}" alt="Leaf Scan" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700">
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Right Column: Environmental & Soil Data -->
+            <div class="lg:col-span-2 space-y-8 animate-[fadeInUp_1s_ease-out]">
+                
+                <!-- NPK Soil Metrics -->
+                <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-2xl font-black text-slate-900 tracking-tighter">Soil Composition</h3>
+                        <div class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold tracking-wide">NPK Ratio Analysis</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Nitrogen -->
+                        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/0 to-emerald-100/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="relative z-10">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-emerald-600 text-lg">
+                                        N
+                                    </div>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nitrogen</span>
+                                </div>
+                                <div class="flex items-end gap-2">
+                                    <span class="text-5xl font-black text-slate-900 tracking-tighter">{{ report.nitrogen|floatformat:1 }}</span>
+                                </div>
+                                <p class="text-xs font-bold text-emerald-600 mt-2">Target: {{ crop_details.meta.ideal_npk.0 }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Phosphorus -->
+                        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-50/0 to-blue-100/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="relative z-10">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-blue-600 text-lg">
+                                        P
+                                    </div>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phosphorus</span>
+                                </div>
+                                <div class="flex items-end gap-2">
+                                    <span class="text-5xl font-black text-slate-900 tracking-tighter">{{ report.phosphorus|floatformat:1 }}</span>
+                                </div>
+                                <p class="text-xs font-bold text-blue-600 mt-2">Target: {{ crop_details.meta.ideal_npk.1 }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Potassium -->
+                        <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-gradient-to-br from-amber-50/0 to-amber-100/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="relative z-10">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-amber-500 text-lg">
+                                        K
+                                    </div>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Potassium</span>
+                                </div>
+                                <div class="flex items-end gap-2">
+                                    <span class="text-5xl font-black text-slate-900 tracking-tighter">{{ report.potassium|floatformat:1 }}</span>
+                                </div>
+                                <p class="text-xs font-bold text-amber-500 mt-2">Target: {{ crop_details.meta.ideal_npk.2 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Environmental Metrics -->
+                <div class="bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-100 relative overflow-hidden">
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-agri-100 rounded-full opacity-20 blur-[80px]"></div>
+                    
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tighter mb-8 relative z-10">Environmental Readings</h3>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+                        <!-- Temp -->
+                        <div class="bg-rose-50 rounded-2xl p-5 border border-rose-100">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-temperature-half mr-1 text-rose-500"></i> Temp</p>
+                            <p class="text-3xl font-black text-slate-900">{{ report.temperature|floatformat:1 }}<span class="text-lg text-slate-400 ml-1">°C</span></p>
+                        </div>
+                        <!-- Humidity -->
+                        <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-droplet mr-1 text-blue-500"></i> Humid</p>
+                            <p class="text-3xl font-black text-slate-900">{{ report.humidity|floatformat:1 }}<span class="text-lg text-slate-400 ml-1">%</span></p>
+                        </div>
+                        <!-- pH -->
+                        <div class="bg-amber-50 rounded-2xl p-5 border border-amber-100">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-flask mr-1 text-amber-500"></i> pH</p>
+                            <p class="text-3xl font-black text-slate-900">{{ report.ph|floatformat:1 }}</p>
+                        </div>
+                        <!-- Rainfall -->
+                        <div class="bg-indigo-50 rounded-2xl p-5 border border-indigo-100">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-cloud-rain mr-1 text-indigo-500"></i> Rain</p>
+                            <p class="text-3xl font-black text-slate-900">{{ report.rainfall|floatformat:1 }}<span class="text-lg text-slate-400 ml-1">mm</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agronomic Advice -->
+                <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-xl flex items-start gap-6">
+                    <div class="w-16 h-16 rounded-2xl bg-agri-50 text-agri-600 flex items-center justify-center text-2xl shrink-0">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tighter mb-2">Agronomic Tips</h3>
+                        <p class="text-slate-600 font-medium leading-relaxed">{{ crop_details.tips }}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+{% endblock %}
