@@ -31,7 +31,12 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'fallback-key-change-in-production')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # SECURITY: Allowed hosts loaded from .env
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,*.render.com,*.pythonanywhere.com').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,*.render.com,*.pythonanywhere.com,*.hf.space').split(',')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.render.com',
+    'https://*.hf.space',
+]
 
 
 # Application definition
