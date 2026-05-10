@@ -77,19 +77,11 @@ def predict_yield(request):
                 return _render_yield_form(request, "Invalid numeric input for soil/weather data.")
 
             # Model input: X = df[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall', 'Area']]
-            # Order must match training: N, P, K, temp, humidity, ph, rain, area
-            input_data = np.array([[
-                nitrogen, 
-                phosphorus, 
-                potassium, 
-                temperature, 
-                humidity, 
-                ph, 
-                rainfall, 
-                area
-            ]])
+            import pandas as pd
+            feature_names = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall', 'Area']
+            input_df = pd.DataFrame([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall, area]], columns=feature_names)
 
-            prediction = model.predict(input_data)
+            prediction = model.predict(input_df)
             total_yield = round(float(prediction[0]), 2)  # type: ignore
             yield_per_hectare = round(float(total_yield / area), 2) if area > 0 else 0.0  # type: ignore
 

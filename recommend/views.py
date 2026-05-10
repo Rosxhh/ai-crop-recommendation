@@ -72,10 +72,12 @@ def recommend_crop(request):
             ph          = _safe_float(request.POST.get("ph"),          0, 0, 14)
             rainfall    = _safe_float(request.POST.get("rainfall"),    0, 0, 5000)
 
-            input_data = np.array([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]])
+            import pandas as pd
+            feature_names = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
+            input_df = pd.DataFrame([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]], columns=feature_names)
 
             # Predict probabilities
-            probabilities = model.predict_proba(input_data)[0]
+            probabilities = model.predict_proba(input_df)[0]
             top_3_indices = np.argsort(probabilities)[-3:][::-1]
             
             from .crop_info import get_crop_data, CROP_MAPPING
@@ -261,8 +263,10 @@ def rapid_recommend(request):
             ph_val = ph_map.get(ph_obs, 6.8)
 
             # 🚀 RUN PREDICTION
-            input_data = np.array([[n, p, k, temp, hum, ph_val, rainfall]])
-            prediction = model.predict(input_data)
+            import pandas as pd
+            feature_names = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
+            input_df = pd.DataFrame([[n, p, k, temp, hum, ph_val, rainfall]], columns=feature_names)
+            prediction = model.predict(input_df)
             
             from .crop_info import get_crop_data
             crop_data = get_crop_data(int(prediction[0]))
