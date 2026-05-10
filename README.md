@@ -1,3 +1,12 @@
+---
+title: Crop Yield Project
+emoji: 🌾
+colorFrom: green
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # AI Crop Recommendation System
 
 This project recommends suitable crops based on soil nutrients and environmental conditions using Machine Learning.
