@@ -611,45 +611,41 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="antialiased font-sans flex flex-col min-h-screen relative bg-transparent">
+<body class="antialiased font-sans flex flex-col min-h-screen relative bg-transparent pb-24 sm:pb-0">
 
     <!-- 📱 Mobile Bottom Navigation (Glassmorphism) -->
-    {% if request.path != '/chatbot/' %}
+    {% if '/chatbot/' not in request.path %}
     <div class="sm:hidden fixed bottom-6 left-6 right-6 h-16 bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-[150] flex items-center justify-around px-2">
         <a href="/dashboard/" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
             <i class="fa-solid fa-house text-lg"></i>
-            <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
+            <span class="text-[8px] font-black uppercase">Home</span>
         </a>
         <a href="/recommend/" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
             <i class="fa-solid fa-microscope text-lg"></i>
-            <span class="text-[8px] font-black uppercase tracking-widest">Scan</span>
+            <span class="text-[8px] font-black uppercase">Scan</span>
         </a>
-        <a href="/chatbot/" class="w-12 h-12 bg-agri-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-agri-600/40 -translate-y-4 border-4 border-emerald-50">
-            <i class="fa-solid fa-comments text-xl"></i>
-        </a>
+        <div class="relative -top-8">
+            <a href="/chatbot/" class="w-14 h-14 bg-agri-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-agri-600/40 border-4 border-white active:scale-90 transition-all">
+                <i class="fa-solid fa-comments text-xl"></i>
+            </a>
+        </div>
         <a href="/recommend/history/" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
             <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-            <span class="text-[8px] font-black uppercase tracking-widest">History</span>
+            <span class="text-[8px] font-black uppercase">History</span>
         </a>
-        <button onclick="toggleDrawer()" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
-            <i class="fa-solid fa-bars text-lg"></i>
-            <span class="text-[8px] font-black uppercase tracking-widest">Menu</span>
+        <button onclick="toggleDrawer()" id="mobileMenuBtn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
+            <i class="fa-solid fa-bars-staggered text-lg"></i>
+            <span class="text-[8px] font-black uppercase">Menu</span>
         </button>
     </div>
     {% endif %}
 
     <!-- 🌾 Vibrant Farm Background (Lite Green Edition) -->
-    <!-- Global Premium Background (Solid Lite Green) -->
     <div class="fixed inset-0 -z-[100] bg-emerald-50"></div>
 
     <!-- Navbar (Lite Green & White) -->
     <header class="w-full h-20 flex items-center justify-between px-6 md:px-12 bg-white sticky top-0 z-[110] border-b border-slate-900/10 shadow-sm">
         <div class="flex items-center gap-4">
-            <!-- Mobile Menu Toggle -->
-            <button id="mobileMenuBtn" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-600 hover:bg-agri-50 hover:text-agri-600 transition-all">
-                <i class="fa-solid fa-bars-staggered text-lg"></i>
-            </button>
-
             <a href="{% if user.is_authenticated %}/dashboard/{% else %}/{% endif %}" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 bg-agri-600 rounded-xl flex items-center justify-center p-2 shadow-lg group-hover:rotate-12 transition-transform">
                     <i class="fa-solid fa-seedling text-white text-lg"></i>
@@ -658,13 +654,11 @@
             </a>
         </div>
 
-        <!-- Vertical Separator -->
         <div class="hidden lg:block w-[1px] h-8 bg-slate-200 mx-8"></div>
 
         <nav class="hidden lg:flex items-center h-full gap-3 xl:gap-6">
             <a href="/dashboard/" class="text-slate-600 font-black hover:text-agri-600 transition-colors uppercase text-[9px] xl:text-[10px] tracking-[0.15em] flex items-center h-full" data-i18n="nav_dash">Dashboard</a>
 
-            <!-- AI Scanner Dropdown -->
             <div class="relative group h-full">
                 <button class="text-slate-600 font-black hover:text-agri-600 transition-colors uppercase text-[9px] xl:text-[10px] tracking-[0.15em] flex items-center gap-1 h-full">
                     <span data-i18n="nav_scanner">AI Scanner</span> <i class="fa-solid fa-chevron-down text-[7px] mt-0.5"></i>
@@ -687,7 +681,6 @@
                 </div>
             </div>
 
-            <!-- More Tools Dropdown -->
             <div class="relative group h-full">
                 <button class="text-slate-600 font-black hover:text-agri-600 transition-colors uppercase text-[9px] xl:text-[10px] tracking-[0.15em] flex items-center gap-1 h-full">
                     <span data-i18n="tools">More Tools</span> <i class="fa-solid fa-chevron-down text-[7px] mt-0.5"></i>
@@ -729,7 +722,6 @@
         </nav>
 
         <div class="flex items-center gap-2 xl:gap-4 shrink-0">
-            <!-- Language Dropdown -->
             <div class="relative group h-9 hidden sm:block">
                 <button class="flex items-center gap-2 h-full px-4 rounded-xl bg-slate-100 text-slate-800 font-black text-[10px] hover:bg-slate-200 transition-all">
                     <i class="fa-solid fa-language text-agri-600 text-sm"></i>
@@ -762,40 +754,21 @@
                 </div>
             </div>
 
-            {% if user.is_authenticated %}
-            <div class="hidden sm:flex items-center h-11 px-2 bg-slate-100 border border-slate-200 rounded-2xl gap-2 xl:gap-3">
-                <div class="w-7 h-7 xl:w-8 xl:h-8 rounded-lg bg-agri-100 flex items-center justify-center text-agri-600 font-black text-xs">
-                    {{ user.first_name|default:user.username|slice:":1"|upper }}
-                </div>
-                <div class="flex flex-col justify-center hidden lg:flex">
-                    <p class="text-[6px] xl:text-[7px] font-black text-slate-400 uppercase tracking-widest leading-tight mb-0.5 whitespace-nowrap">Logged In</p>
-                    <p class="text-[10px] xl:text-[11px] font-black text-slate-800 leading-tight whitespace-nowrap">{{ user.first_name|default:user.username|truncatechars:12 }}</p>
-                </div>
-                <div class="h-6 w-px bg-slate-200 mx-1 hidden lg:block"></div>
-                <a href="/logout/" class="w-7 h-7 xl:w-8 xl:h-8 rounded-lg text-slate-400 flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all" title="Logout">
-                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="/chatbot/" class="flex items-center justify-center w-10 h-10 rounded-xl bg-agri-700 text-white shadow-xl shadow-agri-700/30 active:scale-95 transition-all">
+                    <i class="fa-solid fa-comments text-sm"></i>
                 </a>
-            </div>
-            {% else %}
-            <a href="/" class="hidden sm:flex items-center gap-2 h-10 px-5 rounded-2xl bg-white text-slate-700 font-black hover:bg-slate-50 border border-slate-100 transition-all shadow-sm">
-                <i class="fa-solid fa-user-circle text-sm"></i>
-                <span class="text-xs">Login</span>
-            </a>
-            {% endif %}
 
-            <a href="/chatbot/" class="flex items-center gap-2 xl:gap-3 h-10 xl:h-11 px-4 xl:px-6 rounded-2xl bg-agri-700 text-white font-black hover:bg-agri-800 shadow-xl shadow-agri-700/30 transition-all transform hover:-translate-y-1">
-                <i class="fa-solid fa-comments"></i>
-                <span class="text-[10px] xl:text-xs hidden md:inline" data-i18n="assistant">AI Assistant</span>
-            </a>
+                <!-- 📱 Mobile Menu Button (Prominent) -->
+                <button onclick="toggleDrawer()" class="sm:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-900 text-white shadow-xl shadow-slate-900/20 active:scale-95 transition-all">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- 📱 Mobile Navigation Drawer (Glassmorphism) -->
     <div id="mobileDrawer" class="fixed inset-0 z-[200] pointer-events-none opacity-0 transition-all duration-500">
-        <!-- Backdrop -->
         <div id="drawerBackdrop" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity opacity-0"></div>
-        
-        <!-- Menu Content -->
         <div id="drawerContent" class="absolute top-0 left-0 bottom-0 w-[85%] max-w-sm bg-white shadow-2xl transition-transform -translate-x-full flex flex-col">
             <div class="p-6 border-b border-slate-100 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -853,6 +826,27 @@
                     <span class="font-bold text-slate-700" data-i18n="nav_weather">Weather Info</span>
                 </a>
 
+                <a href="/tools/fertilizer/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <i class="fa-solid fa-flask"></i>
+                    </div>
+                    <span class="font-bold text-slate-700">Fertilizer Helper</span>
+                </a>
+
+                <a href="/tools/profit/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <span class="font-bold text-slate-700">Profit Helper</span>
+                </a>
+
+                <a href="/yield/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-yellow-50 flex items-center justify-center text-yellow-600">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                    </div>
+                    <span class="font-bold text-slate-700">Yield Predictor</span>
+                </a>
+
                 <a href="/tools/market/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
                     <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
                         <i class="fa-solid fa-indian-rupee-sign"></i>
@@ -905,7 +899,6 @@
     </div>
 
     <script>
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const closeDrawer = document.getElementById('closeDrawer');
         const drawerBackdrop = document.getElementById('drawerBackdrop');
         const mobileDrawer = document.getElementById('mobileDrawer');
@@ -933,7 +926,6 @@
             }
         }
 
-        mobileMenuBtn?.addEventListener('click', toggleDrawer);
         closeDrawer?.addEventListener('click', toggleDrawer);
         drawerBackdrop?.addEventListener('click', toggleDrawer);
     </script>
@@ -944,7 +936,6 @@
 
     <footer class="bg-white border-t border-slate-100 pt-20 pb-10 mt-20">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
-            <!-- Brand Column -->
             <div class="md:col-span-1 space-y-6">
                 <div class="flex items-center gap-3">
                     <i class="fa-solid fa-seedling text-agri-600 text-3xl"></i>
@@ -960,7 +951,6 @@
                 </div>
             </div>
 
-            <!-- Quick Links -->
             <div class="md:col-span-1">
                 <h4 class="text-slate-900 font-black uppercase text-[10px] tracking-widest mb-6">Quick Tools</h4>
                 <ul class="space-y-4">
@@ -970,7 +960,6 @@
                 </ul>
             </div>
 
-            <!-- More Resources -->
             <div class="md:col-span-1">
                 <h4 class="text-slate-900 font-black uppercase text-[10px] tracking-widest mb-6" data-i18n="tools">More Tools</h4>
                 <ul class="space-y-4">
@@ -979,10 +968,8 @@
                     <li><a href="#" class="text-slate-500 font-bold text-sm hover:text-agri-600 transition-colors">Farming Tips</a></li>
                 </ul>
             </div>
-
         </div>
 
-        <!-- Copyright -->
         <div class="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">© 2026 AGRICORE PLATFORM. RURAL ACCESSIBILITY EDITION.</p>
             <div class="flex gap-6">
@@ -990,7 +977,6 @@
                 <a href="#" class="text-slate-400 text-[9px] font-black uppercase tracking-widest hover:text-slate-600">Terms of Use</a>
             </div>
         </div>
-    </footer>
     </footer>
 </body>
 </html>

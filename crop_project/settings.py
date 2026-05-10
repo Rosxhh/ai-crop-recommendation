@@ -30,13 +30,18 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'fallback-key-change-in-production')
 # SECURITY: Debug mode loaded from .env (set False in production!)
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# SECURITY: Allowed hosts loaded from .env
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,*.render.com,*.pythonanywhere.com,*.hf.space').split(',')
+# SECURITY: Allowed hosts (Universal for deployment)
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.render.com',
     'https://*.hf.space',
+    'https://*.huggingface.co',
 ]
+
+# Tell Django to trust the X-Forwarded-Host header from the proxy
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
@@ -175,7 +180,8 @@ ACCOUNT_EMAIL_VERIFICATION = 'none' # For testing
 
 # --- Clickjacking Protection ---
 # Prevents your pages from being embedded in iframes on other sites
-X_FRAME_OPTIONS = 'DENY'
+# Changed to 'SAMEORIGIN' for Hugging Face Spaces compatibility
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # --- Content-Type Sniffing Protection ---
 # Stops browsers from guessing MIME types (prevents drive-by downloads)
