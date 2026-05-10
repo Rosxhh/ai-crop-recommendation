@@ -10,17 +10,17 @@
     <div class="max-w-6xl mx-auto px-6 relative z-10">
         
         <!-- Header & Back Button -->
-        <div class="flex items-center gap-6 mb-12 animate-[fadeInDown_0.6s_ease-out]">
-            <a href="{% url 'recommendation_history' %}" class="w-14 h-14 rounded-2xl flex items-center justify-center bg-agri-600 text-white hover:bg-agri-700 transition-all shadow-xl shadow-agri-600/30">
-                <i class="fa-solid fa-arrow-left text-xl"></i>
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 mb-8 md:mb-12 animate-[fadeInDown_0.6s_ease-out]">
+            <a href="{% url 'recommendation_history' %}" class="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center bg-agri-600 text-white hover:bg-agri-700 transition-all shadow-xl shadow-agri-600/30">
+                <i class="fa-solid fa-arrow-left text-lg md:text-xl"></i>
             </a>
             <div>
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 border border-white/80 backdrop-blur-sm text-slate-700 text-[10px] font-black uppercase tracking-[0.2em] mb-2 shadow-sm">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 border border-white/80 backdrop-blur-sm text-slate-700 text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-1 md:mb-2 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-agri-500 animate-pulse"></span>
                     Protocol ACR-{{ report.id|stringformat:"04d" }}
                 </div>
-                <h1 class="text-4xl font-black text-slate-900 tracking-tighter">Detailed Analysis Report</h1>
-                <p class="text-slate-500 font-medium text-sm mt-1">Check generated on {{ report.created_at|date:"F j, Y, g:i a" }}</p>
+                <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter">Detailed Analysis Report</h1>
+                <p class="text-slate-500 font-medium text-xs md:text-sm mt-1">Check generated on {{ report.created_at|date:"F j, Y, g:i a" }}</p>
             </div>
         </div>
 
@@ -30,17 +30,17 @@
             <div class="lg:col-span-1 space-y-8 animate-[fadeInUp_0.8s_ease-out]">
                 
                 <!-- Prediction Card -->
-                <div class="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-2xl relative overflow-hidden group">
+                <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 border border-slate-100 shadow-2xl relative overflow-hidden group">
                     <div class="absolute top-0 right-0 w-40 h-40 bg-agri-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity -z-10 translate-x-10 -translate-y-10"></div>
                     
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Recommended Crop</p>
+                    <p class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Recommended Crop</p>
                     
-                    <div class="w-24 h-24 rounded-[2rem] bg-agri-50 text-agri-600 flex items-center justify-center text-4xl border border-agri-100 shadow-inner mb-6">
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl md:rounded-[2rem] bg-agri-50 text-agri-600 flex items-center justify-center text-3xl md:text-4xl border border-agri-100 shadow-inner mb-6">
                         <i class="{{ crop_details.icon }}"></i>
                     </div>
                     
-                    <h2 class="text-5xl font-black text-slate-900 capitalize tracking-tighter mb-4">{{ report.predicted_crop }}</h2>
-                    <p class="text-slate-600 font-medium leading-relaxed">{{ crop_details.description }}</p>
+                    <h2 class="text-4xl md:text-5xl font-black text-slate-900 capitalize tracking-tighter mb-4">{{ report.predicted_crop }}</h2>
+                    <p class="text-slate-600 font-medium leading-relaxed text-sm md:text-base">{{ crop_details.description }}</p>
                 </div>
 
                 <!-- Leaf Scan Image (If available) -->
@@ -125,26 +125,26 @@
                     
                     <h3 class="text-2xl font-black text-slate-900 tracking-tighter mb-8 relative z-10">Environmental Readings</h3>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 relative z-10">
                         <!-- Temp -->
-                        <div class="bg-rose-50 rounded-2xl p-5 border border-rose-100">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-temperature-half mr-1 text-rose-500"></i> Temp</p>
-                            <p class="text-3xl font-black text-slate-900">{{ report.temperature|floatformat:1 }}<span class="text-lg text-slate-400 ml-1">°C</span></p>
+                        <div class="bg-rose-50 rounded-2xl p-4 md:p-5 border border-rose-100">
+                            <p class="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-temperature-half mr-1 text-rose-500"></i> Temp</p>
+                            <p class="text-2xl md:text-3xl font-black text-slate-900">{{ report.temperature|floatformat:1 }}<span class="text-base md:text-lg text-slate-400 ml-1">°C</span></p>
                         </div>
                         <!-- Humidity -->
-                        <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-droplet mr-1 text-blue-500"></i> Humid</p>
-                            <p class="text-3xl font-black text-slate-900">{{ report.humidity|floatformat:1 }}<span class="text-lg text-slate-400 ml-1">%</span></p>
+                        <div class="bg-blue-50 rounded-2xl p-4 md:p-5 border border-blue-100">
+                            <p class="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-droplet mr-1 text-blue-500"></i> Humid</p>
+                            <p class="text-2xl md:text-3xl font-black text-slate-900">{{ report.humidity|floatformat:1 }}<span class="text-base md:text-lg text-slate-400 ml-1">%</span></p>
                         </div>
                         <!-- pH -->
-                        <div class="bg-amber-50 rounded-2xl p-5 border border-amber-100">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-flask mr-1 text-amber-500"></i> pH</p>
-                            <p class="text-3xl font-black text-slate-900">{{ report.ph|floatformat:1 }}</p>
+                        <div class="bg-amber-50 rounded-2xl p-4 md:p-5 border border-amber-100">
+                            <p class="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-flask mr-1 text-amber-500"></i> pH</p>
+                            <p class="text-2xl md:text-3xl font-black text-slate-900">{{ report.ph|floatformat:1 }}</p>
                         </div>
                         <!-- Rainfall -->
-                        <div class="bg-indigo-50 rounded-2xl p-5 border border-indigo-100">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-cloud-rain mr-1 text-indigo-500"></i> Rain</p>
-                            <p class="text-3xl font-black text-slate-900">{{ report.rainfall|floatformat:1 }}<span class="text-lg text-slate-400 ml-1">mm</span></p>
+                        <div class="bg-indigo-50 rounded-2xl p-4 md:p-5 border border-indigo-100">
+                            <p class="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2"><i class="fa-solid fa-cloud-rain mr-1 text-indigo-500"></i> Rain</p>
+                            <p class="text-2xl md:text-3xl font-black text-slate-900">{{ report.rainfall|floatformat:1 }}<span class="text-base md:text-lg text-slate-400 ml-1">mm</span></p>
                         </div>
                     </div>
                 </div>

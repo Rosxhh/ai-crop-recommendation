@@ -613,18 +613,50 @@
 
 <body class="antialiased font-sans flex flex-col min-h-screen relative bg-transparent">
 
+    <!-- 📱 Mobile Bottom Navigation (Glassmorphism) -->
+    {% if request.path != '/chatbot/' %}
+    <div class="sm:hidden fixed bottom-6 left-6 right-6 h-16 bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-[150] flex items-center justify-around px-2">
+        <a href="/dashboard/" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
+        </a>
+        <a href="/recommend/" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
+            <i class="fa-solid fa-microscope text-lg"></i>
+            <span class="text-[8px] font-black uppercase tracking-widest">Scan</span>
+        </a>
+        <a href="/chatbot/" class="w-12 h-12 bg-agri-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-agri-600/40 -translate-y-4 border-4 border-emerald-50">
+            <i class="fa-solid fa-comments text-xl"></i>
+        </a>
+        <a href="/recommend/history/" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
+            <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+            <span class="text-[8px] font-black uppercase tracking-widest">History</span>
+        </a>
+        <button onclick="toggleDrawer()" class="flex flex-col items-center gap-1 text-slate-400 hover:text-agri-600 transition-all">
+            <i class="fa-solid fa-bars text-lg"></i>
+            <span class="text-[8px] font-black uppercase tracking-widest">Menu</span>
+        </button>
+    </div>
+    {% endif %}
+
     <!-- 🌾 Vibrant Farm Background (Lite Green Edition) -->
     <!-- Global Premium Background (Solid Lite Green) -->
     <div class="fixed inset-0 -z-[100] bg-emerald-50"></div>
 
     <!-- Navbar (Lite Green & White) -->
     <header class="w-full h-20 flex items-center justify-between px-6 md:px-12 bg-white sticky top-0 z-[110] border-b border-slate-900/10 shadow-sm">
-        <a href="{% if user.is_authenticated %}/dashboard/{% else %}/{% endif %}" class="flex items-center gap-3 group">
-            <div class="w-10 h-10 bg-agri-600 rounded-xl flex items-center justify-center p-2 shadow-lg group-hover:rotate-12 transition-transform">
-                <i class="fa-solid fa-seedling text-white text-lg"></i>
-            </div>
-            <span class="text-xl font-black text-slate-900 tracking-tight" data-i18n="brand">AgriCore</span>
-        </a>
+        <div class="flex items-center gap-4">
+            <!-- Mobile Menu Toggle -->
+            <button id="mobileMenuBtn" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-600 hover:bg-agri-50 hover:text-agri-600 transition-all">
+                <i class="fa-solid fa-bars-staggered text-lg"></i>
+            </button>
+
+            <a href="{% if user.is_authenticated %}/dashboard/{% else %}/{% endif %}" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 bg-agri-600 rounded-xl flex items-center justify-center p-2 shadow-lg group-hover:rotate-12 transition-transform">
+                    <i class="fa-solid fa-seedling text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-black text-slate-900 tracking-tight" data-i18n="brand">AgriCore</span>
+            </a>
+        </div>
 
         <!-- Vertical Separator -->
         <div class="hidden lg:block w-[1px] h-8 bg-slate-200 mx-8"></div>
@@ -757,6 +789,154 @@
             </a>
         </div>
     </header>
+
+    <!-- 📱 Mobile Navigation Drawer (Glassmorphism) -->
+    <div id="mobileDrawer" class="fixed inset-0 z-[200] pointer-events-none opacity-0 transition-all duration-500">
+        <!-- Backdrop -->
+        <div id="drawerBackdrop" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity opacity-0"></div>
+        
+        <!-- Menu Content -->
+        <div id="drawerContent" class="absolute top-0 left-0 bottom-0 w-[85%] max-w-sm bg-white shadow-2xl transition-transform -translate-x-full flex flex-col">
+            <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-agri-600 rounded-lg flex items-center justify-center text-white text-xs">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <span class="font-black text-slate-900">AgriCore Menu</span>
+                </div>
+                <button id="closeDrawer" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="flex-grow overflow-y-auto p-4 space-y-2">
+                <a href="/dashboard/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:text-agri-600 transition-all">
+                        <i class="fa-solid fa-house"></i>
+                    </div>
+                    <span class="font-bold text-slate-700" data-i18n="nav_dash">Dashboard</span>
+                </a>
+
+                <div class="pt-4 pb-2 px-4">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest" data-i18n="nav_scanner">AI Scanners</span>
+                </div>
+                
+                <a href="/recommend/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <i class="fa-solid fa-microscope"></i>
+                    </div>
+                    <span class="font-bold text-slate-700" data-i18n="recommend">Check My Soil</span>
+                </a>
+
+                <a href="/soil/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
+                        <i class="fa-solid fa-camera-retro"></i>
+                    </div>
+                    <span class="font-bold text-slate-700">Soil Image Scanner</span>
+                </a>
+
+                <a href="/disease/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+                        <i class="fa-solid fa-bug-slash"></i>
+                    </div>
+                    <span class="font-bold text-slate-700" data-i18n="nav_leaf">Leaf Disease Check</span>
+                </a>
+
+                <div class="pt-4 pb-2 px-4">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest" data-i18n="tools">Farmer Tools</span>
+                </div>
+
+                <a href="/weather/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
+                        <i class="fa-solid fa-cloud-sun-rain"></i>
+                    </div>
+                    <span class="font-bold text-slate-700" data-i18n="nav_weather">Weather Info</span>
+                </a>
+
+                <a href="/tools/market/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+                    <span class="font-bold text-slate-700" data-i18n="market_prices">Market Prices</span>
+                </a>
+
+                <a href="/recommend/history/" class="flex items-center gap-4 p-4 rounded-2xl hover:bg-agri-50 group transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <span class="font-bold text-slate-700" data-i18n="nav_db">Saved History</span>
+                </a>
+            </div>
+
+            <div class="p-6 border-t border-slate-100 bg-slate-50/50">
+                <div class="flex items-center gap-3 mb-6">
+                    <i class="fa-solid fa-language text-agri-600"></i>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Select Language</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setLanguage('en'); toggleDrawer();" class="p-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black text-slate-600 hover:border-agri-500 hover:text-agri-600 transition-all">English</button>
+                    <button onclick="setLanguage('ta'); toggleDrawer();" class="p-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black text-slate-600 hover:border-agri-500 hover:text-agri-600 transition-all">தமிழ்</button>
+                    <button onclick="setLanguage('hi'); toggleDrawer();" class="p-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black text-slate-600 hover:border-agri-500 hover:text-agri-600 transition-all">हिन्दी</button>
+                    <button onclick="setLanguage('te'); toggleDrawer();" class="p-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black text-slate-600 hover:border-agri-500 hover:text-agri-600 transition-all">తెలుగు</button>
+                </div>
+
+                {% if user.is_authenticated %}
+                <div class="mt-8 pt-6 border-t border-slate-200 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-agri-100 flex items-center justify-center text-agri-600 font-black">
+                            {{ user.first_name|default:user.username|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-800 leading-tight">{{ user.username }}</p>
+                            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Farmer Account</p>
+                        </div>
+                    </div>
+                    <a href="/logout/" class="w-10 h-10 rounded-xl flex items-center justify-center bg-rose-50 text-rose-500 hover:bg-rose-100 transition-all">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                </div>
+                {% else %}
+                <a href="/" class="mt-8 w-full h-12 rounded-xl bg-agri-600 text-white font-black flex items-center justify-center gap-3 shadow-lg shadow-agri-600/20">
+                    <i class="fa-solid fa-user-circle"></i> Login
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const closeDrawer = document.getElementById('closeDrawer');
+        const drawerBackdrop = document.getElementById('drawerBackdrop');
+        const mobileDrawer = document.getElementById('mobileDrawer');
+        const drawerContent = document.getElementById('drawerContent');
+
+        function toggleDrawer() {
+            const isOpen = mobileDrawer.classList.contains('pointer-events-auto');
+            
+            if (!isOpen) {
+                mobileDrawer.classList.remove('pointer-events-none');
+                mobileDrawer.classList.add('pointer-events-auto', 'opacity-100');
+                drawerBackdrop.classList.remove('opacity-0');
+                drawerBackdrop.classList.add('opacity-100');
+                drawerContent.classList.remove('-translate-x-full');
+                drawerContent.classList.add('translate-x-0');
+                document.body.style.overflow = 'hidden';
+            } else {
+                mobileDrawer.classList.remove('pointer-events-auto', 'opacity-100');
+                mobileDrawer.classList.add('pointer-events-none');
+                drawerBackdrop.classList.remove('opacity-100');
+                drawerBackdrop.classList.add('opacity-0');
+                drawerContent.classList.remove('translate-x-0');
+                drawerContent.classList.add('-translate-x-full');
+                document.body.style.overflow = '';
+            }
+        }
+
+        mobileMenuBtn?.addEventListener('click', toggleDrawer);
+        closeDrawer?.addEventListener('click', toggleDrawer);
+        drawerBackdrop?.addEventListener('click', toggleDrawer);
+    </script>
 
     <main class="flex-grow">
         {% block content %}{% endblock %}
