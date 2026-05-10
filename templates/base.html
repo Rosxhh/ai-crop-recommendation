@@ -652,6 +652,10 @@
                 </div>
                 <span class="text-xl font-black text-slate-900 tracking-tight" data-i18n="brand">AgriCore</span>
             </a>
+            <!-- 📱 Instant Menu Access (Right of Brand) -->
+            <button onclick="toggleDrawer()" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 text-slate-600 active:bg-agri-100 active:text-agri-600 transition-all">
+                <i class="fa-solid fa-bars-staggered text-sm"></i>
+            </button>
         </div>
 
         <div class="hidden lg:block w-[1px] h-8 bg-slate-200 mx-8"></div>
@@ -759,9 +763,9 @@
                     <i class="fa-solid fa-comments text-sm"></i>
                 </a>
 
-                <!-- 📱 Mobile Menu Button (Force Visible on all mobile/tablet) -->
-                <button onclick="toggleDrawer()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-900 text-white shadow-xl shadow-slate-900/20 active:scale-95 transition-all">
-                    <i class="fa-solid fa-bars-staggered"></i>
+                <!-- 📱 Primary Mobile Menu (Enhanced Visibility) -->
+                <button onclick="toggleDrawer()" class="lg:hidden w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-900 text-white shadow-2xl shadow-slate-900/40 active:scale-90 transition-all border-2 border-white/20">
+                    <i class="fa-solid fa-bars text-lg"></i>
                 </button>
             </div>
         </div>
