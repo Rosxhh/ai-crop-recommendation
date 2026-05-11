@@ -4,15 +4,15 @@
 {% block content %}
 <div class="relative w-full min-h-screen pb-24 bg-transparent overflow-hidden">
 
-  <!-- Background Cinematic Accents -->
-  <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-emerald-50 rounded-full blur-[160px] -z-10 opacity-60"></div>
-  <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[60%] bg-slate-100 rounded-full blur-[140px] -z-10 opacity-40"></div>
+  <!-- Cinematic Background Accents -->
+  <div class="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-50 rounded-full blur-[160px] -z-10 opacity-70"></div>
+  <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[60%] bg-slate-100 rounded-full blur-[140px] -z-10 opacity-40"></div>
 
   <div class="max-w-6xl mx-auto px-6 py-12">
 
     <!-- Premium Navigation -->
     <div class="mb-10 animate-[fadeIn_0.6s_ease-out]">
-      <a href="/dashboard/" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-slate-600 hover:text-agri-600 font-black text-[10px] uppercase tracking-[0.2em] transition-all group btn-3d btn-3d-slate shadow-sm">
+      <a href="/dashboard/" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 backdrop-blur-sm border border-white shadow-sm text-slate-600 hover:text-agri-600 font-black text-[10px] uppercase tracking-[0.2em] transition-all group">
         <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i> Return to Terminal
       </a>
     </div>
@@ -20,371 +20,290 @@
     <!-- Main Header -->
     <div class="text-center mb-16 animate-[fadeInDown_0.6s_ease-out]">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 border border-white/80 backdrop-blur-sm text-agri-700 text-[9px] font-black uppercase tracking-[0.2em] mb-6 shadow-sm">
-        <i class="fa-solid fa-microscope text-agri-500"></i> Vision Engine v4.2
+        <i class="fa-solid fa-microscope text-agri-500"></i> <span data-i18n="brand">AgriCore</span> Vision v5.2
       </div>
       <h1 class="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter leading-[0.95] mb-6 drop-shadow-md">
-        Agricultural <span class="text-transparent bg-clip-text bg-gradient-to-r from-agri-600 to-emerald-500">Soil Scout</span>
+        Soil <span class="text-transparent bg-clip-text bg-gradient-to-r from-agri-600 to-emerald-500 text-shadow-sm">Scout</span>
       </h1>
-      <p class="text-slate-700 font-bold text-lg max-w-xl mx-auto leading-relaxed drop-shadow-sm">
-        Real-time optical characterization. Point your lens or submit high-res imagery for instant agronomic profiling.
+      <p class="text-slate-700 font-bold text-lg max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
+        Point your camera at a sample of bare soil for real-time optical characterization and agronomic profiling.
       </p>
     </div>
 
-    {% if error %}
-    <div class="max-w-2xl mx-auto mb-10 bg-rose-50 border border-rose-100 rounded-3xl p-6 flex items-center gap-5 text-rose-700 shadow-xl animate-shake">
-        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-            <i class="fa-solid fa-circle-exclamation text-xl"></i>
-        </div>
-        <span class="font-bold text-sm tracking-tight">{{ error }}</span>
-    </div>
-    {% endif %}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
-    <!-- UNIFIED DASHBOARD CARD -->
-    <div class="bg-white rounded-[3.5rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-emerald-100 overflow-hidden animate-[fadeInUp_0.8s_ease-out]">
-
-      <!-- Sleek Dynamic Tab Switcher -->
-      <div class="flex p-3 bg-slate-50/50 border-b border-slate-100">
-        <div class="flex p-1 bg-white border border-slate-200 rounded-[1.75rem] shadow-sm w-full">
-            <button id="tab-upload-btn" onclick="setTab('upload')"
-              class="flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all duration-500 bg-white text-agri-600 shadow-md">
-              <i class="fa-solid fa-upload"></i> Upload Imagery
-            </button>
-            <button id="tab-live-btn" onclick="setTab('live')"
-              class="flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all duration-500 text-slate-400 hover:text-slate-700">
-              <i class="fa-solid fa-circle-dot text-rose-500 animate-pulse"></i> Tactical Live Scan
-            </button>
-        </div>
-      </div>
-
-      <!-- TAB 1: SUBMISSION -->
-      <div id="panel-upload" class="p-10 md:p-16">
-        <form method="post" enctype="multipart/form-data" id="uploadForm" class="max-w-3xl mx-auto">
-          {% csrf_token %}
-
-          <div id="dropZone"
-            class="relative w-full h-80 rounded-[3rem] border-2 border-dashed border-slate-200 bg-white
-                   hover:border-agri-500 hover:bg-agri-50 transition-all group flex flex-col
-                   items-center justify-center cursor-pointer overflow-hidden mb-10 shadow-inner">
-
-            <input type="file" name="image" id="fileInput" accept="image/*"
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-              required onchange="previewImage(event)">
-
-            <div id="uploadUI" class="flex flex-col items-center justify-center text-center p-12 transition-all duration-500">
-              <div class="w-20 h-20 bg-slate-50 rounded-[2rem] shadow-lg flex items-center justify-center mb-6 text-slate-300 group-hover:text-agri-500 group-hover:scale-110 group-hover:rotate-6 transition-all border border-slate-100">
-                <i class="fa-solid fa-images text-3xl"></i>
-              </div>
-              <p class="text-slate-800 font-black text-xl mb-2">Drop your soil sample here</p>
-              <p class="text-slate-400 font-bold text-xs uppercase tracking-widest">Supports JPG, PNG, WEBP · Max 10MB</p>
-            </div>
-
-            <img id="imagePreview" src="#" alt="Preview"
-              class="absolute inset-0 w-full h-full object-cover hidden z-0 rounded-[3rem]"/>
-          </div>
-
-          <div class="mt-12">
-            <button type="submit" class="w-full h-20 bg-agri-600 text-white font-black rounded-3xl shadow-2xl hover:bg-agri-700 transition-all flex items-center justify-center gap-4 text-xl uppercase tracking-widest">
-              <i class="fa-solid fa-microscope opacity-80"></i>
-              <span>Execute Analysis</span>
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- TAB 2: TACTICAL LIVE SCAN -->
-      <div id="panel-live" class="hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
-
-          <!-- Camera Feed (L) -->
-          <div class="lg:col-span-12 xl:col-span-7 p-8 xl:p-12 bg-slate-50/30">
-            <div class="relative rounded-[2.5rem] overflow-hidden bg-slate-900 min-h-[400px] md:aspect-[4/3] shadow-2xl border-4 border-white">
-              <video id="live-video" autoplay playsinline class="w-full h-full object-cover hidden"></video>
-
-              <!-- UI Mock Overlays -->
-              <div class="absolute inset-0 pointer-events-none border-[40px] border-black/5 opacity-40"></div>
-              
-              <div id="live-scan-overlay" class="hidden absolute inset-0 z-10 pointer-events-none">
-                <div class="absolute inset-x-0 top-0 h-1 bg-agri-500/50 shadow-[0_0_20px_#10b981] animate-[liveScan_3s_ease-in-out_infinite]"></div>
-                <div class="absolute top-8 left-8 w-10 h-10 border-t-4 border-l-4 border-agri-500 rounded-tl-2xl"></div>
-                <div class="absolute top-8 right-8 w-10 h-10 border-t-4 border-r-4 border-agri-500 rounded-tr-2xl"></div>
-                <div class="absolute bottom-8 left-8 w-10 h-10 border-b-4 border-l-4 border-agri-500 rounded-bl-2xl"></div>
-                <div class="absolute bottom-8 right-8 w-10 h-10 border-b-4 border-r-4 border-agri-500 rounded-br-2xl"></div>
-                <!-- Tactical Metadata -->
-                <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 px-4 py-2 rounded-full bg-white/90 backdrop-blur shadow-xl border border-slate-100">
-                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-                    <span class="text-[9px] font-black text-slate-900 uppercase tracking-[0.2em]">Rec. Mode: Spectrum Analysis</span>
-                </div>
-              </div>
-
-              <!-- Placeholder Start -->
-              <div id="live-placeholder" class="text-center p-12 flex flex-col items-center justify-center h-full">
-                <div class="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center mb-6 border border-white/10 backdrop-blur">
-                  <i id="live-ph-icon" class="fa-solid fa-camera-retro text-white/50 text-4xl"></i>
-                </div>
-                <h3 id="live-ph-title" class="text-white font-black text-2xl mb-2">Initialize Scanner</h3>
-                <p id="live-ph-msg" class="text-slate-500 text-sm mb-8 max-w-xs mx-auto">Establish secure camera connection for real-time soil characterization.</p>
-                <button id="live-start-btn" class="px-10 h-16 btn-agri-main">
-                   Start Optical Link
-                </button>
-              </div>
-            </div>
-
-            <!-- Controls bar -->
-            <div class="flex gap-4 mt-8">
-              <button id="live-toggle-btn" disabled
-                class="flex-1 h-16 rounded-2xl bg-slate-100 text-slate-300 font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all border border-slate-200">
-                <i class="fa-solid fa-play"></i> Start Sequence
-              </button>
-              <button id="live-restart-btn"
-                class="px-8 h-16 rounded-2xl font-black flex items-center justify-center gap-3 text-sm transition-all shadow-sm btn-3d btn-3d-slate">
-                <i class="fa-solid fa-power-off"></i> 
-              </button>
-            </div>
-            
-            <div id="live-status-bar" class="hidden mt-6 flex items-center gap-3 px-6 py-3 rounded-2xl bg-slate-50 border border-slate-200 shadow-inner text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              <i id="live-status-icon" class="fa-solid fa-circle-notch animate-spin text-agri-500"></i>
-              <span id="live-status-text">System Online</span>
-            </div>
-          </div>
-
-          <!-- TACTICAL MONITOR (R) -->
-          <div class="lg:col-span-12 xl:col-span-5 p-8 xl:p-12 border-l border-slate-100 flex flex-col bg-white">
-            
-            <!-- Result Headline -->
-            <div id="live-header" class="hidden mb-10">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-[9px] font-black text-agri-600 uppercase tracking-[0.3em] mb-2">Subject Identified</p>
-                  <h2 id="lm-type" class="text-4xl font-black text-slate-900 tracking-tighter leading-none mb-2">Subject</h2>
-                  <p id="lm-indian" class="text-sm font-bold text-slate-400">Biological ID</p>
-                </div>
-                <div id="lm-conf-box" class="w-20 h-20 rounded-3xl bg-agri-50 border border-agri-100 flex flex-col items-center justify-center shadow-inner">
-                    <span id="lm-conf" class="text-xl font-black text-agri-700 tracking-tighter">0%</span>
-                    <span class="text-[7px] text-agri-500 font-black uppercase tracking-[0.2em]">Conf</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-3 mt-6">
-                <div id="lm-swatch" class="w-8 h-8 rounded-xl border-2 border-white shadow-xl"></div>
-                <div class="h-4 w-px bg-slate-200"></div>
-                <span id="lm-texture" class="text-[10px] font-black text-slate-500 uppercase tracking-widest text-opacity-70">Texture Profile</span>
-              </div>
-            </div>
-
-            <!-- Idle State -->
-            <div id="live-waiting" class="flex flex-col items-center justify-center py-20 text-center opacity-40">
-              <i class="fa-solid fa-radar text-6xl text-slate-300 mb-6"></i>
-              <p class="text-slate-800 font-black text-lg mb-1">Awaiting Data Feed</p>
-              <p class="text-slate-500 text-xs font-medium uppercase tracking-widest">Scan subject to populate sensor data</p>
-            </div>
-
-            <!-- HIGH-END METRICS -->
-            <div id="live-metrics" class="hidden space-y-6 flex-grow">
-              
-              <!-- Water Level Sensor -->
-              <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 relative group transition-all hover:bg-slate-100">
-                <div class="flex justify-between items-end mb-4">
-                  <div class="space-y-1">
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sensor: Moisture</p>
-                    <p id="lm-water-label" class="text-xs font-bold text-slate-800">Retention Estimate</p>
-                  </div>
-                  <span id="lm-water-pct" class="text-xl font-black text-blue-600">0%</span>
-                </div>
-                <div class="h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div id="lm-water-bar" class="h-full bg-blue-500 transition-all duration-1000" style="width:0%"></div>
-                </div>
-              </div>
-
-              <!-- pH Scale Sensor -->
-              <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 relative group transition-all hover:bg-slate-100">
-                <div class="flex justify-between items-end mb-4">
-                    <div class="space-y-1">
-                      <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sensor: Alkalinity</p>
-                      <p id="lm-ph-label" class="text-xs font-bold text-slate-800">pH Analysis</p>
+        <!-- ── LEFT: TACTICAL VIEWER ── -->
+        <div class="lg:col-span-12 xl:col-span-7 animate-[fadeInLeft_0.8s_ease-out]">
+            <div class="bg-white rounded-[3.5rem] border border-emerald-100 overflow-hidden group shadow-2xl">
+                
+                <!-- Tab Mode Switcher -->
+                <div class="p-3 bg-slate-50/50 border-b border-slate-100">
+                    <div class="flex p-1 bg-white border border-slate-200 rounded-[1.75rem] shadow-sm w-full">
+                        <button id="tab-camera" class="flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 bg-white text-agri-600 shadow-md">
+                            <i class="fa-solid fa-video"></i> Live Scanner
+                        </button>
+                        <button id="tab-upload" class="flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 text-slate-400 hover:text-slate-700">
+                            <i class="fa-solid fa-image"></i> Upload Photo
+                        </button>
                     </div>
-                    <span id="lm-ph-range" class="text-xl font-black text-purple-600">0.0</span>
                 </div>
-                <div class="relative h-2 rounded-full overflow-hidden mb-1" style="background: linear-gradient(to right,#ef4444,#eab308,#22c55e,#3b82f6,#8b5cf6)">
-                  <div id="lm-ph-marker" class="absolute top-0 bottom-0 w-2 h-full bg-white border border-slate-900 rounded-full shadow-lg transition-all duration-1000" style="left:50%"></div>
-                </div>
-              </div>
 
-              <!-- Bento Utility Grid -->
-              <div class="grid grid-cols-2 gap-4">
-                <div class="bg-agri-50 border border-agri-100 rounded-[2rem] p-5 text-agri-700 shadow-inner">
-                    <p class="text-[8px] font-black text-agri-500 uppercase tracking-widest mb-1">Drainage</p>
-                    <p id="lm-drainage" class="text-xs font-black">Stable</p>
-                </div>
-                <div class="bg-slate-50 rounded-[2rem] p-5 border border-slate-100">
-                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Organic</p>
-                    <p id="lm-organic" class="text-xs font-black text-slate-800">Present</p>
-                </div>
-              </div>
+                <!-- Shared Tactical Viewport -->
+                <div class="p-4">
+                    <div class="relative rounded-[2.5rem] overflow-hidden bg-slate-900 min-h-[400px] md:aspect-[4/3] shadow-inner border-4 border-white flex items-center justify-center">
+                        
+                        <video id="camera-stream" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+                        <canvas id="camera-canvas" class="hidden w-full h-full object-cover absolute inset-0 z-10"></canvas>
+                        <img id="upload-preview" class="hidden absolute inset-0 w-full h-full object-cover z-10" alt="preview"/>
 
-              <!-- Recommendation Engine -->
-              <div class="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl">
-                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4">Optimized Biodiversity</p>
-                 <div id="lm-crops" class="flex flex-wrap gap-2"></div>
-              </div>
-              
-              <!-- AI Insight Box -->
-              <div class="bg-emerald-600 rounded-[2rem] p-6 text-white shadow-[0_20px_40px_-10px_rgba(5,150,105,0.4)] flex gap-4">
-                  <i class="fa-solid fa-lightbulb text-agri-200 mt-1"></i>
-                  <p id="lm-tip" class="text-xs font-bold leading-relaxed text-emerald-50 opacity-90"></p>
-              </div>
+                        <!-- Scanline UI -->
+                        <div id="scan-line" class="absolute inset-0 pointer-events-none hidden z-30">
+                            <div class="w-full h-1 bg-agri-500 shadow-[0_0_20px_#16a34a] animate-[liveScan_3s_ease-in-out_infinite]"></div>
+                            <div class="absolute inset-0 bg-agri-500/5 backdrop-blur-[1px]"></div>
+                        </div>
 
+                        <!-- Tactical HUD -->
+                        <div class="absolute inset-0 pointer-events-none z-20">
+                            <div class="absolute top-8 left-8 w-10 h-10 border-t-4 border-l-4 border-agri-500 rounded-tl-2xl opacity-50"></div>
+                            <div class="absolute top-8 right-8 w-10 h-10 border-t-4 border-r-4 border-agri-500 rounded-tr-2xl opacity-50"></div>
+                            <div class="absolute bottom-8 left-8 w-10 h-10 border-b-4 border-l-4 border-agri-500 rounded-bl-2xl opacity-50"></div>
+                            <div class="absolute bottom-8 right-8 w-10 h-10 border-b-4 border-r-4 border-agri-500 rounded-br-2xl opacity-50"></div>
+                            
+                            <div class="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 px-4 py-2 rounded-full bg-white/90 backdrop-blur shadow-xl border border-slate-100">
+                                <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                                <span class="text-[9px] font-black text-slate-900 uppercase tracking-[0.2em]">Rec. Mode: Spectrum Analysis</span>
+                            </div>
+                        </div>
+
+                        <!-- Placeholders -->
+                        <div id="camera-placeholder" class="text-center absolute z-20 p-8 flex flex-col items-center">
+                            <div class="w-20 h-20 bg-white/10 backdrop-blur rounded-[2rem] flex items-center justify-center mb-6 shadow-sm border border-white/20">
+                                <i id="cam-icon" class="fa-solid fa-camera-retro text-white/50 text-3xl"></i>
+                            </div>
+                            <h3 id="cam-title" class="text-white font-black text-xl mb-1">Scanner Offline</h3>
+                            <p id="cam-msg" class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-8">Establish optical link for soil ID</p>
+                            <button id="start-cam-btn" class="px-10 h-16 bg-agri-600 text-white font-black rounded-2xl shadow-xl hover:bg-agri-700 transition-all flex items-center gap-3">
+                                <i class="fa-solid fa-power-off"></i> <span>Initialize Link</span>
+                            </button>
+                        </div>
+
+                        <div id="upload-placeholder" class="hidden text-center absolute z-20 p-8 cursor-pointer w-full h-full flex flex-col items-center justify-center group/ph" onclick="document.getElementById('file-input').click()">
+                            <div class="w-20 h-20 bg-white/10 backdrop-blur rounded-[2rem] flex items-center justify-center mb-6 shadow-sm border border-white/20 group-hover/ph:scale-110 transition-transform">
+                                <i class="fa-solid fa-cloud-arrow-up text-white/50 text-3xl"></i>
+                            </div>
+                            <h3 class="text-white font-black text-xl mb-1">Import Data</h3>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Select a clear soil sample image</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-8 pb-4">
+                        <button id="main-btn" disabled class="flex-1 h-16 bg-agri-600 text-white font-black rounded-2xl shadow-2xl hover:bg-agri-700 disabled:opacity-80 transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-sm">
+                            <i id="main-btn-icon" class="fa-solid fa-bolt"></i>
+                            <span id="main-btn-label">Analyze Soil Sample</span>
+                        </button>
+                        <button id="restart-btn" class="px-8 h-16 rounded-2xl font-black flex items-center justify-center gap-3 transition-all btn-3d btn-3d-slate shadow-sm">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                        <button id="clear-btn" class="hidden px-8 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-rose-500 font-black flex items-center justify-center gap-3 hover:bg-rose-100 transition-all">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs -->
+                <input type="file" id="file-input" accept="image/*" class="hidden"/>
+            </div>
+        </div>
+
+        <!-- ── RIGHT: TACTICAL MONITOR ── -->
+        <div id="results-panel" class="lg:col-span-12 xl:col-span-5 hidden opacity-0 translate-y-10 transition-all duration-700 pointer-events-none">
+            
+            <div class="bg-white rounded-[3rem] p-8 text-slate-900 relative overflow-hidden shadow-2xl border border-slate-100 mb-8 group">
+                <div id="res-swatch" class="absolute top-0 right-0 w-32 h-32 opacity-20 blur-xl transition-all duration-700"></div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <p class="text-[9px] font-black text-agri-500 uppercase tracking-[0.3em] mb-2">Subject Identified</p>
+                            <h3 id="res-type" class="text-4xl font-black text-slate-900 tracking-tighter leading-none mb-1">Soil Type</h3>
+                            <p id="res-indian" class="text-sm font-bold text-slate-500">Biological ID</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-2xl bg-slate-50 flex flex-col items-center justify-center border border-slate-100 shadow-inner">
+                            <span id="res-conf" class="text-xl font-black text-slate-900">0%</span>
+                            <span class="text-[7px] font-black text-agri-500 uppercase tracking-widest">Conf</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Texture</p>
+                            <p id="res-texture" class="text-xs font-black text-slate-800">-</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Organic</p>
+                            <p id="res-organic" class="text-xs font-black text-slate-800">-</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-          </div><!-- /tactical monitor -->
-        </div><!-- /grid -->
-      </div><!-- /panel-live -->
+            <!-- Sensor Metrics Grid -->
+            <div class="space-y-6">
+                <!-- Moisture Metric -->
+                <div class="bg-white border border-emerald-100 shadow-xl rounded-[2.5rem] p-8 group hover:-translate-y-1 transition-transform">
+                    <div class="flex justify-between items-end mb-4">
+                      <div class="flex gap-4 items-center">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                            <i class="fa-solid fa-droplet text-sm"></i>
+                        </div>
+                        <div class="space-y-0.5">
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Moisture Sensor</p>
+                            <p id="res-water-label" class="text-xs font-bold text-slate-800">Retention Estimate</p>
+                        </div>
+                      </div>
+                      <span id="res-water-pct" class="text-lg font-black text-blue-600">0%</span>
+                    </div>
+                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div id="res-water-bar" class="h-full bg-blue-500 transition-all duration-1000" style="width:0%"></div>
+                    </div>
+                </div>
 
-    </div><!-- /main dashboard card -->
+                <!-- pH Metric -->
+                <div class="bg-white border border-emerald-100 shadow-xl rounded-[2.5rem] p-8 group hover:-translate-y-1 transition-transform">
+                    <div class="flex justify-between items-end mb-4">
+                        <div class="flex gap-4 items-center">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center">
+                                <i class="fa-solid fa-flask-vial text-sm"></i>
+                            </div>
+                            <div class="space-y-0.5">
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Alkalinity Sensor</p>
+                                <p id="res-ph-label" class="text-xs font-bold text-slate-800">pH Analysis</p>
+                            </div>
+                        </div>
+                        <span id="res-ph-range" class="text-lg font-black text-purple-600">0.0</span>
+                    </div>
+                    <div class="relative h-2 rounded-full overflow-hidden mb-1" style="background: linear-gradient(to right,#ef4444,#eab308,#22c55e,#3b82f6,#8b5cf6)">
+                      <div id="res-ph-marker" class="absolute top-0 bottom-0 w-2 h-full bg-white border border-slate-900 rounded-full shadow-lg transition-all duration-1000" style="left:50%"></div>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="bg-emerald-600 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <h4 class="text-[9px] font-black text-emerald-200 uppercase tracking-[0.2em] mb-4">Expert Insight</h4>
+                        <p id="res-tip" class="text-sm font-bold leading-relaxed mb-6 opacity-95"></p>
+                        <div class="h-px bg-white/20 mb-6"></div>
+                        <h4 class="text-[9px] font-black text-emerald-200 uppercase tracking-[0.2em] mb-4">Optimized Biodiversity</h4>
+                        <div id="res-crops" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
   </div>
 </div>
 
 <!-- ANALYSING OVERLAY -->
-<div id="upload-overlay" class="fixed inset-0 z-[100] hidden bg-white/90 backdrop-blur-3xl flex flex-col items-center justify-center">
-  <div class="relative mb-12">
-      <div class="w-32 h-32 rounded-[2.5rem] bg-agri-600 shadow-[0_0_80px_rgba(34,197,94,0.4)] flex items-center justify-center animate-bounce">
-        <i class="fa-solid fa-microscope text-5xl text-white"></i>
-      </div>
-      <div class="absolute -inset-4 border-2 border-agri-500/20 rounded-[3rem] animate-ping"></div>
-  </div>
-  <h2 class="text-3xl font-black text-slate-900 tracking-widest uppercase mb-2">Analyzing Sample</h2>
-  <p class="text-agri-600 font-bold text-sm uppercase tracking-[0.3em] animate-pulse">Running Neural Optimization Protocols</p>
+<div id="processing-overlay" class="fixed inset-0 z-[100] hidden bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
+    <div class="relative mb-12">
+        <div class="w-32 h-32 rounded-[3rem] bg-agri-100 flex items-center justify-center border border-agri-200 shadow-inner relative overflow-hidden">
+            <i class="fa-solid fa-microscope text-4xl text-agri-600 relative z-10 animate-pulse"></i>
+            <div class="absolute inset-0 bg-gradient-to-t from-agri-500/20 to-transparent translate-y-full animate-[scan_2s_ease-in-out_infinite]"></div>
+        </div>
+    </div>
+    <h2 class="text-3xl font-black text-slate-800 tracking-widest uppercase mb-2">Optical Scan</h2>
+    <p class="text-slate-400 font-bold text-sm uppercase tracking-[0.3em] animate-pulse">Running Neural Optimization Protocols</p>
 </div>
 
 <style>
-@keyframes liveScan { 0% { transform: translateY(0); opacity: 0.2; } 50% { transform: translateY(340px); opacity: 0.8; } 100% { transform: translateY(0); opacity: 0.2; } }
-@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-.animate-shake { animation: shake 0.4s ease-in-out; }
+@keyframes liveScan { 0% { transform: translateY(0); opacity: 0.1; } 50% { transform: translateY(350px); opacity: 0.7; } 100% { transform: translateY(0); opacity: 0.1; } }
+@keyframes fadeInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
 </style>
 
 <script>
-/* ──────────────────────────────────────────────────────────────
-   CLIENT LOGIC
-   ────────────────────────────────────────────────────────────── */
-function previewImage(event) {
-  const input = event.target;
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const prev = document.getElementById('imagePreview');
-      prev.src = e.target.result;
-      prev.classList.remove('hidden');
-      document.getElementById('uploadUI').classList.add('opacity-0','scale-95');
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-
-document.getElementById('uploadForm').addEventListener('submit', () => {
-  document.getElementById('upload-overlay').classList.remove('hidden');
-});
-
-function setTab(t) {
-  const uBtn = document.getElementById('tab-upload-btn');
-  const lBtn = document.getElementById('tab-live-btn');
-  const uPan = document.getElementById('panel-upload');
-  const lPan = document.getElementById('panel-live');
-
-  const ACTIVE   = 'bg-white text-agri-600 shadow-md';
-  const INACTIVE = 'text-slate-400 hover:text-slate-700';
-
-  if (t === 'upload') {
-    uBtn.className = `flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all duration-500 ${ACTIVE}`;
-    lBtn.className = `flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all duration-500 ${INACTIVE}`;
-    uPan.classList.remove('hidden');
-    lPan.classList.add('hidden');
-    window.stopLiveScanning && window.stopLiveScanning();
-  } else {
-    lBtn.className = `flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all duration-500 ${ACTIVE}`;
-    uBtn.className = `flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all duration-500 ${INACTIVE}`;
-    lPan.classList.remove('hidden');
-    uPan.classList.add('hidden');
-  }
-}
-
-/* ──────────────────────────────────────────────────────────────
-   OPTICAL SCANNER LOGIC
-   ────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-    const video = document.getElementById('live-video');
-    const ph = document.getElementById('live-placeholder');
-    const overlay = document.getElementById('live-scan-overlay');
-    const startBtn = document.getElementById('live-start-btn');
-    const toggleBtn = document.getElementById('live-toggle-btn');
-    const restartBtn = document.getElementById('live-restart-btn');
-    const statusBox = document.getElementById('live-status-bar');
-    const statusText = document.getElementById('live-status-text');
-    const icon = document.getElementById('live-status-icon');
+    const video = document.getElementById('camera-stream');
+    const canvas = document.getElementById('camera-canvas');
+    const uploadPreview = document.getElementById('upload-preview');
+    const fileInput = document.getElementById('file-input');
+    const tabCamera = document.getElementById('tab-camera');
+    const tabUpload = document.getElementById('tab-upload');
+    const camPlaceholder = document.getElementById('camera-placeholder');
+    const upPlaceholder = document.getElementById('upload-placeholder');
+    const mainBtn = document.getElementById('main-btn');
+    const mainBtnLabel = document.getElementById('main-btn-label');
+    const restartBtn = document.getElementById('restart-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const overlay = document.getElementById('processing-overlay');
+    const resultsPanel = document.getElementById('results-panel');
+    const scanLine = document.getElementById('scan-line');
 
-    const waiting = document.getElementById('live-waiting');
-    const header = document.getElementById('live-header');
-    const metrics = document.getElementById('live-metrics');
+    let mode = 'camera', camStream = null, uploadFile = null;
 
-    let stream = null;
-    let scanning = false;
-    let interval = null;
+    function setTab(t) {
+        mode = t;
+        const btns = [tabCamera, tabUpload];
+        const pans = [camPlaceholder, upPlaceholder];
+        btns.forEach(b => b.className = 'flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 text-slate-400 hover:text-slate-700');
+        const activeBtn = document.getElementById('tab-' + t);
+        activeBtn.className = 'flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 bg-white text-agri-600 shadow-md';
+        
+        [video, canvas, uploadPreview, ...pans].forEach(el => el.classList.add('hidden'));
+        clearBtn.classList.add('hidden');
+        mainBtn.classList.remove('hidden');
+
+        if (t === 'camera') {
+            mainBtnLabel.innerText = 'Analyze Soil Sample';
+            if (camStream) { video.classList.remove('hidden'); enableMain(); } else { camPlaceholder.classList.remove('hidden'); disableMain(); }
+        } else if (t === 'upload') {
+            mainBtnLabel.innerText = 'Execute Analysis';
+            if (uploadFile) { uploadPreview.classList.remove('hidden'); clearBtn.classList.remove('hidden'); enableMain(); } else { upPlaceholder.classList.remove('hidden'); disableMain(); }
+        }
+    }
+
+    tabCamera.onclick = () => setTab('camera');
+    tabUpload.onclick = () => setTab('upload');
 
     async function startCam() {
-        startBtn.innerHTML = '<i class="fa-solid fa-sync animate-spin"></i> Establishing Link...';
+        document.getElementById('start-cam-btn').innerText = "Requesting Link...";
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-            video.srcObject = stream;
+            camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            video.srcObject = camStream;
             video.classList.remove('hidden');
-            ph.classList.add('hidden');
-            toggleBtn.disabled = false;
-            toggleBtn.classList.remove('bg-slate-100', 'text-slate-300');
-            toggleBtn.classList.add('btn-3d', 'btn-3d-agri', 'shadow-xl');
-        } catch (e) {
-            startBtn.innerHTML = 'Link Failed - Retry';
-            alert("Optical link failed. Please check device permissions.");
-        }
+            camPlaceholder.classList.add('hidden');
+            enableMain();
+        } catch(e) { document.getElementById('start-cam-btn').innerText = "Link Failed - Retry"; }
     }
+    document.getElementById('start-cam-btn').onclick = startCam;
 
-    startBtn.addEventListener('click', startCam);
-    restartBtn.addEventListener('click', () => location.reload());
+    fileInput.onchange = (e) => {
+        uploadFile = e.target.files[0];
+        if(!uploadFile) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            uploadPreview.src = ev.target.result;
+            setTab('upload');
+        };
+        reader.readAsDataURL(uploadFile);
+    };
 
-    toggleBtn.addEventListener('click', () => {
-        if (!scanning) {
-            scanning = true;
-            overlay.classList.remove('hidden');
-            statusBox.classList.remove('hidden');
-            toggleBtn.innerHTML = '<i class="fa-solid fa-stop"></i> Abort Scanning';
-            toggleBtn.classList.remove('btn-3d-agri');
-            toggleBtn.classList.add('btn-3d-amber');
-            statusText.innerText = "Real-time characterization active";
-            runScan();
-            interval = setInterval(runScan, 6000);
+    mainBtn.onclick = () => {
+        overlay.classList.remove('hidden');
+        scanLine.classList.remove('hidden');
+        if (mode === 'camera') {
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            predict(canvas.toDataURL('image/jpeg', 0.85));
         } else {
-            stopScan();
+            const reader = new FileReader();
+            reader.onload = (e) => predict(e.target.result);
+            reader.readAsDataURL(uploadFile);
         }
-    });
+    };
 
-    window.stopLiveScanning = stopScan;
-    function stopScan() {
-        scanning = false;
-        clearInterval(interval);
-        overlay.classList.add('hidden');
-        if(toggleBtn) {
-            toggleBtn.innerHTML = '<i class="fa-solid fa-play"></i> Restart Sequence';
-            toggleBtn.classList.remove('btn-3d-amber');
-            toggleBtn.classList.add('btn-3d-agri');
-        }
-        if(statusText) statusText.innerText = "Scanner Standby";
-    }
-
-    function runScan() {
-        if (!stream || !scanning) return;
-        const canvas = document.createElement('canvas');
-        canvas.width = 400; canvas.height = 300;
-        canvas.getContext('2d').drawImage(video, 0, 0, 400, 300);
-        const b64 = canvas.toDataURL('image/jpeg', 0.8);
-
-        icon.className = 'fa-solid fa-circle-notch animate-spin text-agri-400';
-        statusText.innerText = "Decoding Spectrum Data...";
-
+    function predict(b64) {
         fetch('/soil/live/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
@@ -392,37 +311,42 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(r => r.json())
         .then(d => {
-            if (d.success) {
-                waiting.classList.add('hidden');
-                header.classList.remove('hidden');
-                metrics.classList.remove('hidden');
-
-                document.getElementById('lm-type').innerText = d.soil_type;
-                document.getElementById('lm-indian').innerText = d.indian_name;
-                document.getElementById('lm-conf').innerText = d.confidence + "%";
-                document.getElementById('lm-texture').innerText = d.texture;
-                document.getElementById('lm-swatch').style.backgroundColor = d.color;
-                document.getElementById('lm-water-pct').innerText = d.water_pct + "%";
-                document.getElementById('lm-water-bar').style.width = d.water_pct + "%";
-                document.getElementById('lm-water-label').innerText = d.water_retention + " Retention";
-                document.getElementById('lm-ph-range').innerText = d.ph_min + " - " + d.ph_max;
-                document.getElementById('lm-ph-marker').style.left = (d.ph_min/14*100) + "%";
-                document.getElementById('lm-ph-label').innerText = d.ph_label;
-                document.getElementById('lm-drainage').innerText = d.drainage;
-                document.getElementById('lm-organic').innerText = d.organic_matter;
-                document.getElementById('lm-tip').innerText = d.tip;
-
-                const c = document.getElementById('lm-crops');
-                c.innerHTML = d.best_crops.map(x => `<span class="px-4 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-800 text-[10px] font-black uppercase tracking-widest">${x}</span>`).join('');
-
-                icon.className = 'fa-solid fa-circle-check text-emerald-500';
-                statusText.innerText = "Biological ID: " + d.soil_type;
-            } else {
-                icon.className = 'fa-solid fa-triangle-exclamation text-rose-500';
-                statusText.innerText = d.error || "Signal Interference - Retry";
-            }
+            overlay.classList.add('hidden');
+            scanLine.classList.add('hidden');
+            if(d.success) showRes(d); else alert(d.error);
         });
     }
+
+    function showRes(d) {
+        resultsPanel.classList.remove('hidden');
+        setTimeout(() => {
+            resultsPanel.classList.remove('opacity-0','translate-y-10','pointer-events-none');
+            resultsPanel.classList.add('animate-[fadeInRight_0.8s_ease-out]');
+        }, 50);
+
+        document.getElementById('res-type').innerText = d.soil_type;
+        document.getElementById('res-indian').innerText = d.indian_name;
+        document.getElementById('res-conf').innerText = d.confidence + '%';
+        document.getElementById('res-texture').innerText = d.texture;
+        document.getElementById('res-organic').innerText = d.organic_matter;
+        document.getElementById('res-swatch').style.backgroundColor = d.color;
+        document.getElementById('res-water-pct').innerText = d.water_pct + '%';
+        document.getElementById('res-water-bar').style.width = d.water_pct + '%';
+        document.getElementById('res-water-label').innerText = d.water_retention + ' Retention';
+        document.getElementById('res-ph-range').innerText = d.ph_min + ' - ' + d.ph_max;
+        document.getElementById('res-ph-marker').style.left = (d.ph_min / 14 * 100) + '%';
+        document.getElementById('res-ph-label').innerText = d.ph_label;
+        document.getElementById('res-tip').innerText = d.tip;
+
+        const crops = document.getElementById('res-crops');
+        crops.innerHTML = d.best_crops.map(x => `<span class="px-4 py-1.5 rounded-xl bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest">${x}</span>`).join('');
+    }
+
+    function enableMain(){ mainBtn.disabled = false; }
+    function disableMain(){ mainBtn.disabled = true; }
+    
+    restartBtn.onclick = () => location.reload();
+    clearBtn.onclick = () => location.reload();
 });
 </script>
 {% endblock %}
