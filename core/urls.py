@@ -9,4 +9,5 @@ urlpatterns = [
     path('satellite/', views.satellite_map, name='satellite_map'),
     path('weather/', views.weather_view, name='weather'),
     path('security/history/', views.login_history_view, name='login_history'),
+    path('health/', views.health_check, name='health_check'),
 ]

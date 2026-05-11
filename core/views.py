@@ -153,3 +153,6 @@ def weather_view(request):
 def login_history_view(request):
     history = LoginHistory.objects.filter(user=request.user)[:20]
     return render(request, "login_history.html", {"history": history})
+
+def health_check(request):
+    return JsonResponse({"status": "AgriCore Online", "timestamp": timezone.now()})
