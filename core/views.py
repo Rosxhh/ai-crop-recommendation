@@ -5,18 +5,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import LoginHistory
+from .models import LoginHistory, UserProfile
 from django.utils import timezone
-
+from django.db import IntegrityError
 
 API_KEY = "946a968623cdfce53a6c3cc031c29580"
-
 
 # Dashboard (Home) - Protected
 @login_required(login_url='/')
 def home(request):
     return render(request, "home.html")
-
 
 def _record_login(request, user):
     """Helper to record login event"""
@@ -36,69 +34,91 @@ def _record_login(request, user):
         device_type=device
     )
 
-
 def login_view(request):
+    # Support for Guest Mode
+    if request.GET.get('mode') == 'guest':
+        guest_user, created = User.objects.get_or_create(username='guest_explorer', email='guest@agricore.ai')
+        if created:
+            guest_user.set_unusable_password()
+            guest_user.save()
+            UserProfile.objects.get_or_create(user=guest_user)
+        
+        login(request, guest_user, backend='django.contrib.auth.backends.ModelBackend')
+        messages.success(request, "You are now exploring as a Guest. Welcome!")
+        return redirect('home')
+
     if request.user.is_authenticated:
         return redirect('home')
 
     if request.method == "POST":
-        identity = request.POST.get("email") # The form field is still named 'email'
+        identity = request.POST.get("email")
         password = request.POST.get("password")
         
         try:
-            # Try finding user by email or username
-            user_obj = User.objects.filter(email=identity).first() or User.objects.filter(username=identity).first()
+            # Try finding user by email, mobile, or username
+            user_obj = User.objects.filter(email=identity).first() or \
+                       User.objects.filter(username=identity).first() or \
+                       User.objects.filter(profile__mobile=identity).first()
+
             if user_obj:
                 user = authenticate(request, username=user_obj.username, password=password)
                 if user is not None:
                     login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     _record_login(request, user)
+                    messages.success(request, f"Welcome back, {user.first_name or user.username}!")
                     return redirect('home')
                 else:
-                    messages.error(request, "Invalid password credentials.")
+                    messages.error(request, "We couldn't sign you in. Please check your password and try again.")
             else:
-                messages.error(request, "No account associated with this email or username.")
-        except Exception as e:
-            messages.error(request, "An error occurred during login.")
+                messages.error(request, "We couldn't find an account associated with that information.")
+        except Exception:
+            messages.error(request, "A technical issue occurred. Please try again in a few moments.")
 
     return render(request, "login.html")
-
 
 def register_view(request):
     if request.method == "POST":
         name = request.POST.get("name")
         email = request.POST.get("email")
-        username = request.POST.get("username")
+        mobile = request.POST.get("mobile")
         password = request.POST.get("password")
         
         if User.objects.filter(email=email).exists():
-            messages.error(request, "Account with this email already exists.")
-        elif User.objects.filter(username=username).exists():
-            messages.error(request, "This username is already taken.")
+            messages.error(request, "An account with this email already exists. Please try signing in.")
+        elif UserProfile.objects.filter(mobile=mobile).exists():
+            messages.error(request, "This mobile number is already registered with another account.")
         else:
-            # If username is empty, derive from email
-            if not username:
+            try:
+                # Generate unique username from email
                 username = email.split('@')[0]
                 original_username = username
                 counter = 1
                 while User.objects.filter(username=username).exists():
                     username = f"{original_username}{counter}"
                     counter += 1
+                    
+                user = User.objects.create_user(username=username, email=email, password=password)
+                user.first_name = name
+                user.save()
                 
-            user = User.objects.create_user(username=username, email=email, password=password)
-            user.first_name = name
-            user.save()
+                # Create profile with mobile
+                UserProfile.objects.create(user=user, mobile=mobile)
+                
+                # Auto login after register
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                _record_login(request, user)
+                messages.success(request, "Account created successfully! Welcome to AgriCore.")
+                return redirect('home')
+            except IntegrityError:
+                messages.error(request, "That information is already in use. Please check your details.")
+            except Exception:
+                messages.error(request, "We couldn't complete your registration right now. Please try again.")
             
-            # Auto login after register
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            _record_login(request, user)
-            return redirect('home')
-            
-    return redirect('login')
-
+    return render(request, "register.html")
 
 def logout_view(request):
     logout(request)
+    messages.info(request, "You have been securely signed out.")
     return redirect('login')
 
 
