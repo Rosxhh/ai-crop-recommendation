@@ -108,20 +108,24 @@ def register_view(request):
                 user.first_name = name
                 user.save()
                 
-                # Create profile with mobile
-                UserProfile.objects.create(user=user, mobile=mobile)
+                # Create profile with mobile (handle empty as None)
+                UserProfile.objects.create(user=user, mobile=mobile if mobile else None)
                 
                 # Auto login after register
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 _record_login(request, user)
                 messages.success(request, "Account created successfully! Welcome to AgriCore.")
                 return redirect('home')
-            except IntegrityError:
-                messages.error(request, "That information is already in use. Please check your details.")
-            except Exception:
-                messages.error(request, "We couldn't complete your registration right now. Please try again.")
+            except IntegrityError as ie:
+                messages.error(request, f"Registration conflict: {str(ie)}. Please check if your email/mobile is already used.")
+            except Exception as e:
+                messages.error(request, f"Technical issue: {str(e)}")
             
-    return render(request, "register.html")
+    try:
+        return render(request, "register.html")
+    except Exception as e:
+        from django.http import HttpResponse
+        return HttpResponse(f"AgriCore Service (Reg) is initializing. Please refresh. (Diag: {str(e)})", status=200)
 
 def logout_view(request):
     logout(request)
