@@ -129,14 +129,14 @@
             <div class="input-group">
                 <div class="flex justify-between mb-2 px-1">
                     <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Password</label>
-                    <a href="#" class="text-[11px] font-black text-agri-600 hover:underline uppercase tracking-widest">Forgot?</a>
+                    <a href="#" class="text-[11px] font-black text-emerald-600 hover:underline uppercase tracking-widest">Forgot?</a>
                 </div>
                 <div class="relative">
                     <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
                     <input type="password" id="passwordField" name="password" required 
-                           class="w-full h-14 bg-white/50 border-2 border-transparent focus:border-agri-500 focus:bg-white rounded-2xl pl-12 pr-12 outline-none transition-all font-bold text-slate-800"
+                           class="w-full h-14 bg-white/50 border-2 border-transparent focus:border-emerald-500 focus:bg-white rounded-2xl pl-12 pr-12 outline-none transition-all font-bold text-slate-800"
                            placeholder="••••••••">
-                    <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-agri-600">
+                    <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-emerald-600">
                         <i class="fa-solid fa-eye" id="passwordIcon"></i>
                     </button>
                 </div>
@@ -144,7 +144,7 @@
 
             <div class="flex items-center justify-between px-1">
                 <label class="flex items-center gap-3 cursor-pointer group">
-                    <input type="checkbox" class="w-5 h-5 rounded-lg border-2 border-slate-200 text-agri-600 focus:ring-0 cursor-pointer">
+                    <input type="checkbox" class="w-5 h-5 rounded-lg border-2 border-slate-200 text-emerald-600 focus:ring-0 cursor-pointer">
                     <span class="text-sm font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Remember Me</span>
                 </label>
             </div>
@@ -162,26 +162,25 @@
             <div class="h-px bg-slate-200 flex-1"></div>
         </div>
 
-        <!-- Social Buttons (Temporarily disabled for diagnostics)
+        <!-- Social Buttons -->
         <div class="grid grid-cols-2 gap-4">
-            <a href="#" class="h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all shadow-sm">
+            <button onclick="otpMode()" class="h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all shadow-sm">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
                 <span class="text-xs font-black text-slate-600">Google</span>
-            </a>
+            </button>
             <button onclick="otpMode()" class="h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all shadow-sm">
                 <i class="fa-solid fa-mobile-screen-button text-emerald-600"></i>
                 <span class="text-xs font-black text-slate-600">OTP</span>
             </button>
         </div>
-        -->
 
         <!-- Footer -->
         <div class="mt-10 text-center space-y-4">
             <p class="text-sm font-bold text-slate-400">
-                New user? <a href="{% url 'register' %}" class="text-agri-600 hover:underline">Create Account</a>
+                New user? <a href="{% url 'register' %}" class="text-emerald-600 hover:underline">Create Account</a>
             </p>
             <div class="h-px bg-slate-100 w-16 mx-auto"></div>
-            <a href="/?mode=guest" class="inline-flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-agri-600 transition-colors">
+            <a href="/?mode=guest" class="inline-flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-emerald-600 transition-colors">
                 Continue as Guest <i class="fa-solid fa-chevron-right text-[8px]"></i>
             </a>
         </div>
