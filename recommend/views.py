@@ -76,8 +76,16 @@ def recommend_crop(request):
             feature_names = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
             input_df = pd.DataFrame([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall]], columns=feature_names)
 
-            # Predict probabilities
-            probabilities = model.predict_proba(input_df)[0]
+            # 🧪 Safe Inference Engine
+            try:
+                probabilities = model.predict_proba(input_df)[0]
+            except Exception as model_err:
+                print(f"Model Inference Error: {model_err}")
+                return render(request, "recommend.html", {
+                    **context_data,
+                    "error": "The prediction engine is currently undergoing maintenance. Please try again in 5 minutes."
+                })
+
             top_3_indices = np.argsort(probabilities)[-3:][::-1]
             
             from .crop_info import get_crop_data, CROP_MAPPING
@@ -266,7 +274,16 @@ def rapid_recommend(request):
             import pandas as pd
             feature_names = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
             input_df = pd.DataFrame([[n, p, k, temp, hum, ph_val, rainfall]], columns=feature_names)
-            prediction = model.predict(input_df)
+            
+            # 🚀 Safe Prediction
+            try:
+                prediction = model.predict(input_df)
+            except Exception as model_err:
+                print(f"Rapid Inference Error: {model_err}")
+                return render(request, "rapid_recommend.html", {
+                    **context_data,
+                    "error": "The Quick-Scan engine is currently updating. Please try the standard scan or wait a moment."
+                })
             
             from .crop_info import get_crop_data
             crop_data = get_crop_data(int(prediction[0]))

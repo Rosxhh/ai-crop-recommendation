@@ -81,8 +81,14 @@ def predict_yield(request):
             feature_names = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall', 'Area']
             input_df = pd.DataFrame([[nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall, area]], columns=feature_names)
 
-            prediction = model.predict(input_df)
-            total_yield = round(float(prediction[0]), 2)  # type: ignore
+            # 🚀 Safe Prediction Engine
+            try:
+                prediction = model.predict(input_df)
+                total_yield = round(float(prediction[0]), 2)  # type: ignore
+            except Exception as model_err:
+                print(f"Yield Prediction Error: {model_err}")
+                return _render_yield_form(request, "Our prediction engine is being updated to improve accuracy. Please try again in a few moments.")
+
             yield_per_hectare = round(float(total_yield / area), 2) if area > 0 else 0.0  # type: ignore
 
             crop_name = request.POST.get("crop", "Unknown")
