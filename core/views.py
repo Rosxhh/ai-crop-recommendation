@@ -74,7 +74,14 @@ def login_view(request):
         except Exception:
             messages.error(request, "A technical issue occurred. Please try again in a few moments.")
 
-    return render(request, "login.html")
+    try:
+        return render(request, "login.html")
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Login Template Rendering Error: {e}")
+        from django.http import HttpResponse
+        return HttpResponse(f"AgriCore Service is initializing. Please refresh in 30 seconds. (Diagnostic: {str(e)})", status=200)
 
 def register_view(request):
     if request.method == "POST":
