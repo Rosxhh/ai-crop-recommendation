@@ -35,4 +35,4 @@ EXPOSE 7860
 
 # Start the application using Gunicorn
 # Hugging Face Spaces require the app to bind to 0.0.0.0:7860
-CMD ["gunicorn", "crop_project.wsgi:application", "--bind", "0.0.0.0:7860", "--timeout", "120"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn crop_project.wsgi:application --bind 0.0.0.0:7860 --timeout 120"]
