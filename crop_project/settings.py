@@ -28,7 +28,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'fallback-key-change-in-production')
 
 # SECURITY: Debug mode loaded from .env (set False in production!)
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = True
 
 # SECURITY: Allowed hosts (Universal for deployment)
 ALLOWED_HOSTS = ['*']
@@ -171,7 +171,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 SITE_ID = 1
