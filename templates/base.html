@@ -177,7 +177,8 @@
                 start_scan: "Start Scan",
                 weather_desc: "Check rain, temperature, and local weather alerts.",
                 view_weather: "View Weather",
-                view_prices: "View Prices"
+                view_prices: "View Prices",
+                logout: "Logout"
             },
             ta: {
                 brand: "அக்ரிகோர்",
@@ -309,7 +310,8 @@
                 start_scan: "ஸ்கேன் தொடங்கு",
                 weather_desc: "மழை, வெப்பநிலை மற்றும் உள்ளூர் வானிலை எச்சரிக்கைகளை சரிபார்க்கவும்.",
                 view_weather: "வானிலை காண்க",
-                view_prices: "விலைகளை காண்க"
+                view_prices: "விலைகளை காண்க",
+                logout: "வெளியேறு"
             },
             hi: {
                 brand: "एग्रीकोर",
@@ -441,7 +443,8 @@
                 start_scan: "स्कैन शुरू करें",
                 weather_desc: "बारिश, तापमान और स्थानीय मौसम अलर्ट की जांच करें।",
                 view_weather: "मौसम देखें",
-                view_prices: "भाव देखें"
+                view_prices: "भाव देखें",
+                logout: "लॉगआउट"
             },
             te: {
                 brand: "అగ్రి-కోర్", tools: "సాధనాలు", rapid: "త్వరిత తనిఖీ", recommend: "మట్టి తనిఖీ",
@@ -506,7 +509,8 @@
                 start_scan: "స్కాన్ ప్రారంభించండి",
                 weather_desc: "వర్షం, ఉష్ణోగ్రత మరియు స్థానిక వాతావరణ హెచ్చరికలను తనిఖీ చేయండి.",
                 view_weather: "వాతావరణం చూడండి",
-                view_prices: "ధరలు చూడండి"
+                view_prices: "ధరలు చూడండి",
+                logout: "లాగ్ అవుట్"
             },
             kn: {
                 brand: "ಅಗ್ರಿಕೋರ್", tools: "ಪರಿಕರಗಳು", rapid: "ತ್ವರಿತ ಪರಿಶೀಲನೆ", recommend: "ಮಣ್ಣಿನ ತಪಾಸಣೆ",
@@ -571,7 +575,8 @@
                 start_scan: "ಸ್ಕ್ಯಾನ್ ಪ್ರಾರಂಭಿಸಿ",
                 weather_desc: "ಮಳೆ, ತಾಪಮಾನ ಮತ್ತು ಸ್ಥಳೀಯ ಹವಾಮಾನ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
                 view_weather: "ಹವಾಮಾನ ನೋಡಿ",
-                view_prices: "ಬೆಲೆಗಳನ್ನು ನೋಡಿ"
+                view_prices: "ಬೆಲೆಗಳನ್ನು ನೋಡಿ",
+                logout: "ಲಾಗ್ ಔಟ್"
             }
         };
 
@@ -735,6 +740,13 @@
                             <i class="fa-solid fa-wheat-awn text-agri-600 text-xs"></i>
                             <span class="text-[11px] font-black text-slate-800 uppercase tracking-wider">Yield Predictor</span>
                         </a>
+                        {% if user.is_authenticated %}
+                        <div class="h-px bg-slate-100 mx-3 my-1"></div>
+                        <a href="/logout/" class="flex items-center gap-3 p-3 rounded-xl hover:bg-rose-50 text-rose-600 transition-colors">
+                            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                            <span class="text-[11px] font-black uppercase tracking-wider" data-i18n="logout">Logout</span>
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -774,6 +786,40 @@
             </div>
 
             <div class="flex items-center gap-2">
+                {% if user.is_authenticated %}
+                <div class="relative group h-10 hidden lg:block">
+                    <button class="flex items-center gap-2 h-full px-2 rounded-xl bg-slate-100 text-slate-800 font-black text-[10px] hover:bg-slate-200 transition-all border border-slate-200">
+                        <div class="w-7 h-7 rounded-lg bg-agri-600 text-white flex items-center justify-center font-black text-[10px]">
+                            {{ user.first_name|default:user.username|slice:":1"|upper }}
+                        </div>
+                        <span class="max-w-[80px] truncate">{{ user.username }}</span>
+                        <i class="fa-solid fa-chevron-down text-[7px] mt-0.5"></i>
+                    </button>
+                    <div class="absolute top-full right-0 w-48 pt-1 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-[120]">
+                        <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 flex flex-col gap-1">
+                             <div class="px-3 py-2 border-b border-slate-50 mb-1">
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Account</p>
+                                <p class="text-[10px] font-bold text-slate-800 truncate">{{ user.email|default:user.username }}</p>
+                            </div>
+                            <a href="{% url 'login_history' %}" class="flex items-center gap-3 p-2 rounded-lg text-[10px] font-black text-slate-600 hover:bg-agri-50 hover:text-agri-600 transition-all">
+                                <i class="fa-solid fa-shield-halved text-xs"></i>
+                                <span>Login Activity</span>
+                            </a>
+                            <div class="h-px bg-slate-100 my-1"></div>
+                            <a href="/logout/" class="flex items-center gap-3 p-2 rounded-lg text-[10px] font-black text-rose-500 hover:bg-rose-50 transition-all">
+                                <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                                <span data-i18n="logout">Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <a href="/" class="hidden lg:flex items-center gap-2 h-10 px-4 rounded-xl bg-agri-600 text-white font-black text-[10px] hover:bg-agri-700 shadow-lg shadow-agri-600/20 transition-all">
+                    <i class="fa-solid fa-user-circle text-sm"></i>
+                    <span data-i18n="login">Login</span>
+                </a>
+                {% endif %}
+
                 <a href="/chatbot/" class="flex items-center justify-center w-10 h-10 rounded-xl bg-agri-600 text-white shadow-lg shadow-agri-600/20 active:scale-95 transition-all">
                     <i class="fa-solid fa-comments text-sm"></i>
                 </a>
@@ -904,13 +950,13 @@
                             <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Farmer Account</p>
                         </div>
                     </div>
-                    <a href="/logout/" class="w-10 h-10 rounded-xl flex items-center justify-center bg-rose-50 text-rose-500 hover:bg-rose-100 transition-all">
+                    <a href="/logout/" class="w-10 h-10 rounded-xl flex items-center justify-center bg-rose-50 text-rose-500 hover:bg-rose-100 transition-all" title="Logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </a>
                 </div>
                 {% else %}
                 <a href="/" class="mt-8 w-full h-12 rounded-xl bg-agri-600 text-white font-black flex items-center justify-center gap-3 shadow-lg shadow-agri-600/20">
-                    <i class="fa-solid fa-user-circle"></i> Login
+                    <i class="fa-solid fa-user-circle"></i> <span data-i18n="login">Login</span>
                 </a>
                 {% endif %}
             </div>
