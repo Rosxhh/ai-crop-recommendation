@@ -96,13 +96,20 @@
     <!-- Auth Card -->
     <div class="glass-card w-full max-w-[460px] p-8 md:p-12 animate__animated animate__zoomIn">
         
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <div class="w-16 h-16 bg-white/50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <i class="fa-solid fa-leaf text-agri-600 text-3xl"></i>
+        <!-- Language & Action Header -->
+        <div class="flex justify-between items-center mb-10">
+            <div class="flex gap-2">
+                <button onclick="setLang('en')" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 text-[10px] font-black shadow-sm flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all">EN</button>
+                <button onclick="setLang('ta')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-black shadow-sm flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all">தமிழ்</button>
             </div>
-            <h1 class="text-3xl font-black text-slate-900 mb-2">Welcome Back</h1>
-            <p class="text-slate-500 font-medium">Please sign in to your dashboard</p>
+            <div class="w-12 h-12 bg-white/50 rounded-2xl flex items-center justify-center shadow-inner">
+                <i class="fa-solid fa-leaf text-emerald-600 text-2xl"></i>
+            </div>
+        </div>
+
+        <div class="text-center mb-8">
+            <h1 id="loginTitle" class="text-3xl font-black text-slate-900 mb-2">Welcome Back</h1>
+            <p id="loginSubtitle" class="text-slate-500 font-medium">Please sign in to your dashboard</p>
         </div>
 
         <!-- Login Form -->
@@ -191,6 +198,16 @@
                 field.type = 'password';
                 icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
+        }
+
+        function setLang(lang) {
+            const texts = {
+                en: { title: "Welcome Back", subtitle: "Please sign in to your dashboard" },
+                ta: { title: "வரவேற்கிறோம்", subtitle: "உங்கள் டாஷ்போர்டில் உள்நுழையவும்" }
+            };
+            document.getElementById('loginTitle').innerText = texts[lang].title;
+            document.getElementById('loginSubtitle').innerText = texts[lang].subtitle;
+            localStorage.setItem('agri_lang', lang);
         }
 
         function otpMode() {
