@@ -100,18 +100,18 @@
 
             <!-- Unified Input Bar -->
             <div class="max-w-4xl mx-auto">
-                <div class="relative flex items-end gap-2 sm:gap-4">
+                <div class="relative flex items-center gap-1.5 sm:gap-4 px-2">
                     
                     <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
-                    <button onclick="document.getElementById('imageInput').click()" class="w-11 h-11 sm:w-14 sm:h-14 flex-shrink-0 rounded-2xl flex items-center justify-center transition-all shadow-sm btn-3d btn-3d-slate" title="Attach Image">
-                        <i class="fa-solid fa-paperclip text-base sm:text-xl"></i>
+                    <button onclick="document.getElementById('imageInput').click()" class="w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:bg-slate-200" title="Attach Image">
+                        <i class="fa-solid fa-paperclip text-sm sm:text-xl"></i>
                     </button>
 
-                    <div class="flex-1 min-h-[50px] sm:min-h-[56px] bg-white border-2 border-slate-900/10 rounded-[1.5rem] sm:rounded-[2rem] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] focus-within:border-agri-400/50 transition-all flex items-center overflow-hidden">
-                        <textarea id="messageInput" rows="1" class="flex-1 min-w-0 bg-transparent border-none px-4 sm:px-6 py-3.5 sm:py-4 outline-none resize-none text-slate-700 font-medium placeholder:text-slate-300 max-h-40 text-sm sm:text-base" placeholder="Ask in any language..."></textarea>
+                    <div class="flex-1 min-h-[44px] sm:min-h-[56px] bg-white border-2 border-slate-900/5 rounded-2xl sm:rounded-[2rem] shadow-sm focus-within:border-agri-400/50 transition-all flex items-center overflow-hidden">
+                        <textarea id="messageInput" rows="1" class="flex-1 min-w-0 bg-transparent border-none px-3 sm:px-6 py-2.5 sm:py-4 outline-none resize-none text-slate-700 font-medium placeholder:text-slate-300 max-h-40 text-sm sm:text-base" placeholder="Ask anything..."></textarea>
                         
-                        <div class="flex items-center gap-0.5 sm:gap-2 pr-1 sm:pr-4 pl-1 border-l border-slate-50">
-                            <select id="languageSelect" onchange="onLanguageChange()" class="bg-transparent border-none text-[9px] sm:text-xs font-black uppercase text-slate-400 hover:text-agri-600 outline-none cursor-pointer max-w-[50px] sm:max-w-none">
+                        <div class="flex items-center gap-0.5 sm:gap-2 pr-1 sm:pr-4 pl-0.5 border-l border-slate-50">
+                            <select id="languageSelect" onchange="onLanguageChange()" class="bg-transparent border-none text-[8px] sm:text-xs font-black uppercase text-slate-400 outline-none cursor-pointer w-8 sm:w-auto">
                                 <option value="English">EN</option>
                                 <option value="Tamil">TA</option>
                                 <option value="Hindi">HI</option>
@@ -119,20 +119,19 @@
                                 <option value="Kannada">KN</option>
                             </select>
                             
-                            <button id="voiceToggleBtn" onclick="toggleVoice()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-slate-300 hover:text-agri-500">
-                                <i class="fa-solid fa-volume-high text-xs sm:text-base" id="voiceIcon"></i>
+                            <button id="voiceToggleBtn" onclick="toggleVoice()" class="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-slate-300 hover:text-agri-500">
+                                <i class="fa-solid fa-volume-high text-[10px] sm:text-base" id="voiceIcon"></i>
                             </button>
                             
-                            <button id="micBtn" onclick="toggleSpeech()" class="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex flex-col items-center justify-center text-slate-300 hover:text-red-500 transition-all group">
+                            <button id="micBtn" onclick="toggleSpeech()" class="relative w-8 h-8 sm:w-12 sm:h-12 rounded-full flex flex-col items-center justify-center text-slate-300 hover:text-red-500 transition-all group">
                                 <div id="micGlow" class="hidden mic-active-glow"></div>
-                                <i class="fa-solid fa-microphone text-base sm:text-lg" id="micIcon"></i>
-                                <span id="micLangLabel" class="text-[6px] sm:text-[7px] font-black uppercase mt-0.5 opacity-60">EN</span>
+                                <i class="fa-solid fa-microphone text-sm sm:text-lg" id="micIcon"></i>
                             </button>
                         </div>
                     </div>
 
-                    <button id="sendBtn" onclick="sendMessage()" class="w-11 h-11 sm:w-14 sm:h-14 flex-shrink-0 bg-agri-600 text-white rounded-2xl flex items-center justify-center hover:bg-agri-700 shadow-xl shadow-agri-600/20 transition-all group">
-                        <i class="fa-solid fa-paper-plane text-base sm:text-xl group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                    <button id="sendBtn" onclick="sendMessage()" class="w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0 bg-agri-600 text-white rounded-xl flex items-center justify-center hover:bg-agri-700 shadow-lg shadow-agri-600/20 transition-all active:scale-95">
+                        <i class="fa-solid fa-paper-plane text-sm sm:text-xl"></i>
                     </button>
                 </div>
             </div>

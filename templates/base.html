@@ -611,7 +611,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="antialiased font-sans flex flex-col min-h-screen relative bg-transparent pb-24 sm:pb-0">
+<body class="antialiased font-sans flex flex-col min-h-screen relative bg-transparent pb-24 sm:pb-0 overflow-x-hidden">
 
     <!-- 📱 Mobile Bottom Navigation (Glassmorphism) -->
     {% if '/chatbot/' not in request.path %}
@@ -644,18 +644,14 @@
     <div class="fixed inset-0 -z-[100] bg-emerald-50"></div>
 
     <!-- Navbar (Lite Green & White) -->
-    <header class="w-full h-20 flex items-center justify-between px-6 md:px-12 bg-white sticky top-0 z-[110] border-b border-slate-900/10 shadow-sm">
-        <div class="flex items-center gap-4">
-            <a href="{% if user.is_authenticated %}/dashboard/{% else %}/{% endif %}" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 bg-agri-600 rounded-xl flex items-center justify-center p-2 shadow-lg group-hover:rotate-12 transition-transform">
+    <header class="w-full h-20 flex items-center justify-between px-4 md:px-12 bg-white sticky top-0 z-[110] border-b border-slate-900/10 shadow-sm">
+        <div class="flex items-center gap-2 sm:gap-4">
+            <a href="{% if user.is_authenticated %}/dashboard/{% else %}/{% endif %}" class="flex items-center gap-2 sm:gap-3 group">
+                <div class="w-10 h-10 bg-agri-600 rounded-xl flex items-center justify-center p-2 shadow-lg group-hover:rotate-12 transition-transform shrink-0">
                     <i class="fa-solid fa-seedling text-white text-lg"></i>
                 </div>
-                <span class="text-xl font-black text-slate-900 tracking-tight" data-i18n="brand">AgriCore <span class="text-[10px] text-agri-600 bg-agri-50 px-2 py-0.5 rounded-full ml-1">v2.0</span></span>
+                <span class="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-none" data-i18n="brand">AgriCore <span class="hidden xs:inline text-[10px] text-agri-600 bg-agri-50 px-2 py-0.5 rounded-full ml-1 font-bold uppercase">v2.0</span></span>
             </a>
-            <!-- 📱 Instant Menu Access (Right of Brand) -->
-            <button onclick="toggleDrawer()" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 text-slate-600 active:bg-agri-100 active:text-agri-600 transition-all">
-                <i class="fa-solid fa-bars-staggered text-sm"></i>
-            </button>
         </div>
 
         <div class="hidden lg:block w-[1px] h-8 bg-slate-200 mx-8"></div>
@@ -725,8 +721,8 @@
             </div>
         </nav>
 
-        <div class="flex items-center gap-2 xl:gap-4 shrink-0">
-            <div class="relative group h-9 hidden sm:block">
+        <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+            <div class="relative group h-9 hidden md:block">
                 <button class="flex items-center gap-2 h-full px-4 rounded-xl bg-slate-100 text-slate-800 font-black text-[10px] hover:bg-slate-200 transition-all">
                     <i class="fa-solid fa-language text-agri-600 text-sm"></i>
                     <span id="currentLangLabel">English</span>
@@ -758,14 +754,14 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 sm:gap-3">
-                <a href="/chatbot/" class="flex items-center justify-center w-10 h-10 rounded-xl bg-agri-700 text-white shadow-xl shadow-agri-700/30 active:scale-95 transition-all">
+            <div class="flex items-center gap-2">
+                <a href="/chatbot/" class="flex items-center justify-center w-10 h-10 rounded-xl bg-agri-600 text-white shadow-lg shadow-agri-600/20 active:scale-95 transition-all">
                     <i class="fa-solid fa-comments text-sm"></i>
                 </a>
 
-                <!-- 📱 Primary Mobile Menu (Enhanced Visibility) -->
-                <button onclick="toggleDrawer()" class="lg:hidden w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-900 text-white shadow-2xl shadow-slate-900/40 active:scale-90 transition-all border-2 border-white/20">
-                    <i class="fa-solid fa-bars text-lg"></i>
+                <!-- 📱 Primary Mobile Menu -->
+                <button onclick="toggleDrawer()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-900 text-white shadow-xl shadow-slate-900/40 active:scale-90 transition-all border border-white/10">
+                    <i class="fa-solid fa-bars-staggered text-sm"></i>
                 </button>
             </div>
         </div>
