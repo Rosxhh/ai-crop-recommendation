@@ -1,4 +1,5 @@
 {% load static %}
+{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -163,11 +164,11 @@
 
         <!-- Social Buttons -->
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="otpMode()" class="h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all shadow-sm">
+            <a href="{% provider_login_url 'google' %}" class="h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all shadow-sm">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
                 <span class="text-xs font-black text-slate-600">Google</span>
-            </button>
-            <button onclick="otpMode()" class="h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all shadow-sm">
+            </a>
+            <button type="button" onclick="otpMode()" class="h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all shadow-sm">
                 <i class="fa-solid fa-mobile-screen-button text-emerald-600"></i>
                 <span class="text-xs font-black text-slate-600">OTP</span>
             </button>
