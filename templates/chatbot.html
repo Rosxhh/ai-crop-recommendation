@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="h-[calc(100vh-80px)] w-full flex overflow-hidden lg:animate-[fade-in-up_0.5s_ease-out] relative">
+<div class="h-[calc(100vh-80px)] w-full flex overflow-hidden lg:animate-[fade-in-up_0.5s_ease-out] relative bg-slate-50">
     
     <!-- Sidebar: ChatGPT Style (Lite Green Theme) -->
     <div id="sidebar" style="background-color: #f0fdf4 !important;" class="w-72 bg-emerald-50 text-slate-900 flex flex-col transition-all duration-300 -translate-x-full fixed top-20 bottom-0 left-0 z-[100] lg:relative lg:translate-x-0 lg:top-0 border-r border-slate-900/10 shadow-2xl lg:shadow-none">
@@ -85,12 +85,12 @@
         </div>
 
         <!-- Input Section -->
-        <div class="p-4 sm:p-8 bg-emerald-50 border-t border-slate-900/10 z-20">
+        <div class="p-2 sm:p-8 bg-[#f0fdf4] border-t border-slate-900/10 z-20">
             
             <!-- Image Preview -->
-            <div id="imagePreviewContainer" class="hidden max-w-4xl mx-auto mb-6">
+            <div id="imagePreviewContainer" class="hidden max-w-4xl mx-auto mb-4 sm:mb-6 px-2 sm:px-0">
                 <div class="relative inline-block">
-                    <img id="imagePreview" src="" class="h-28 w-auto rounded-2xl shadow-2xl ring-4 ring-agri-500/10 border-2 border-white object-cover" alt="Preview">
+                    <img id="imagePreview" src="" class="h-24 sm:h-28 w-auto rounded-2xl shadow-2xl ring-4 ring-agri-500/10 border-2 border-white object-cover" alt="Preview">
                     <button onclick="clearImage()" class="absolute -top-3 -right-3 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white">
                         <i class="fa-solid fa-xmark text-xs font-bold"></i>
                     </button>
@@ -99,39 +99,41 @@
             </div>
 
             <!-- Unified Input Bar -->
-            <div class="max-w-4xl mx-auto">
-                <div class="relative flex items-center gap-1.5 sm:gap-4 px-2">
+            <div class="max-w-4xl mx-auto px-1 sm:px-0">
+                <div class="relative flex items-end gap-1.5 sm:gap-4">
                     
                     <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
-                    <button onclick="document.getElementById('imageInput').click()" class="w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center transition-all hover:bg-slate-200" title="Attach Image">
-                        <i class="fa-solid fa-paperclip text-sm sm:text-xl"></i>
+                    <button onclick="document.getElementById('imageInput').click()" class="w-10 h-10 sm:w-12 sm:h-12 mb-[2px] sm:mb-[4px] flex-shrink-0 bg-white sm:bg-slate-100 text-slate-500 rounded-full flex items-center justify-center transition-all hover:bg-slate-200 active:scale-95 shadow-sm border border-slate-100 sm:border-transparent" title="Attach Image">
+                        <i class="fa-solid fa-paperclip text-sm sm:text-lg"></i>
                     </button>
 
-                    <div class="flex-1 min-h-[44px] sm:min-h-[56px] bg-white border-2 border-slate-900/5 rounded-2xl sm:rounded-[2rem] shadow-sm focus-within:border-agri-400/50 transition-all flex items-center overflow-hidden">
-                        <textarea id="messageInput" rows="1" class="flex-1 min-w-0 bg-transparent border-none px-3 sm:px-6 py-2.5 sm:py-4 outline-none resize-none text-slate-700 font-medium placeholder:text-slate-300 max-h-40 text-sm sm:text-base" placeholder="Ask anything..."></textarea>
+                    <div class="flex-1 min-h-[44px] sm:min-h-[56px] bg-white border border-slate-200 rounded-[22px] sm:rounded-[28px] shadow-sm focus-within:border-agri-400/50 transition-all flex items-end overflow-hidden">
+                        <textarea id="messageInput" rows="1" class="flex-1 bg-transparent border-none px-3 py-3 sm:px-4 sm:py-4 outline-none resize-none text-slate-700 font-medium placeholder:text-slate-400 max-h-32 sm:max-h-40 text-[13px] sm:text-base leading-tight sm:leading-normal" placeholder="Ask anything..."></textarea>
                         
-                        <div class="flex items-center gap-0.5 sm:gap-2 pr-1 sm:pr-4 pl-0.5 border-l border-slate-50">
-                            <select id="languageSelect" onchange="onLanguageChange()" class="bg-transparent border-none text-[8px] sm:text-xs font-black uppercase text-slate-400 outline-none cursor-pointer w-8 sm:w-auto">
-                                <option value="English">EN</option>
-                                <option value="Tamil">TA</option>
-                                <option value="Hindi">HI</option>
-                                <option value="Telugu">TE</option>
-                                <option value="Kannada">KN</option>
-                            </select>
-                            
-                            <button id="voiceToggleBtn" onclick="toggleVoice()" class="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-slate-300 hover:text-agri-500">
-                                <i class="fa-solid fa-volume-high text-[10px] sm:text-base" id="voiceIcon"></i>
+                        <div class="flex items-center gap-0.5 sm:gap-2 pr-1 sm:pr-3 pb-[8px] sm:pb-[12px]">
+                            <div class="relative group flex items-center">
+                                <select id="languageSelect" onchange="onLanguageChange()" class="bg-transparent border-none text-[9px] sm:text-[10px] font-black uppercase text-slate-400 hover:text-agri-600 outline-none cursor-pointer appearance-none pr-3 sm:pr-4 py-1 sm:py-0">
+                                    <option value="English">EN</option>
+                                    <option value="Tamil">TA</option>
+                                    <option value="Hindi">HI</option>
+                                    <option value="Telugu">TE</option>
+                                    <option value="Kannada">KN</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1/2 -translate-y-1/2 text-[6px] sm:text-[7px] pointer-events-none text-slate-400"></i>
+                            </div>
+
+                            <button id="voiceToggleBtn" onclick="toggleVoice()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-agri-500 transition-colors">
+                                <i class="fa-solid fa-volume-high text-[11px] sm:text-xs" id="voiceIcon"></i>
                             </button>
-                            
-                            <button id="micBtn" onclick="toggleSpeech()" class="relative w-8 h-8 sm:w-12 sm:h-12 rounded-full flex flex-col items-center justify-center text-slate-300 hover:text-red-500 transition-all group">
-                                <div id="micGlow" class="hidden mic-active-glow"></div>
-                                <i class="fa-solid fa-microphone text-sm sm:text-lg" id="micIcon"></i>
+
+                            <button id="micBtn" onclick="toggleSpeech()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+                                <i class="fa-solid fa-microphone text-[12px] sm:text-sm" id="micIcon"></i>
                             </button>
                         </div>
                     </div>
 
-                    <button id="sendBtn" onclick="sendMessage()" class="w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0 bg-agri-600 text-white rounded-xl flex items-center justify-center hover:bg-agri-700 shadow-lg shadow-agri-600/20 transition-all active:scale-95">
-                        <i class="fa-solid fa-paper-plane text-sm sm:text-xl"></i>
+                    <button id="sendBtn" onclick="sendMessage()" class="w-10 h-10 sm:w-12 sm:h-12 mb-[2px] sm:mb-[4px] flex-shrink-0 bg-agri-600 text-white rounded-full flex items-center justify-center hover:bg-agri-700 shadow-md shadow-agri-600/20 transition-all active:scale-95">
+                        <i class="fa-solid fa-paper-plane text-[13px] sm:text-lg ml-0.5 sm:ml-1"></i>
                     </button>
                 </div>
             </div>
@@ -160,10 +162,8 @@
     let voices = [];
     let currentSessionId = "{{ session_id }}";
 
-    // 1. Multilingual Voice & Initialization
     function initVoices() {
         voices = window.speechSynthesis.getVoices();
-        console.log(`System voices loaded: ${voices.length}`);
     }
     if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = initVoices;
@@ -173,17 +173,12 @@
     function onLanguageChange() {
         const lang = languageSelect.value;
         const msgMap = {
-            'English': 'Voice mode active. English ready.',
-            'Tamil': 'குரல் முறை செயல்படுகிறது. தமிழ் தயார்.',
-            'Hindi': 'वॉयस मोड सक्रिय है। हिंदी तैयार है।',
-            'Telugu': 'వాయిస్ మోడ్ యాక్టివ్. తెలుగు సిద్ధంగా ఉంది.',
-            'Kannada': 'ಧ್ವನಿ ಮೋಡ್ ಸಕ್ರಿಯವಾಗಿದೆ. ಕನ್ನಡ ಸಿದ್ಧವಾಗಿದೆ.'
+            'English': 'Voice mode active.',
+            'Tamil': 'குரல் முறை செயல்படுகிறது.',
+            'Hindi': 'वॉयस मोड सक्रिय है।',
+            'Telugu': 'వాయిస్ మోడ్ యాక్టివ్.',
+            'Kannada': 'ಧ್ವನಿ ಮೋಡ್ ಸಕ್ರಿಯವಾಗಿದೆ.'
         };
-        
-        // Update UI indicator
-        const shortCodes = { 'English': 'EN', 'Tamil': 'TA', 'Hindi': 'HI', 'Telugu': 'TE', 'Kannada': 'KN' };
-        document.getElementById('micLangLabel').innerText = shortCodes[lang] || 'EN';
-        
         speakText(msgMap[lang], lang);
     }
 
@@ -198,21 +193,9 @@
         utterance.rate = 1.0;
         
         let availableVoices = window.speechSynthesis.getVoices();
-        if (availableVoices.length === 0) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                availableVoices = window.speechSynthesis.getVoices();
-                performSpeak(utterance, availableVoices, code, lang);
-            };
-        } else {
-            performSpeak(utterance, availableVoices, code, lang);
-        }
-    }
-
-    function performSpeak(utterance, voicesList, code, langName) {
-        const targetVoice = voicesList.find(v => v.lang === code && (v.name.includes("Google") || v.localService)) || 
-                            voicesList.find(v => v.lang === code) ||
-                            voicesList.find(v => v.lang.startsWith(code.split('-')[0])) ||
-                            voicesList.find(v => v.name.toLowerCase().includes(langName.toLowerCase()));
+        const targetVoice = availableVoices.find(v => v.lang === code && (v.name.includes("Google") || v.localService)) || 
+                            availableVoices.find(v => v.lang === code) ||
+                            availableVoices.find(v => v.lang.startsWith(code.split('-')[0]));
         
         if (targetVoice) utterance.voice = targetVoice;
         window.speechSynthesis.speak(utterance);
@@ -220,11 +203,10 @@
 
     function toggleVoice() {
         voiceOutputEnabled = !voiceOutputEnabled;
-        voiceIcon.className = voiceOutputEnabled ? "fa-solid fa-volume-high" : "fa-solid fa-volume-xmark text-slate-400";
+        voiceIcon.className = voiceOutputEnabled ? "fa-solid fa-volume-high text-xs" : "fa-solid fa-volume-xmark text-xs text-slate-400";
         if (!voiceOutputEnabled) window.speechSynthesis.cancel();
     }
 
-    // 2. Sidebar & Conversation Management
     function toggleSidebar() {
         sidebar.classList.toggle('-translate-x-full');
         sidebarOverlay.classList.toggle('hidden');
@@ -234,7 +216,7 @@
         try {
             const res = await fetch('/chatbot/api/?list_chats=true');
             const data = await res.json();
-            chatHistoryList.innerHTML = '<div class="px-4 py-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">History</div>';
+            chatHistoryList.innerHTML = '<div class="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">History</div>';
             
             data.chats.forEach(chat => {
                 const isActive = chat.session_id === currentSessionId;
@@ -257,22 +239,18 @@
 
     async function deleteSession(event, sid) {
         event.stopPropagation();
-        if (!confirm("Are you sure you want to delete this conversation? 🚜")) return;
-        
+        if (!confirm("Are you sure?")) return;
         try {
-            const res = await fetch('/chatbot/api/', {
+            await fetch('/chatbot/api/', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
                 body: JSON.stringify({ delete_chat: true, session_id: sid })
             });
-            const data = await res.json();
-            
             if (sid === currentSessionId) {
-                currentSessionId = data.session_id;
-                messagesEl.innerHTML = '';
-                addMessage("This conversation was deleted. How can I help you with a new one? 🌾", false);
+                location.reload();
+            } else {
+                loadChatHistory();
             }
-            loadChatHistory();
         } catch (e) { console.error("Delete fail:", e); }
     }
 
@@ -301,7 +279,6 @@
         if (window.innerWidth < 1024) toggleSidebar();
     }
 
-    // 3. UI Messaging
     function addMessage(text, isUser = false, isTyping = false, imageUrl = null) {
         const div = document.createElement('div');
         div.className = `flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-1 max-w-[92%] sm:max-w-[80%] ${isUser ? 'ml-auto' : ''} animate-fade-in-up group/msg`;
@@ -312,10 +289,9 @@
         const content = isTyping 
             ? `<div class="bg-white border border-emerald-100 px-6 py-4 rounded-3xl flex items-center gap-3 shadow-sm"><div class="dot-typing"></div></div>`
             : `<div class="relative flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-full">
-                <div class="${isUser ? 'bg-agri-600 text-white shadow-xl' : 'bg-white border border-emerald-100 shadow-md'} px-6 py-4 rounded-3xl rounded-${isUser?'tr':'tl'}-sm font-bold leading-relaxed text-base sm:text-lg overflow-hidden break-words text-slate-900">
-                    ${isUser ? `<style>.text-slate-900 { color: white !important; }</style>` : '<style>.text-slate-900 { color: black !important; }</style>'}
+                <div class="${isUser ? 'bg-agri-600 text-white shadow-xl' : 'bg-white border border-emerald-100 shadow-md'} px-6 py-4 rounded-3xl rounded-${isUser?'tr':'tl'}-sm font-bold leading-relaxed text-base sm:text-lg overflow-hidden break-words">
                     ${imageUrl ? `<img src="${imageUrl}" class="max-w-full h-auto rounded-xl mb-3 border border-white/20 shadow-sm" alt="Shared Image">` : ''}
-                    ${messageContent}
+                    <div class="${isUser ? 'text-white' : 'text-slate-800'}">${messageContent}</div>
                 </div>
                 ${!isTyping ? `
                 <button class="copy-btn mt-2 opacity-0 group-hover/msg:opacity-100 transition-opacity p-2 text-slate-400 hover:text-agri-600 bg-white shadow-sm border border-slate-100 rounded-lg flex items-center gap-2 text-[10px] font-bold">
@@ -324,12 +300,13 @@
                </div>`;
             
         div.innerHTML = content;
-        
-        // Attach listener safely (Fixes the "leaking code" bug)
         const btn = div.querySelector('.copy-btn');
-        if (btn) {
-            btn.onclick = () => copyToClipboard(text, btn);
-        }
+        if (btn) btn.onclick = () => {
+            navigator.clipboard.writeText(text);
+            const icon = btn.querySelector('i');
+            icon.className = "fa-solid fa-check text-green-500";
+            setTimeout(() => icon.className = "fa-regular fa-copy", 2000);
+        };
 
         messagesEl.appendChild(div);
         messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -356,42 +333,30 @@
             const data = await res.json();
             typing.remove();
             
-            // Sophisticated Markdown Parser for UNLIMITED responses
             let reply = data.reply
-                .replace(/\*\*\*(.*?)\*\*\*/g, '<strong class="font-extrabold text-agri-800 underline">$1</strong>') // Bold Italics
-                .replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-agri-700">$1</strong>') // Bold
-                .replace(/^\* (.*$)/gm, '<li class="ml-4 list-disc text-slate-800">$1</li>') // Bullet points
-                .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-black text-slate-900 mt-4 mb-2">$1</h1>') // H1
-                .replace(/^## (.*$)/gm, '<h2 class="text-xl font-black text-slate-800 mt-3 mb-1">$1</h2>') // H2
-                .replace(/`(.*?)`/g, '<code class="bg-slate-100 px-2 py-0.5 rounded text-rose-600 font-mono text-sm">$1</code>'); // Inline code
+                .replace(/\*\*\*(.*?)\*\*\*/g, '<strong class="font-extrabold text-agri-800">$1</strong>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-agri-700">$1</strong>')
+                .replace(/^\* (.*$)/gm, '<li class="ml-4 list-disc">$1</li>')
+                .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-black mt-4 mb-2">$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2 class="text-xl font-black mt-3 mb-1">$1</h2>')
+                .replace(/`(.*?)`/g, '<code class="bg-slate-100 px-2 py-0.5 rounded text-rose-600 font-mono text-sm">$1</code>');
 
             addMessage(reply);
             speakText(data.reply, languageSelect.value);
             loadChatHistory();
-        } catch (e) { typing.remove(); addMessage("⚠️ System busy. Please try again soon."); }
+        } catch (e) { typing.remove(); addMessage("⚠️ Error. Try again."); }
     }
 
-    // Handlers
     window.addEventListener('DOMContentLoaded', async () => {
         const res = await fetch('/chatbot/api/');
         const data = await res.json();
         currentSessionId = data.session_id;
 
-        // Sync language with global setting
         const globalLang = localStorage.getItem('agri_lang') || 'en';
         const langMapReverse = { 'en': 'English', 'ta': 'Tamil', 'hi': 'Hindi', 'te': 'Telugu', 'kn': 'Kannada' };
-        if (langMapReverse[globalLang]) {
-            languageSelect.value = langMapReverse[globalLang];
-        }
+        if (langMapReverse[globalLang]) languageSelect.value = langMapReverse[globalLang];
         
-        const initialMessage = `{{ initial_message|escapejs }}`;
-        
-        if (initialMessage && initialMessage.trim() !== "") {
-            messagesEl.innerHTML = '';
-            inputEl.value = initialMessage;
-            sendMessage();
-        }
-        else if (data.history?.length > 0) {
+        if (data.history?.length > 0) {
             messagesEl.innerHTML = '';
             data.history.forEach(m => addMessage(m.content, m.role === 'user', false, m.image_data));
         } else {
@@ -400,132 +365,26 @@
         loadChatHistory();
     });
 
-    window.addEventListener('agriLangChanged', (e) => {
-        const langMapReverse = { 'en': 'English', 'ta': 'Tamil', 'hi': 'Hindi', 'te': 'Telugu', 'kn': 'Kannada' };
-        if (langMapReverse[e.detail]) {
-            languageSelect.value = langMapReverse[e.detail];
-            onLanguageChange();
-        }
-    });
-
-    // Standard Handlers
     inputEl.oninput = () => { inputEl.style.height = 'auto'; inputEl.style.height = inputEl.scrollHeight + 'px'; };
     inputEl.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
-    // Paste Support (Universal)
-    inputEl.addEventListener('paste', (e) => {
-        const items = e.clipboardData.items;
-        let imagePasted = false;
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].type.indexOf("image") !== -1) {
-                const blob = items[i].getAsFile();
-                window.handleImageSelection({ files: [blob] });
-                imagePasted = true;
-            }
-        }
-        // If it's a text paste, trigger resize after browser renders it
-        if (!imagePasted) {
-            setTimeout(() => inputEl.dispatchEvent(new Event('input')), 0);
-        }
-    });
-
-    function copyToClipboard(text, btn) {
-        navigator.clipboard.writeText(text).then(() => {
-            const icon = btn.querySelector('i');
-            const original = icon.className;
-            icon.className = "fa-solid fa-check text-green-500 scale-125 transition-all text-[10px]";
-            setTimeout(() => icon.className = original, 2000);
-        });
-    }
-
     let recognition;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
     if (SpeechRecognition) {
         recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-
-        recognition.onstart = () => {
-            const langName = languageSelect.value;
-            console.log(`🎤 Mic session started in ${langName}`);
-            micIcon.className = "fa-solid fa-stop text-red-500 animate-pulse";
-            document.getElementById('micGlow').classList.remove('hidden');
-            inputEl.placeholder = `Listening in ${langName}... Speak now! 🌾`;
-            inputEl.focus();
+        recognition.onstart = () => micIcon.className = "fa-solid fa-stop text-red-500 animate-pulse";
+        recognition.onresult = (e) => { 
+            inputEl.value = e.results[0][0].transcript; 
+            inputEl.dispatchEvent(new Event('input')); 
+            sendMessage(); 
         };
-
-        recognition.onresult = (e) => {
-            let interimTranscript = '';
-            let finalTranscript = '';
-
-            for (let i = e.resultIndex; i < e.results.length; ++i) {
-                if (e.results[i].isFinal) {
-                    finalTranscript += e.results[i][0].transcript;
-                } else {
-                    interimTranscript += e.results[i][0].transcript;
-                }
-            }
-
-            if (finalTranscript) {
-                inputEl.value = finalTranscript;
-            } else if (interimTranscript) {
-                inputEl.value = interimTranscript;
-            }
-
-            inputEl.dispatchEvent(new Event('input'));
-
-            if (finalTranscript) {
-                recognition.stop();
-                setTimeout(() => {
-                    if (inputEl.value.trim() !== "") {
-                        sendMessage();
-                    }
-                }, 700);
-            }
-        };
-
-        recognition.onerror = (e) => {
-            console.error("❌ Mic Error:", e.error);
-            micIcon.className = "fa-solid fa-microphone text-lg";
-            document.getElementById('micGlow').classList.add('hidden');
-            
-            const errorMap = {
-                'no-speech': "No speech detected. Try again.",
-                'not-allowed': "⚠️ Browser blocked mic. Check address bar settings!",
-                'network': "Internet error. Voice needs cloud sync.",
-                'aborted': "Mic session aborted."
-            };
-            inputEl.placeholder = errorMap[e.error] || `Mic Error: ${e.error}`;
-        };
-
-        recognition.onend = () => {
-            console.log("🎤 Mic session ended");
-            micIcon.className = "fa-solid fa-microphone text-lg";
-            document.getElementById('micGlow').classList.add('hidden');
-            if (!inputEl.value) {
-                inputEl.placeholder = "Type or ask in your language... (V3.2)";
-            }
-        };
+        recognition.onend = () => micIcon.className = "fa-solid fa-microphone text-sm";
     }
 
     function toggleSpeech() { 
-        if (!recognition) {
-            alert("This browser does not support voice features. Please use Chrome.");
-            return; 
-        }
-        
-        try {
-            // Force reset to prevent getting stuck
-            recognition.stop();
-            setTimeout(() => {
-                recognition.lang = langMap[languageSelect.value];
-                recognition.start();
-            }, 100);
-        } catch(e) {
-            console.log("Mic toggle notice:", e);
-            recognition.stop();
-        }
+        if (!recognition) return; 
+        recognition.lang = langMap[languageSelect.value];
+        recognition.start();
     }
 
     window.handleImageSelection = function(e) {
@@ -542,7 +401,6 @@
 <style>
     .custom-scrollbar::-webkit-scrollbar { width: 5px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
-    #sidebar .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
     .dot-typing { position: relative; width: 6px; height: 6px; border-radius: 5px; background-color: #22c55e; animation: dotTyping 1.2s infinite linear; }
     .dot-typing::before, .dot-typing::after { content: ''; display: inline-block; position: absolute; top: 0; width: 6px; height: 6px; border-radius: 5px; background-color: #22c55e; }
     .dot-typing::before { left: -10px; animation: dotTypingBefore 1.2s infinite linear; }
@@ -551,22 +409,4 @@
     @keyframes dotTyping { 33% { opacity: 0; } 66% { opacity: 1; } 100% { opacity: 0; } }
     @keyframes dotTypingAfter { 0% { opacity: 0; } 66% { opacity: 0; } 100% { opacity: 1; } }
 </style>
-    <style>
-        #agriSpeakBtn { display: none !important; } /* Hide global FAB on Chat page */
-        
-        .mic-active-glow {
-            position: absolute;
-            inset: -4px;
-            background: rgba(239, 68, 68, 0.2);
-            border-radius: 9999px;
-            animation: pulse-red 2s infinite;
-            z-index: -1;
-        }
-        @keyframes pulse-red {
-            0% { transform: scale(1); opacity: 0.8; }
-            70% { transform: scale(1.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 0; }
-        }
-    </style>
-</div>
 {% endblock %}
