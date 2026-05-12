@@ -1,5 +1,5 @@
 import os
-import google.generativeai as genai # type: ignore
+    from ..ai import free_ai as genai # type: ignore
 from dotenv import load_dotenv # type: ignore
 
 load_dotenv(r'c:\Users\acer\Desktop\CropYieldProject\crop_project\.env')

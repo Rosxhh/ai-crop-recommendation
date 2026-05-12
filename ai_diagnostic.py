@@ -1,5 +1,8 @@
 import os
-import google.generativeai as genai # type: ignore
+try:
+    from ai import free_ai as genai
+except ImportError:
+    import google.generativeai as genai
 from dotenv import load_dotenv # type: ignore
 import time
 

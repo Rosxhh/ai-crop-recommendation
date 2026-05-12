@@ -15,7 +15,7 @@ from .models import ChatMessage
 # Initialize Environment
 load_dotenv()
 try:
-    import google.generativeai as genai
+    from ..ai import free_ai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False

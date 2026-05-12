@@ -1,5 +1,8 @@
 import os
-import google.generativeai as genai  # type: ignore
+try:
+    from ..ai import free_ai as genai
+except ImportError:
+    import google.generativeai as genai  # type: ignore
 
 def get_agronomist_strategy(soil_type, temp, humidity):
     """

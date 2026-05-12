@@ -1,5 +1,8 @@
 import os
-import google.generativeai as genai
+try:
+    from ai import free_ai as genai
+except ImportError:
+    import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv(r'c:\Users\acer\Desktop\CropYieldProject\crop_project\.env')

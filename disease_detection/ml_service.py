@@ -3,10 +3,14 @@ import os
 import json
 
 try:
-    import google.generativeai as genai # type: ignore
+    from ..ai import free_ai as genai
     HAS_GENAI = True
 except ImportError:
-    HAS_GENAI = False
+    try:
+        import google.generativeai as genai # type: ignore
+        HAS_GENAI = True
+    except ImportError:
+        HAS_GENAI = False
 
 class DiseaseDetector:
     def __init__(self):

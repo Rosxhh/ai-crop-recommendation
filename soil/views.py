@@ -12,7 +12,7 @@ from recommend.crop_info import get_crop_data
 load_dotenv()
 
 try:
-    import google.generativeai as genai
+    from ..ai import free_ai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False

@@ -16,10 +16,14 @@ from .models import DiseaseMarker
 load_dotenv()
 
 try:
-    import google.generativeai as genai  # type: ignore
+    from ..ai import free_ai as genai
     GEMINI_AVAILABLE = True
 except ImportError:
-    GEMINI_AVAILABLE = False
+    try:
+        import google.generativeai as genai  # type: ignore
+        GEMINI_AVAILABLE = True
+    except ImportError:
+        GEMINI_AVAILABLE = False
 
 # Load Models
 crop_model_path = os.path.join(settings.BASE_DIR, "crop1.pkl")
